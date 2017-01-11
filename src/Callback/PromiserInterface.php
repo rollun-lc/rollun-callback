@@ -8,7 +8,7 @@
 
 namespace rollun\callback\Callback;
 
-use zaboy\async\Promise\Promise;
+use rollun\promise\Promise\Promise;
 
 interface PromiserInterface
 {

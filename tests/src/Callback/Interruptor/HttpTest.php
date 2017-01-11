@@ -6,14 +6,12 @@
  * Time: 5:17 PM
  */
 
-namespace zaboy\test\Interruptor\Callback;
-
+namespace rollun\test\callback\Interruptor\Callback;
 
 use rollun\callback\Callback\Interruptor\Http;
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
 use rollun\callback\Callback\Interruptor\Process;
-use zaboy\test\Callback\CallbackTestDataProvider;
-
+use rollun\test\callback\Callback\CallbackTestDataProvider;
 
 class HttpTest extends CallbackTestDataProvider
 {

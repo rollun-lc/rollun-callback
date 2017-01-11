@@ -6,7 +6,7 @@
  * Time: 1:57 PM
  */
 
-namespace rollun\test\callback;
+namespace rollun\test\callback\callback;
 
 class TestEnvTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,17 +1,14 @@
 <?php
-
 // try http://__zaboy-rest/api/rest/index_StoreMiddleware?fNumberOfHours=8&fWeekday=Monday
 // Change to the project root, to simplify resolving paths
 chdir(dirname(__DIR__));
-
 require 'vendor/autoload.php';
 require_once 'config/env_configurator.php';
+
+use rollun\callback\Callback\Pipe\Factory\CronReceiverFactory;
+use rollun\callback\Callback\Pipe\Factory\HttpReceiverFactory;
 use Zend\Diactoros\Server;
-use zaboy\rest\Pipe\MiddlewarePipeOptions;
-use zaboy\rest\Pipe\Factory\RestRqlFactory;
-use Zend\Stratigility\Middleware\ErrorHandler;
-use Zend\Stratigility\Middleware\NotFoundHandler;
-use Zend\Stratigility\NoopFinalHandler;
+use rollun\datastore\Pipe\MiddlewarePipeOptions;
 
 // Define application environment - 'dev' or 'prop'
 if (getenv('APP_ENV') === 'dev') {
@@ -19,12 +16,17 @@ if (getenv('APP_ENV') === 'dev') {
     ini_set('display_errors', 1);
     $env = 'develop';
 }
-
 $container = include 'config/container.php';
 
-$server = Server::createServer(function ($req, $resp, $next) {
-    return "Hello World!";
-}, $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+$HttpReceiverFactory = new HttpReceiverFactory();
+$http = $HttpReceiverFactory($container, '');
+
+$CronReceiverFactory = new CronReceiverFactory();
+$cron = $CronReceiverFactory($container, '');
+
+$app = new MiddlewarePipeOptions(['env' => isset($env) ? $env : null]); //['env' => 'develop']
+$app->pipe('/api/http', $http);
+$app->pipe('/api/cron', $cron);
+
+$server = Server::createServer($app, $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $server->listen();
-
-

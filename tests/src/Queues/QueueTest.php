@@ -1,11 +1,11 @@
 <?php
 
-namespace zaboy\test\Queues;
+namespace rollun\test\callback\Queues;
 
 use rollun\callback\Queues\Queue;
 use rollun\promise\Promise\Promise;
 use rollun\callback\Queues\QueueInterface;
-use zaboy\res\Di\InsideConstruct;
+use rollun\dic\InsideConstruct;
 
 class QueueTest extends \PHPUnit_Framework_TestCase
 {

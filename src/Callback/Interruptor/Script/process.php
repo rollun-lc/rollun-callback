@@ -10,7 +10,7 @@ chdir(__DIR__ . '/../../../../');
 require './vendor/autoload.php';
 
 use rollun\callback\Callback\CallbackException;
-use zaboy\res\Di\InsideConstruct;
+use rollun\dic\InsideConstruct;
 use rollun\callback\Callback\Interruptor\Job;
 
 /** @var Zend\ServiceManager\ServiceManager $container */

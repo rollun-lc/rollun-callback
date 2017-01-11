@@ -29,18 +29,6 @@ class Http extends InterruptorAbstract implements InterruptorInterface
         parent::__construct($callback);
 
         $this->url = rtrim(trim($url), '/');
-        /*if (is_array($options)) {
-            if (isset($options['login']) && isset($options['password'])) {
-                $this->login = $options['login'];
-                $this->password = $options['password'];
-            }
-            $supportedKeys = [
-                'maxredirects',
-                'useragent',
-                'timeout',
-            ];
-            $this->options = array_intersect_key($options, array_flip($supportedKeys));
-        }*/
     }
 
     public function __invoke($value)
@@ -58,8 +46,7 @@ class Http extends InterruptorAbstract implements InterruptorInterface
         //$client->setStream($result[self::STDOUT_KEY]);
 
         $response = $client->send();
-
-        $result['data'] = $this->jsonDecode($response->getBody());
+        $result['data'] = $response->isOk() ? $this->jsonDecode($response->getBody()) : $response->getStatusCode();
         $result[static::MACHINE_NAME_KEY] = constant(static::ENV_VAR_MACHINE_NAME);
         $result[static::INTERRUPTOR_TYPE_KEY] = static::class;
         return $result;

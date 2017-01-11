@@ -12,7 +12,7 @@ use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Example\CronMinMultiplexer;
 use rollun\callback\Example\CronSecMultiplexer;
 use rollun\callback\Ticker\Ticker;
-use zaboy\utils\UtcTime;
+use rollun\utils\UtcTime;
 
 class TickerCron extends Ticker
 {

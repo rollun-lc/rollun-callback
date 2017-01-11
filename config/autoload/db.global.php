@@ -1,5 +1,7 @@
 <?php
 
+use Zend\Db\Adapter\AdapterAbstractServiceFactory;
+
 return [
 
     'db' => [

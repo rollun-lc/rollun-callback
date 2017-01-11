@@ -32,13 +32,13 @@ class Process extends InterruptorAbstract implements InterruptorInterface
     const PID_KEY = 'pid';
     //
     const PATH_SCRIPT_SRC = 'src/Callback/Interruptor/Script/';
-    const PATH_SCRIPT_WWW = 'www/Callback/Interruptor/Script/';
+    const PATH_SCRIPT_WWW = 'public/Callback/Interruptor/Script/';
     const FILE_NAME = 'process.php';
 
     public function __invoke($value)
     {
         if (!is_file($this->getScriptName())) {
-            throw new CallbackException('Script "' . $this->getScriptName() . '" does not exist in the folder "Script"');
+            throw new CallbackException('Script "'.$this->getScriptName().'" does not exist in the folder "Script"');
         }
         $cmd = 'php ' . $this->getScriptName();
 
@@ -74,11 +74,9 @@ class Process extends InterruptorAbstract implements InterruptorInterface
     protected function getScriptName()
     {
         if (!file_exists(self::PATH_SCRIPT_WWW . self::FILE_NAME)) {
-            throw new \RuntimeException(
-            'File ' . self::FILE_NAME, ' is not exist in ' . self::PATH_SCRIPT_WWW
-            );
+            throw new \RuntimeException('File ' . self::FILE_NAME . ' is not exist in ' . self::PATH_SCRIPT_WWW);
         }
-        return self::PATH_SCRIPT_WWW . self::FILE_NAME;
+        return (self::PATH_SCRIPT_WWW . self::FILE_NAME);
     }
 
     /**

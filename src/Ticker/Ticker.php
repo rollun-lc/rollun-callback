@@ -9,8 +9,8 @@
 
 namespace rollun\callback\Ticker;
 
-use zaboy\res\Di\InsideConstruct;
-use zaboy\utils\UtcTime;
+use rollun\dic\InsideConstruct;
+use rollun\utils\UtcTime;
 
 /**
  * Ticker
@@ -41,7 +41,7 @@ class Ticker
 
     public function __construct(callable $tickerCallback = null, $ticksCount = 60, $tickDuration = 1)
     {
-        InsideConstruct::initServices();
+        InsideConstruct::setConstructParams();
     }
 
     public function secBySec60ticks()

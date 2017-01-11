@@ -6,14 +6,14 @@
  * Time: 17:11
  */
 
-namespace zaboy\test\Callback\Interruptor;
+namespace rollun\test\callback\Callback\Interruptor;
 
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
 use rollun\callback\Callback\Interruptor\Multiplexer;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Promiser;
-use zaboy\res\Di\InsideConstruct;
-use zaboy\test\Callback\CallbackTestDataProvider;
+use rollun\dic\InsideConstruct;
+use rollun\test\callback\Callback\CallbackTestDataProvider;
 
 class MultiplexerTest extends CallbackTestDataProvider
 {

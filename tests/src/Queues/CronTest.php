@@ -6,14 +6,15 @@
  * Time: 10:30
  */
 
-namespace zaboy\test\Queues;
+namespace rollun\test\callback\Queues;
 
 use Interop\Container\ContainerInterface;
 use rollun\callback\Queues\Extractor;
 use rollun\callback\Queues\Queue;
 use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
-use zaboy\res\Di\InsideConstruct;
+use rollun\dic\InsideConstruct;
 use rollun\callback\Ticker\Example\TickerCron;
+use rollun\installer\Command;
 use Zend\Http\Client;
 
 class CronTest extends \PHPUnit_Framework_TestCase
@@ -28,13 +29,6 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
     protected $config;
 
-    const SEC_FILE_NAME = __DIR__. DIRECTORY_SEPARATOR .
-    '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-    'www' . DIRECTORY_SEPARATOR . 'interrupt_sec';
-    const MIN_FILE_NAME = __DIR__. DIRECTORY_SEPARATOR .
-    '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-    'www' . DIRECTORY_SEPARATOR . 'interrupt_min';
-
     public function setUp()
     {
         $this->secQueue = new Queue('test_cron_sec_multiplexer');
@@ -47,37 +41,17 @@ class CronTest extends \PHPUnit_Framework_TestCase
         InsideConstruct::setContainer($container);
 
         $this->deleteJob();
-        fopen(static::MIN_FILE_NAME, 'w');
-        fopen(static::SEC_FILE_NAME, 'w');
-    }
-
-    protected function setJob()
-    {
-        $interruptorSecQueue = new QueueInterruptor(function ($value) {
-            file_put_contents(static::SEC_FILE_NAME, "SEC_FILE_NAME: $value" . ";", FILE_APPEND);
-        }, $this->secQueue);
-
-        $interruptorMinQueue = new QueueInterruptor(function ($value) {
-            file_put_contents(static::MIN_FILE_NAME, "MIN_FILE_NAME: $value" . ";", FILE_APPEND);
-        }, $this->minQueue);
-
-        $this->callJob($interruptorMinQueue, 3);
-        $this->callJob($interruptorSecQueue, 2);
-    }
-
-    protected function callJob(callable $callback, $count){
-        for ($i = 0; $i < $count; $i++) {
-            call_user_func($callback, $i+1 . ":$count");
-        }
+        fopen(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min', 'w');
+        fopen(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec', 'w');
     }
 
     protected function deleteJob()
     {
-        if(file_exists(static::SEC_FILE_NAME)) {
-            unlink(static::SEC_FILE_NAME);
+        if (file_exists(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec')) {
+            unlink(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
         }
-        if (file_exists(static::MIN_FILE_NAME)) {
-            unlink(static::MIN_FILE_NAME);
+        if (file_exists(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min')) {
+            unlink(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
         }
     }
 
@@ -95,12 +69,41 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         sleep(3);
 
-        $minFileData = file_get_contents(static::MIN_FILE_NAME);
-        $secFileData = file_get_contents(static::SEC_FILE_NAME);
+        $minFileData = file_get_contents(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
+        $secFileData = file_get_contents(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
         $data = explode(';', $minFileData);
         $this->assertEquals(1, count(array_diff($data, [''])));
         $this->assertEquals(2, count(array_diff(explode(';', $secFileData), [''])));
 
         $this->deleteJob();
+    }
+
+    protected function setJob()
+    {
+        $interruptorSecQueue = new QueueInterruptor(function ($value) {
+            file_put_contents(
+                Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec',
+                "SEC_FILE_NAME: $value" . ";",
+                FILE_APPEND
+            );
+        }, $this->secQueue);
+
+        $interruptorMinQueue = new QueueInterruptor(function ($value) {
+            file_put_contents(
+                Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min',
+                "MIN_FILE_NAME: $value" . ";",
+                FILE_APPEND
+            );
+        }, $this->minQueue);
+
+        $this->callJob($interruptorMinQueue, 3);
+        $this->callJob($interruptorSecQueue, 2);
+    }
+
+    protected function callJob(callable $callback, $count)
+    {
+        for ($i = 0; $i < $count; $i++) {
+            call_user_func($callback, $i + 1 . ":$count");
+        }
     }
 }

@@ -11,8 +11,7 @@ namespace rollun\callback\Callback;
 
 use rollun\callback\Callback\CallbackException;
 use Opis\Closure\SerializableClosure;
-use zaboy\async\Promise\Promise;
-use zaboy\async\Callback\Interrupter\InterrupterInterface;
+use rollun\promise\Promise\Promise;
 
 /**
  * Callback

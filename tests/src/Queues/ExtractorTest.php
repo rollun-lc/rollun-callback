@@ -6,7 +6,7 @@
  * Time: 13:24
  */
 
-namespace zaboy\test\Queues;
+namespace rollun\test\callback\Queues;
 
 
 use Interop\Container\ContainerInterface;

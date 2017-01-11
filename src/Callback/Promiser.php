@@ -9,9 +9,9 @@
 
 namespace rollun\callback\Callback;
 
-use zaboy\async\Promise\Exception;
+use rollun\promise\Promise\Exception;
 use Opis\Closure\SerializableClosure;
-use zaboy\async\Promise\Promise;
+use rollun\promise\Promise\Promise;
 use rollun\callback\Callback\Interruptor\Process as InterruptorProcess;
 
 /**

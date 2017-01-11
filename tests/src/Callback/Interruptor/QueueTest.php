@@ -6,10 +6,10 @@
  * Time: 16:11
  */
 
-namespace zaboy\test\Interruptor\Callback;
+namespace rollun\test\callback\Interruptor\Callback;
 
 use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
-use zaboy\test\Queues\ExtractorTest;
+use rollun\test\callback\Queues\ExtractorTest;
 
 class QueueTest extends ExtractorTest
 {

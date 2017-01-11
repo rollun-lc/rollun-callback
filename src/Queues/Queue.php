@@ -14,12 +14,10 @@ use ReputationVIP\QueueClient\QueueClientInterface;
 use ReputationVIP\QueueClient\Adapter\FileAdapter;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Queues\Message;
+use rollun\installer\Command;
 
 class Queue implements QueueInterface
 {
-
-    const PUBLIC_DIR = 'www';
-
     /**
      *
      * @var string
@@ -48,7 +46,7 @@ class Queue implements QueueInterface
         $this->queueName = $queueName;
         $this->delaySeconds = $delaySeconds;
         $priorityHandler = new ThreeLevelPriorityHandler;
-        $adapter = new FileAdapter($this->getPublicDir(), $priorityHandler);
+        $adapter = new FileAdapter(Command::getPublicDir(), $priorityHandler);
         $this->queueClient = new QueueClient($adapter);
         $queues = $this->queueClient->listQueues();
         if (!in_array($this->queueName, $queues)) {
@@ -95,17 +93,9 @@ class Queue implements QueueInterface
     /**
      * @return string
      */
-    protected function getPublicDir()
-    {
-        return static::PUBLIC_DIR;
-    }
-
-    /**
-     * @return string
-     */
     protected function getQueueDir()
     {
-        return $this->getPublicDir() . DIRECTORY_SEPARATOR . 'queues';
+        return Command::getPublicDir() . DIRECTORY_SEPARATOR . 'queues';
     }
 
 }

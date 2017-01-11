@@ -8,7 +8,7 @@
 
 namespace rollun\callback\Callback\Interruptor;
 
-use zaboy\async\Promise\Exception;
+use rollun\promise\Promise\Exception;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\InterruptorInterface;
 use rollun\callback\Callback\PromiserInterface;
