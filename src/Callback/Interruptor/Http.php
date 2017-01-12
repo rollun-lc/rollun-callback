@@ -46,7 +46,15 @@ class Http extends InterruptorAbstract implements InterruptorInterface
         //$client->setStream($result[self::STDOUT_KEY]);
 
         $response = $client->send();
-        $result['data'] = $response->isOk() ? $this->jsonDecode($response->getBody()) : $response->getStatusCode();
+
+        $result['data'] = $response->isOk() ? [
+            'status' => $response->getStatusCode(),
+            'body' => $this->jsonDecode($response->getBody())
+        ] : [
+            'body' => $response->getBody(),
+            'reasonPhrase' => $response->getReasonPhrase(),
+            'status' => $response->getStatusCode()
+        ];
         $result[static::MACHINE_NAME_KEY] = constant(static::ENV_VAR_MACHINE_NAME);
         $result[static::INTERRUPTOR_TYPE_KEY] = static::class;
         return $result;
