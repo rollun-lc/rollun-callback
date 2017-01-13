@@ -10,7 +10,7 @@
 namespace rollun\callback\Ticker;
 
 use rollun\dic\InsideConstruct;
-use rollun\utils\UtcTime;
+use rollun\utils\Time\UtcTime;
 
 /**
  * Ticker

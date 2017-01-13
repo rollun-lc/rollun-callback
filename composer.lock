@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f0cfcd468ac2ac2fae61d42413bf2593",
-    "content-hash": "3952ebe70d336f2d9ccc5004200c7f9b",
+    "hash": "426aacc661ebbf99d0b89a80355aff25",
+    "content-hash": "0c031496cffe3c2a963df4e66f31e3ef",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2339,37 +2339,39 @@
         },
         {
             "name": "rollun-com/rollun-datastore",
-            "version": "dev-master",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-datastore.git",
-                "reference": "b5b373595cd0ff0b8584d7fc3d3b10fb8d5db780"
+                "reference": "59c9c846783eb2afc8b6d6e9516f4ced87f71d26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/b5b373595cd0ff0b8584d7fc3d3b10fb8d5db780",
-                "reference": "b5b373595cd0ff0b8584d7fc3d3b10fb8d5db780",
+                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/59c9c846783eb2afc8b6d6e9516f4ced87f71d26",
+                "reference": "59c9c846783eb2afc8b6d6e9516f4ced87f71d26",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.6 || ^7.0",
                 "phpunit/phpunit": "^4.0",
-                "psr/http-message": "^1.0",
                 "psr/log": "^1.0",
-                "rollun-com/rollun-installer": "dev-master",
+                "roave/security-advisories": "dev-master",
+                "rollun-com/rollun-installer": "^1.0",
                 "symfony/filesystem": ">=2.7",
                 "xiag/rql-parser": "^1.0",
-                "zendframework/zend-config": "^2.6",
                 "zendframework/zend-db": "2.8.2",
-                "zendframework/zend-diactoros": "^1.1",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
                 "zendframework/zend-http": "^2.5",
                 "zendframework/zend-json": "^3",
                 "zendframework/zend-servicemanager": "^3.0",
-                "zendframework/zend-stdlib": "^3",
-                "zendframework/zend-stratigility": "^1.1"
+                "zendframework/zend-stdlib": "^3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0"
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
             },
             "type": "library",
             "autoload": {
@@ -2392,34 +2394,38 @@
                 }
             ],
             "description": "Datastore",
-            "time": "2017-01-11 10:33:01"
+            "time": "2017-01-13 13:20:16"
         },
         {
             "name": "rollun-com/rollun-dic",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-dic.git",
-                "reference": "eed510bcb27346c4260e833d5e5f0278adf79d28"
+                "reference": "bd78d3e90bd1934954ac9c7ea5cc35c452abb4c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-dic/zipball/eed510bcb27346c4260e833d5e5f0278adf79d28",
-                "reference": "eed510bcb27346c4260e833d5e5f0278adf79d28",
+                "url": "https://api.github.com/repos/rollun-com/rollun-dic/zipball/bd78d3e90bd1934954ac9c7ea5cc35c452abb4c3",
+                "reference": "bd78d3e90bd1934954ac9c7ea5cc35c452abb4c3",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.6 || ^7.0",
-                "psr/http-message": "^1.0",
-                "rollun-com/rollun-installer": "dev-master",
-                "zendframework/zend-config": "^2.6",
-                "zendframework/zend-diactoros": "^1.1",
+                "psr/log": "^1.0",
+                "roave/security-advisories": "dev-master",
+                "rollun-com/rollun-installer": "^1.0",
+                "zendframework/zend-db": "2.8.2",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
                 "zendframework/zend-servicemanager": "^3.0",
-                "zendframework/zend-stdlib": "^3",
-                "zendframework/zend-stratigility": "^1.1"
+                "zendframework/zend-stdlib": "^3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0"
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
             },
             "type": "library",
             "autoload": {
@@ -2442,35 +2448,38 @@
                 }
             ],
             "description": "InsideConstruct",
-            "time": "2017-01-11 15:00:58"
+            "time": "2017-01-13 11:47:01"
         },
         {
             "name": "rollun-com/rollun-installer",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-installer.git",
-                "reference": "f18945e9d008ed58f100f449bfa0592d622f71b1"
+                "reference": "d29fdafe01d5635742f3b8d2abd51848b04db3bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-installer/zipball/f18945e9d008ed58f100f449bfa0592d622f71b1",
-                "reference": "f18945e9d008ed58f100f449bfa0592d622f71b1",
+                "url": "https://api.github.com/repos/rollun-com/rollun-installer/zipball/d29fdafe01d5635742f3b8d2abd51848b04db3bf",
+                "reference": "d29fdafe01d5635742f3b8d2abd51848b04db3bf",
                 "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^1.1",
                 "composer/composer": "^1.0",
                 "php": "^5.6 || ^7.0",
-                "psr/http-message": "^1.0",
-                "zendframework/zend-config": "^2.6",
-                "zendframework/zend-diactoros": "^1.1",
+                "roave/security-advisories": "dev-master",
+                "zendframework/zend-db": "2.8.2",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
                 "zendframework/zend-servicemanager": "^3.0",
-                "zendframework/zend-stdlib": "^3",
-                "zendframework/zend-stratigility": "^1.1"
+                "zendframework/zend-stdlib": "^3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0"
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
             },
             "type": "library",
             "autoload": {
@@ -2493,40 +2502,42 @@
                 }
             ],
             "description": "Installer",
-            "time": "2017-01-11 09:44:07"
+            "time": "2017-01-13 11:33:21"
         },
         {
             "name": "rollun-com/rollun-promise",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-promise.git",
-                "reference": "23c01b6d031c19e80af4a795386ac729d8903652"
+                "reference": "17a4bc478190d5b72d12f72a5bb825ec32b4b173"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-promise/zipball/23c01b6d031c19e80af4a795386ac729d8903652",
-                "reference": "23c01b6d031c19e80af4a795386ac729d8903652",
+                "url": "https://api.github.com/repos/rollun-com/rollun-promise/zipball/17a4bc478190d5b72d12f72a5bb825ec32b4b173",
+                "reference": "17a4bc478190d5b72d12f72a5bb825ec32b4b173",
                 "shasum": ""
             },
             "require": {
                 "mindplay/jsonfreeze": "0.3.3.x-dev",
                 "opis/closure": "^2.1.0",
                 "php": "^5.6 || ^7.0",
-                "psr/http-message": "^1.0",
-                "rollun-com/rollun-datastore": "dev-master",
-                "rollun-com/rollun-dic": "dev-master",
-                "rollun-com/rollun-installer": "dev-master",
-                "rollun-com/rollun-utils": "dev-master",
-                "zendframework/zend-config": "^2.6",
-                "zendframework/zend-db": "^2.0.1",
-                "zendframework/zend-diactoros": "^1.1",
+                "roave/security-advisories": "dev-master",
+                "rollun-com/rollun-datastore": "^1.0",
+                "rollun-com/rollun-dic": "^1.0",
+                "rollun-com/rollun-installer": "^1.0",
+                "rollun-com/rollun-utils": "^1.0",
+                "zendframework/zend-db": "2.8.2",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
                 "zendframework/zend-servicemanager": "^3.0",
-                "zendframework/zend-stdlib": "^3",
-                "zendframework/zend-stratigility": "^1.1"
+                "zendframework/zend-stdlib": "^3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0"
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
             },
             "type": "library",
             "autoload": {
@@ -2549,20 +2560,20 @@
                 }
             ],
             "description": "Promise",
-            "time": "2017-01-11 15:08:29"
+            "time": "2017-01-13 12:37:10"
         },
         {
             "name": "rollun-com/rollun-utils",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-utils.git",
-                "reference": "6fe250be65c2efbd11b2dd551deedb938b414e41"
+                "reference": "fe1d2d0c693dd1b70ed98f5b6252203dd6b19d00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-utils/zipball/6fe250be65c2efbd11b2dd551deedb938b414e41",
-                "reference": "6fe250be65c2efbd11b2dd551deedb938b414e41",
+                "url": "https://api.github.com/repos/rollun-com/rollun-utils/zipball/fe1d2d0c693dd1b70ed98f5b6252203dd6b19d00",
+                "reference": "fe1d2d0c693dd1b70ed98f5b6252203dd6b19d00",
                 "shasum": ""
             },
             "require": {
@@ -2570,17 +2581,20 @@
                 "mindplay/jsonfreeze": "0.3.3.x-dev",
                 "opis/closure": "^2.1.0",
                 "php": "^5.6 || ^7.0",
-                "psr/http-message": "^1.0",
                 "psr/log": "^1.0",
-                "rollun-com/rollun-installer": "dev-master",
-                "zendframework/zend-config": "^2.6",
-                "zendframework/zend-diactoros": "^1.1",
+                "roave/security-advisories": "dev-master",
+                "rollun-com/rollun-installer": "^1.0",
+                "zendframework/zend-db": "2.8.2",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
                 "zendframework/zend-servicemanager": "^3.0",
-                "zendframework/zend-stdlib": "^3",
-                "zendframework/zend-stratigility": "^1.1"
+                "zendframework/zend-stdlib": "^3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0"
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
             },
             "type": "library",
             "autoload": {
@@ -2609,7 +2623,7 @@
                 "php",
                 "rest"
             ],
-            "time": "2017-01-11 09:56:37"
+            "time": "2017-01-13 11:43:46"
         },
         {
             "name": "sebastian/comparator",
@@ -3123,16 +3137,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "d12aa9ca20f4db83ec58410978dab6afcb9d6aaa"
+                "reference": "4f9e449e76996adf310498a8ca955c6deebe29dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/d12aa9ca20f4db83ec58410978dab6afcb9d6aaa",
-                "reference": "d12aa9ca20f4db83ec58410978dab6afcb9d6aaa",
+                "url": "https://api.github.com/repos/symfony/console/zipball/4f9e449e76996adf310498a8ca955c6deebe29dd",
+                "reference": "4f9e449e76996adf310498a8ca955c6deebe29dd",
                 "shasum": ""
             },
             "require": {
@@ -3182,20 +3196,20 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-12-11 14:34:22"
+            "time": "2017-01-08 20:47:33"
         },
         {
             "name": "symfony/debug",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "9f923e68d524a3095c5a2ae5fc7220c7cbc12231"
+                "reference": "810ba5c1c5352a4ddb15d4719e8936751dff0b05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/9f923e68d524a3095c5a2ae5fc7220c7cbc12231",
-                "reference": "9f923e68d524a3095c5a2ae5fc7220c7cbc12231",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/810ba5c1c5352a4ddb15d4719e8936751dff0b05",
+                "reference": "810ba5c1c5352a4ddb15d4719e8936751dff0b05",
                 "shasum": ""
             },
             "require": {
@@ -3239,20 +3253,20 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-16 22:18:16"
+            "time": "2017-01-02 20:32:22"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "8d4cf7561a5b17e5eb7a02b80d0b8f014a3796d4"
+                "reference": "a0c6ef2dc78d33b58d91d3a49f49797a184d06f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/8d4cf7561a5b17e5eb7a02b80d0b8f014a3796d4",
-                "reference": "8d4cf7561a5b17e5eb7a02b80d0b8f014a3796d4",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/a0c6ef2dc78d33b58d91d3a49f49797a184d06f4",
+                "reference": "a0c6ef2dc78d33b58d91d3a49f49797a184d06f4",
                 "shasum": ""
             },
             "require": {
@@ -3288,20 +3302,20 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-24 00:46:43"
+            "time": "2017-01-08 20:47:33"
         },
         {
             "name": "symfony/finder",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b"
+                "reference": "8c71141cae8e2957946b403cc71a67213c0380d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b",
-                "reference": "a69cb5d455b4885ca376dc5bb3e1155cc8c08c4b",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/8c71141cae8e2957946b403cc71a67213c0380d6",
+                "reference": "8c71141cae8e2957946b403cc71a67213c0380d6",
                 "shasum": ""
             },
             "require": {
@@ -3337,7 +3351,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2016-12-13 09:39:43"
+            "time": "2017-01-02 20:32:22"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -3400,16 +3414,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "02ea84847aad71be7e32056408bb19f3a616cdd3"
+                "reference": "350e810019fc52dd06ae844b6a6d382f8a0e8893"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/02ea84847aad71be7e32056408bb19f3a616cdd3",
-                "reference": "02ea84847aad71be7e32056408bb19f3a616cdd3",
+                "url": "https://api.github.com/repos/symfony/process/zipball/350e810019fc52dd06ae844b6a6d382f8a0e8893",
+                "reference": "350e810019fc52dd06ae844b6a6d382f8a0e8893",
                 "shasum": ""
             },
             "require": {
@@ -3445,20 +3459,20 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2016-11-24 10:40:28"
+            "time": "2017-01-02 20:32:22"
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.2.1",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "a7095af4b97a0955f85c8989106c249fa649011f"
+                "reference": "50eadbd7926e31842893c957eca362b21592a97d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/a7095af4b97a0955f85c8989106c249fa649011f",
-                "reference": "a7095af4b97a0955f85c8989106c249fa649011f",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/50eadbd7926e31842893c957eca362b21592a97d",
+                "reference": "50eadbd7926e31842893c957eca362b21592a97d",
                 "shasum": ""
             },
             "require": {
@@ -3500,7 +3514,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-12-10 10:07:06"
+            "time": "2017-01-03 13:51:32"
         },
         {
             "name": "webmozart/assert",
@@ -3594,62 +3608,6 @@
                 "rql"
             ],
             "time": "2016-07-03 08:43:00"
-        },
-        {
-            "name": "zendframework/zend-config",
-            "version": "2.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/zend-config.git",
-                "reference": "2920e877a9f6dca9fa8f6bd3b1ffc2e19bb1e30d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-config/zipball/2920e877a9f6dca9fa8f6bd3b1ffc2e19bb1e30d",
-                "reference": "2920e877a9f6dca9fa8f6bd3b1ffc2e19bb1e30d",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.5 || ^7.0",
-                "zendframework/zend-stdlib": "^2.7 || ^3.0"
-            },
-            "require-dev": {
-                "fabpot/php-cs-fixer": "1.7.*",
-                "phpunit/phpunit": "~4.0",
-                "zendframework/zend-filter": "^2.6",
-                "zendframework/zend-i18n": "^2.5",
-                "zendframework/zend-json": "^2.6.1",
-                "zendframework/zend-servicemanager": "^2.7.5 || ^3.0.3"
-            },
-            "suggest": {
-                "zendframework/zend-filter": "Zend\\Filter component",
-                "zendframework/zend-i18n": "Zend\\I18n component",
-                "zendframework/zend-json": "Zend\\Json to use the Json reader or writer classes",
-                "zendframework/zend-servicemanager": "Zend\\ServiceManager for use with the Config Factory to retrieve reader and writer instances"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.6-dev",
-                    "dev-develop": "2.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Zend\\Config\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "provides a nested object property based user interface for accessing this configuration data within application code",
-            "homepage": "https://github.com/zendframework/zend-config",
-            "keywords": [
-                "config",
-                "zf2"
-            ],
-            "time": "2016-02-04 23:01:10"
         },
         {
             "name": "zendframework/zend-db",
@@ -4648,12 +4606,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "roave/security-advisories": 20,
-        "mindplay/jsonfreeze": 20,
-        "rollun-com/rollun-installer": 20,
-        "rollun-com/rollun-utils": 20,
-        "rollun-com/rollun-dic": 20,
-        "rollun-com/rollun-datastore": 20,
-        "rollun-com/rollun-promise": 20
+        "mindplay/jsonfreeze": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

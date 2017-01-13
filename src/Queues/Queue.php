@@ -46,7 +46,7 @@ class Queue implements QueueInterface
         $this->queueName = $queueName;
         $this->delaySeconds = $delaySeconds;
         $priorityHandler = new ThreeLevelPriorityHandler;
-        $adapter = new FileAdapter(Command::getPublicDir(), $priorityHandler);
+        $adapter = new FileAdapter($this->getQueueDir(), $priorityHandler);
         $this->queueClient = new QueueClient($adapter);
         $queues = $this->queueClient->listQueues();
         if (!in_array($this->queueName, $queues)) {
@@ -95,7 +95,7 @@ class Queue implements QueueInterface
      */
     protected function getQueueDir()
     {
-        return Command::getPublicDir() . DIRECTORY_SEPARATOR . 'queues';
+        return Command::getDataDir() . DIRECTORY_SEPARATOR . 'queues';
     }
 
 }
