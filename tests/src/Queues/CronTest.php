@@ -41,17 +41,17 @@ class CronTest extends \PHPUnit_Framework_TestCase
         InsideConstruct::setContainer($container);
 
         $this->deleteJob();
-        fopen(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min', 'w');
-        fopen(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec', 'w');
+        fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min', 'w');
+        fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec', 'w');
     }
 
     protected function deleteJob()
     {
-        if (file_exists(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec')) {
-            unlink(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
+        if (file_exists(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec')) {
+            unlink(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
         }
-        if (file_exists(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min')) {
-            unlink(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
+        if (file_exists(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min')) {
+            unlink(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
         }
     }
 
@@ -69,8 +69,8 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         sleep(3);
 
-        $minFileData = file_get_contents(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
-        $secFileData = file_get_contents(Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
+        $minFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
+        $secFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
         $data = explode(';', $minFileData);
         $this->assertEquals(1, count(array_diff($data, [''])));
         $this->assertEquals(2, count(array_diff(explode(';', $secFileData), [''])));
@@ -82,7 +82,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
     {
         $interruptorSecQueue = new QueueInterruptor(function ($value) {
             file_put_contents(
-                Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_sec',
+                Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec',
                 "SEC_FILE_NAME: $value" . ";",
                 FILE_APPEND
             );
@@ -90,7 +90,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         $interruptorMinQueue = new QueueInterruptor(function ($value) {
             file_put_contents(
-                Command::getPublicDir() . DIRECTORY_SEPARATOR . 'interrupt_min',
+                Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min',
                 "MIN_FILE_NAME: $value" . ";",
                 FILE_APPEND
             );

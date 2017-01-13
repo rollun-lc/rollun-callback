@@ -8,7 +8,7 @@
 
 return [
     'httpInterruptor' => [
-        'url' => 'http://' . constant('HOST') .'/api/http'
+        'url' => 'http://' . constant('HOST') .'/api/http/callback'
     ],
     'cronQueue' => [
         'url' => 'http://' . constant('HOST') .'/api/cron'

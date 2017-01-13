@@ -35,6 +35,7 @@ class HttpTest extends CallbackTestDataProvider
         $httpInterraptor = new Http($callable, $this->url);
         $result = $httpInterraptor($val);
         $this->assertTrue(isset($result['data']));
+        $this->assertTrue($result['data']['status'] == 200);
         $this->assertTrue(isset($result[InterruptorAbstract::MACHINE_NAME_KEY]));
         $this->assertTrue(isset($result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY]));
     }
