@@ -24,10 +24,6 @@ class CronMinMultiplexer extends Multiplexer
     {
         parent::__construct($interruptors);
         $queue = new Queue(static::QUERY_NAME);
-        $this->interruptors[] = new Process(function () use ($queue) {
-            $extractor = new Extractor($queue);
-            $extractor->extract();
-        });
+        $this->interruptors[]  = new Extractor($queue);
     }
-
 }

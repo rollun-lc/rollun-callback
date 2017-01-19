@@ -45,7 +45,7 @@ class CronReceiver implements MiddlewareInterface
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
         $ticker = new TickerCron();
-        $interruptor = new Process(function () use ($ticker){
+        $interruptor = new Process(function () use ($ticker) {
             $ticker->everyMin();
         });
         $interruptor("start");

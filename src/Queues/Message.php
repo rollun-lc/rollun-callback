@@ -23,6 +23,9 @@ class Message
         $this->message = $message;
     }
 
+    /**
+     * @return string
+     */
     public function getData()
     {
         if (isset($this->message['Body'])) {
@@ -31,6 +34,20 @@ class Message
         throw new \RuntimeException('No "Body" in the message');
     }
 
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        if (isset($this->message['id'])) {
+            return $this->message['id'];
+        }
+        throw new \RuntimeException('No "id" in the message');
+    }
+
+    /**
+     * @return array
+     */
     public function getMessage()
     {
         return $this->message;
