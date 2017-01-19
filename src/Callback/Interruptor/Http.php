@@ -8,7 +8,6 @@
 
 namespace rollun\callback\Callback\Interruptor;
 
-
 use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
@@ -69,6 +68,7 @@ class Http extends InterruptorAbstract implements InterruptorInterface
         $httpClient = new Client($this->url);
         $headers['Content-Type'] = 'text/text';
         $headers['Accept'] = 'application/json';
+        $headers['APP_ENV'] = constant('APP_ENV');
         $httpClient->setHeaders($headers);
         $httpClient->setMethod('POST');
         return $httpClient;

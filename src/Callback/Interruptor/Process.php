@@ -46,7 +46,7 @@ class Process extends InterruptorAbstract implements InterruptorInterface
 
         $serializedJob = $job->serializeBase64();
         $cmd .= ' ' . $serializedJob;
-
+        $cmd .= ' APP_ENV=' . constant('APP_ENV');
         // Files names for stdout and stderr
         $result[self::STDOUT_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stdout_', 1);
         $result[self::STDERR_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stderr_', 1);

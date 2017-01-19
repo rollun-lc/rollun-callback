@@ -8,6 +8,7 @@
 chdir(__DIR__ . '/../../../../');
 
 require './vendor/autoload.php';
+require_once 'config/env_configurator.php';
 
 use rollun\callback\Callback\CallbackException;
 use rollun\dic\InsideConstruct;
