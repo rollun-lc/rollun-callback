@@ -15,6 +15,7 @@ use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\PromiserInterface;
+use rollun\logger\Exception\LogExceptionLevel;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
 
@@ -69,7 +70,7 @@ class HttpCallbackReceiver implements MiddlewareInterface
                     $data = call_user_func($callback, $value);
                     break;
                 default:
-                    throw new CallbackException('Callback is not callable');
+                    throw new CallbackException('Callback is not callable', LogExceptionLevel::CRITICAL);
             }
 
 

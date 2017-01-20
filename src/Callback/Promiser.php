@@ -9,6 +9,8 @@
 
 namespace rollun\callback\Callback;
 
+use rollun\logger\Exception\LogExceptionLevel;
+use rollun\logger\Exception\LoggedException;
 use rollun\promise\Promise\Exception;
 use Opis\Closure\SerializableClosure;
 use rollun\promise\Promise\Promise;
@@ -52,7 +54,7 @@ class Promiser extends Callback implements PromiserInterface
     {
 
         if (isset($this->interruptorResalt) && is_array($this->interruptorResalt)) {
-            throw new \LogicException('Do not call twise __invoke()');
+            throw new LoggedException('Do not call twise __invoke()', LogExceptionLevel::WARNING);
         }
         $result = call_user_func($this->interruptorProcess, $value);
         if (isset($this->interruptorResalt)) {
@@ -69,7 +71,7 @@ class Promiser extends Callback implements PromiserInterface
             $result = $this->run($value);
             $this->promise->resolve($result);
             return $result;
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $this->promise->reject($e);
             return [];
         }

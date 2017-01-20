@@ -11,6 +11,7 @@ namespace rollun\callback\Callback;
 
 use rollun\callback\Callback\CallbackException;
 use Opis\Closure\SerializableClosure;
+use rollun\logger\Exception\LogExceptionLevel;
 use rollun\promise\Promise\Promise;
 
 /**
@@ -44,6 +45,37 @@ class Callback
         return $this->run($value);
     }
 
+    protected function run($value)
+    {
+        if (!is_callable($this->getCallback(), true)) {
+            throw new CallbackException(
+                'There was not correct instance callable in Callback',
+                LogExceptionLevel::CRITICAL
+            );
+        }
+        try {
+            $callback = $this->getCallback();
+            $result = call_user_func($callback, $value);
+            return $result;
+        } catch (\Exception $exc) {
+            throw new CallbackException(
+                'Cannot execute Callback. Reason: ' . $exc->getMessage(),
+                LogExceptionLevel::CRITICAL,
+                $exc
+            );
+        }
+    }
+
+    protected function getCallback()
+    {
+        return $this->callback;
+    }
+
+    protected function setCallback(callable $callback)
+    {
+        $this->callback = $callback;
+    }
+
     public function __sleep()
     {
         $callback = $this->getCallback();
@@ -59,37 +91,10 @@ class Callback
         $callback = $this->getCallback();
         if (!is_callable($callback, true)) {
             throw new CallbackException(
-            'There is not correct instance callable in Callback'
+                'There is not correct instance callable in Callback',
+                LogExceptionLevel::CRITICAL
             );
         }
-    }
-
-    protected function run($value)
-    {
-        if (!is_callable($this->getCallback(), true)) {
-            throw new CallbackException(
-            'There was not correct instance callable in Callback'
-            );
-        }
-        try {
-            $callback = $this->getCallback();
-            $result = call_user_func($callback, $value);
-            return $result;
-        } catch (\Exception $exc) {
-            throw new CallbackException(
-            'Cannot execute Callback. Reason: ' . $exc->getMessage(), 0, $exc
-            );
-        }
-    }
-
-    protected function getCallback()
-    {
-        return $this->callback;
-    }
-
-    protected function setCallback(callable $callback)
-    {
-        $this->callback = $callback;
     }
 
 }

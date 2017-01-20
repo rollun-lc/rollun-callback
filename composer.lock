@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "426aacc661ebbf99d0b89a80355aff25",
-    "content-hash": "0c031496cffe3c2a963df4e66f31e3ef",
+    "hash": "d7c2ccdd298c1aa7ea2be22dd9a610c7",
+    "content-hash": "58bcdcc40f6ffb40227e61cd77cb6b48",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2212,12 +2212,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "8b674956ac0ca9b4c90a98197f244cf81079e084"
+                "reference": "1991086b35313dd4e3c5b351f4b22760deea0910"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/8b674956ac0ca9b4c90a98197f244cf81079e084",
-                "reference": "8b674956ac0ca9b4c90a98197f244cf81079e084",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/1991086b35313dd4e3c5b351f4b22760deea0910",
+                "reference": "1991086b35313dd4e3c5b351f4b22760deea0910",
                 "shasum": ""
             },
             "conflict": {
@@ -2266,7 +2266,7 @@
                 "silverstripe/forum": "<=0.6.1|>=0.7,<=0.7.3",
                 "silverstripe/framework": ">=3,<3.3",
                 "silverstripe/userforms": "<3",
-                "simplesamlphp/saml2": ">=1.9,<1.9.1|>=1.10,<1.10.3|>=2.3,<2.3.3",
+                "simplesamlphp/saml2": "<1.8.1|>=1.9,<1.9.1|>=1.10,<1.10.3|>=2,<2.3.3",
                 "simplesamlphp/simplesamlphp": "<1.14.11",
                 "simplesamlphp/simplesamlphp-module-infocard": "<1.0.1",
                 "socalnick/scn-social-auth": "<1.15.2",
@@ -2289,7 +2289,7 @@
                 "thelia/backoffice-default-template": ">=2.1,<2.1.2",
                 "thelia/thelia": ">=2.1.0-beta1,<2.1.3|>=2.1,<2.1.2",
                 "twig/twig": "<1.20",
-                "typo3/cms": ">=6.2,<6.2.29|>=8,<8.4.1|>=7,<7.6.13",
+                "typo3/cms": ">=6.2,<6.2.30|>=8,<8.4.1|>=7,<7.6.13",
                 "typo3/flow": ">=2.3,<2.3.16|>=3,<3.0.10|>=3.1,<3.1.7|>=3.2,<3.2.7|>=3.3,<3.3.5|>=1,<1.0.4|>=1.1,<1.1.1|>=2,<2.0.1",
                 "typo3/neos": ">=1.1,<1.1.3|>=1.2,<1.2.13|>=2,<2.0.4",
                 "willdurand/js-translation-bundle": "<2.1.1",
@@ -2335,20 +2335,20 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2017-01-09 15:59:17"
+            "time": "2017-01-19 15:04:18"
         },
         {
             "name": "rollun-com/rollun-datastore",
-            "version": "v1.0.3",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-datastore.git",
-                "reference": "59c9c846783eb2afc8b6d6e9516f4ced87f71d26"
+                "reference": "8408f360b95cfd4a2273cae5f097f044ea207e8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/59c9c846783eb2afc8b6d6e9516f4ced87f71d26",
-                "reference": "59c9c846783eb2afc8b6d6e9516f4ced87f71d26",
+                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/8408f360b95cfd4a2273cae5f097f044ea207e8a",
+                "reference": "8408f360b95cfd4a2273cae5f097f044ea207e8a",
                 "shasum": ""
             },
             "require": {
@@ -2394,7 +2394,7 @@
                 }
             ],
             "description": "Datastore",
-            "time": "2017-01-13 13:20:16"
+            "time": "2017-01-18 15:29:41"
         },
         {
             "name": "rollun-com/rollun-dic",
@@ -2452,16 +2452,16 @@
         },
         {
             "name": "rollun-com/rollun-installer",
-            "version": "v1.0.0",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-installer.git",
-                "reference": "d29fdafe01d5635742f3b8d2abd51848b04db3bf"
+                "reference": "353d0bb4704cc4d92e25e0f360a5935954ec82e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-installer/zipball/d29fdafe01d5635742f3b8d2abd51848b04db3bf",
-                "reference": "d29fdafe01d5635742f3b8d2abd51848b04db3bf",
+                "url": "https://api.github.com/repos/rollun-com/rollun-installer/zipball/353d0bb4704cc4d92e25e0f360a5935954ec82e3",
+                "reference": "353d0bb4704cc4d92e25e0f360a5935954ec82e3",
                 "shasum": ""
             },
             "require": {
@@ -2481,6 +2481,9 @@
                 "phpunit/phpunit": "^4.0",
                 "squizlabs/php_codesniffer": "^2.3"
             },
+            "bin": [
+                "bin/InstallerSelfCall"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2502,7 +2505,65 @@
                 }
             ],
             "description": "Installer",
-            "time": "2017-01-13 11:33:21"
+            "time": "2017-01-18 12:47:58"
+        },
+        {
+            "name": "rollun-com/rollun-logger",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rollun-com/rollun-logger.git",
+                "reference": "6ad3ea20ac258d67e3e41da54fe9cb333e1dcbfa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rollun-com/rollun-logger/zipball/6ad3ea20ac258d67e3e41da54fe9cb333e1dcbfa",
+                "reference": "6ad3ea20ac258d67e3e41da54fe9cb333e1dcbfa",
+                "shasum": ""
+            },
+            "require": {
+                "mindplay/jsonfreeze": "0.3.3.x-dev",
+                "php": "^5.6 || ^7.0",
+                "psr/log": "^1.0",
+                "roave/security-advisories": "dev-master",
+                "rollun-com/rollun-dic": "^1.0",
+                "rollun-com/rollun-installer": "^1.0",
+                "rollun-com/rollun-utils": "^1.0",
+                "zendframework/zend-db": "2.8.2",
+                "zendframework/zend-expressive": "^1.0",
+                "zendframework/zend-expressive-fastroute": "^1.0",
+                "zendframework/zend-expressive-helpers": "^2.0",
+                "zendframework/zend-expressive-twigrenderer": "^1.0",
+                "zendframework/zend-servicemanager": "^3.0",
+                "zendframework/zend-stdlib": "^3"
+            },
+            "require-dev": {
+                "filp/whoops": "^1.1 || ^2.0",
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "rollun\\logger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "avz-cmf",
+                    "email": "email@example.com"
+                },
+                {
+                    "name": "victorynox",
+                    "email": "it.proffesor02@gmail.com"
+                }
+            ],
+            "description": "Logger",
+            "time": "2017-01-20 15:18:42"
         },
         {
             "name": "rollun-com/rollun-promise",
@@ -3517,6 +3578,67 @@
             "time": "2017-01-03 13:51:32"
         },
         {
+            "name": "twig/twig",
+            "version": "v1.31.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "ddc9e3e20ee9c0b6908f401ac8353635b750eca7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ddc9e3e20ee9c0b6908f401ac8353635b750eca7",
+                "reference": "ddc9e3e20ee9c0b6908f401ac8353635b750eca7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.7"
+            },
+            "require-dev": {
+                "symfony/debug": "~2.7",
+                "symfony/phpunit-bridge": "~3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.31-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Twig_": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
+                },
+                {
+                    "name": "Twig Team",
+                    "homepage": "http://twig.sensiolabs.org/contributors",
+                    "role": "Contributors"
+                }
+            ],
+            "description": "Twig, the flexible, fast, and secure template language for PHP",
+            "homepage": "http://twig.sensiolabs.org",
+            "keywords": [
+                "templating"
+            ],
+            "time": "2017-01-11 19:36:15"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.2.0",
             "source": {
@@ -3668,16 +3790,16 @@
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.3.8",
+            "version": "1.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "d9c1fd7c4b024179d49faf367da544b4eef7cfe8"
+                "reference": "d5d74ca5548753e0e427fcffca89b134943bac89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/d9c1fd7c4b024179d49faf367da544b4eef7cfe8",
-                "reference": "d9c1fd7c4b024179d49faf367da544b4eef7cfe8",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/d5d74ca5548753e0e427fcffca89b134943bac89",
+                "reference": "d5d74ca5548753e0e427fcffca89b134943bac89",
                 "shasum": ""
             },
             "require": {
@@ -3714,7 +3836,7 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2017-01-05 21:44:28"
+            "time": "2017-01-17 16:18:33"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -4039,6 +4161,65 @@
                 "template"
             ],
             "time": "2017-01-11 18:42:34"
+        },
+        {
+            "name": "zendframework/zend-expressive-twigrenderer",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-expressive-twigrenderer.git",
+                "reference": "786c2b971856c810106b37e9e9b8a90cc28ae454"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-expressive-twigrenderer/zipball/786c2b971856c810106b37e9e9b8a90cc28ae454",
+                "reference": "786c2b971856c810106b37e9e9b8a90cc28ae454",
+                "shasum": ""
+            },
+            "require": {
+                "container-interop/container-interop": "^1.1",
+                "php": "^5.6 || ^7.0",
+                "twig/twig": "^1.26",
+                "zendframework/zend-expressive-helpers": "^1.1 || ^2.0 || ^3.0",
+                "zendframework/zend-expressive-router": "^1.3.2 || ^2.0",
+                "zendframework/zend-expressive-template": "^1.0.4"
+            },
+            "require-dev": {
+                "malukenho/docheader": "^0.1.5",
+                "phpunit/phpunit": "^5.7",
+                "zendframework/zend-coding-standard": "~1.0.0"
+            },
+            "suggest": {
+                "aura/di": "3.0.*@beta to make use of Aura.Di dependency injection container",
+                "mouf/pimple-interop": "^1.0 to use Pimple for dependency injection",
+                "zendframework/zend-servicemanager": "^2.5 to use zend-servicemanager for dependency injection"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2-dev",
+                    "dev-develop": "1.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Zend\\Expressive\\Twig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Twig integration for Expressive",
+            "keywords": [
+                "expressive",
+                "http",
+                "middleware",
+                "psr",
+                "psr-7",
+                "twig"
+            ],
+            "time": "2017-01-12 10:57:50"
         },
         {
             "name": "zendframework/zend-http",

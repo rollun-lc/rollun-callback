@@ -31,7 +31,8 @@
     "rollun-com/rollun-utils": "^1.0",
     "rollun-com/rollun-dic": "^1.0",
     "rollun-com/rollun-promise": "^1.0",
-    "rollun-com/rollun-datastore": "~1.0"
+    "rollun-com/rollun-datastore": "^1.0",
+    "rollun-com/rollun-logger": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.0",

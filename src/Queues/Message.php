@@ -9,6 +9,9 @@
 
 namespace rollun\callback\Queues;
 
+use rollun\logger\Exception\LogExceptionLevel;
+use rollun\logger\Exception\LoggedException;
+
 class Message
 {
 //TODO: counter of return in queue
@@ -25,24 +28,26 @@ class Message
 
     /**
      * @return string
+     * @throws LoggedException
      */
     public function getData()
     {
         if (isset($this->message['Body'])) {
             return $this->message['Body'];
         }
-        throw new \RuntimeException('No "Body" in the message');
+        throw new LoggedException('No "Body" in the message', LogExceptionLevel::ERROR);
     }
 
     /**
      * @return string
+     * @throws LoggedException
      */
     public function getId()
     {
         if (isset($this->message['id'])) {
             return $this->message['id'];
         }
-        throw new \RuntimeException('No "id" in the message');
+        throw new LoggedException('No "id" in the message', LogExceptionLevel::ERROR);
     }
 
     /**

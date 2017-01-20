@@ -13,6 +13,8 @@ use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\Interruptor\Job;
+use rollun\logger\Exception\LogExceptionLevel;
+use rollun\logger\Exception\LoggedException;
 
 /**
  * AnotherProcess
@@ -73,7 +75,7 @@ class Process extends InterruptorAbstract implements InterruptorInterface
     protected function getScriptName()
     {
         if (!file_exists(self::PATH_SCRIPT_DATA . self::FILE_NAME)) {
-            throw new \RuntimeException('File ' . self::FILE_NAME . ' is not exist in ' . self::PATH_SCRIPT_DATA);
+            throw new LoggedException('File ' . self::FILE_NAME . ' is not exist in ' . self::PATH_SCRIPT_DATA, LogExceptionLevel::CRITICAL);
         }
         return (self::PATH_SCRIPT_DATA . self::FILE_NAME);
     }

@@ -8,7 +8,6 @@
 
 namespace rollun\callback\Callback\Interruptor;
 
-use rollun\promise\Promise\Exception;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\PromiserInterface;
 
@@ -26,9 +25,12 @@ class Multiplexer implements InterruptorInterface
      */
     public function __construct(array $interruptors = [])
     {
-        if (!$this->checkInterruptors($interruptors)) {
-            //add to logger
-            //throw new CallbackException('Interruptors array contains non InterruptorInterface object!');
+
+        try {
+            if (!$this->checkInterruptors($interruptors)) {
+                throw new CallbackException('Interruptors array contains non InterruptorInterface object!');
+            }
+        } catch (\Exception $exception) {
         }
         $this->interruptors = $interruptors;
     }

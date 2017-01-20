@@ -11,6 +11,7 @@ namespace rollun\callback\Callback\Interruptor;
 use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
+use rollun\logger\Exception\LogExceptionLevel;
 use Zend\Http\Client;
 use Zend\Json\Json;
 
@@ -86,7 +87,8 @@ class Http extends InterruptorAbstract implements InterruptorInterface
             $jsonErrorMsg = json_last_error_msg();
             json_encode(null);  // Clear json_last_error()
             throw new CallbackException(
-                'Unable to decode data from JSON - ' . $jsonErrorMsg
+                'Unable to decode data from JSON - ' . $jsonErrorMsg,
+                LogExceptionLevel::CRITICAL
             );
         }
         return $result;
