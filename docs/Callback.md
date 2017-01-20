@@ -44,6 +44,8 @@
 * `Process` - Позвояет выполнить **Callback** в отдельном процессе
 * `Multiplexer` - Позвояет выполнить переданный список других **Interruptor** или **Promise**.
 > Принимает на вход массив содержащий **Interruptor** или **Promise** в ином случае будет выброшено исключение.
+* `Queue` - Позволяет положить **Callback** в очередь.
+* `Extractor` - Позволяет запусть **Callback** из очереди. 
 
 ## Promiser
 
@@ -83,6 +85,44 @@
 В случае ошибки одноги из членов массива продолжит свое выполение.
 Возвращает массив со списком возвращенных значений **Interruptor** или **Promiser**.
 
+## Extractor
+
+Подвид **Interruptor** который позволяет достать и запустить Job который лежит в очереди.
+
+Метод `extract` позволяет получить ответ из вызванного **Callback**.
+Метод `__invoke` возвращает массив с вспомагательными данными.
 
 
+## Queue
 
+**Interruptor** который позволяет положить **Callback** в очередь.
+
+## Ticker 
+
+**Interruptor** который вызовет переданый **Callback** заданое количество раз, с заданым интервалом.
+
+#CronManager
+
+**Interruptor** который позволяет сконфигурировать и запустить минтутный и секундный **Ticker**.  
+**Ticker** в свою очередь запустить минутный **Multiplexer** и который запустит секундный **Ticker** 
+внутри которого 60 раз будет запущен секундный **Multiplexer**.
+
+Сам **CronManager** принимает на вход два **Multiplexer**, первый - секундный, второй - минутный.
+
+Что бы задать минутный и секундный мультиплекторы, укажите их в конфиге [**CronReceiver**](Corn.md).
+Пример:
+```php
+'dependencies' => [
+        //example cron multiplexer
+        'invokables' => [
+            'exampleSecMultiplexor' => Example\CronSecMultiplexer::class,
+            'exampleMinMultiplexor' => Example\CronMinMultiplexer::class
+        ],
+    ],
+    'cron' => [
+        CronReceiver::KEY_MIN_MULTIPLEXER => 'exampleMinMultiplexor',
+        CronReceiver::KEY_SEC_MULTIPLEXER => 'exampleSecMultiplexor',
+    ],
+```
+> По умаолчанию заданы примерочные **Multiplexer**,
+    которые в свою очередь просто запускают ектакторы для соответсвующих очередей.

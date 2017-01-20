@@ -1,5 +1,8 @@
 <?php
 
+use rollun\callback\Middleware\CronReceiver;
+use rollun\callback\Middleware\Factory\CronReceiverFactory;
+
 return [
     'dependencies' => [
         'invokables' => [
@@ -10,10 +13,7 @@ return [
              * if you use rollun-datastore uncomment this
              \rollun\datastore\Pipe\RestRql::class => \rollun\datastore\Pipe\Factory\RestRqlFactory::class
              */
-            \rollun\callback\Callback\Pipe\CronReceiver::class =>
-                \rollun\callback\Callback\Pipe\Factory\CronReceiverFactory::class,
-            \rollun\callback\Callback\Pipe\HttpReceiver::class =>
-                \rollun\callback\Callback\Pipe\Factory\HttpReceiverFactory::class
+            CronReceiver::class => CronReceiverFactory::class
         ],
     ],
 
@@ -28,15 +28,9 @@ return [
         ],
         */
         [
-            'name' => 'api.http.callback',
-            'path' => '/api/http/callback',
-            'middleware' => \rollun\callback\Callback\Pipe\HttpReceiver::class,
-            'allowed_methods' => ['POST'],
-        ],
-        [
             'name' => 'api.cron',
             'path' => '/api/cron',
-            'middleware' => \rollun\callback\Callback\Pipe\CronReceiver::class,
+            'middleware' => CronReceiver::class,
             'allowed_methods' => ['GET', 'POST'],
         ],
     ],

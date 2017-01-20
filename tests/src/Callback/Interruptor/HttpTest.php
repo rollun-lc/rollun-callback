@@ -8,10 +8,12 @@
 
 namespace rollun\test\callback\Interruptor\Callback;
 
+use Interop\Container\ContainerInterface;
 use rollun\callback\Callback\Interruptor\Http;
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\test\callback\Callback\CallbackTestDataProvider;
+use Zend\Expressive\Helper\UrlHelper;
 
 class HttpTest extends CallbackTestDataProvider
 {
@@ -20,8 +22,11 @@ class HttpTest extends CallbackTestDataProvider
 
     public function setUp()
     {
+        /** @var ContainerInterface $container */
         $container = include 'config/container.php';
-        $this->url = $container->get('config')['httpInterruptor']['url'];
+
+        $config = $container->get("config");
+        $this->url = 'http://' . constant("HOST") .  $config['middleware_pipeline']['api.http.callback']['path'];
     }
 
     /**

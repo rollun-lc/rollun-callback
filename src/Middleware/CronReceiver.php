@@ -10,13 +10,30 @@ namespace rollun\callback\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Ticker\Example\TickerCron;
+use rollun\callback\Callback\Interruptor\Multiplexer;
+use rollun\callback\Callback\Interruptor\CronManager;
+use rollun\promise\Promise\Exception;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
 
 class CronReceiver implements MiddlewareInterface
 {
+    const KEY_SEC_MULTIPLEXER = 'secMultiplexor';
+
+    const KEY_MIN_MULTIPLEXER = 'minMultiplexor';
+
+    /** @var  Multiplexer */
+    protected $secMultiplexor;
+
+    /** @var  Multiplexer */
+    protected $minMultiplexor;
+
+    public function __construct(Multiplexer $secMultiplexor, Multiplexer $minMultiplexor)
+    {
+        $this->secMultiplexor = $secMultiplexor;
+        $this->minMultiplexor = $minMultiplexor;
+    }
+
     /**
      * Process an incoming request and/or response.
      *
@@ -44,11 +61,12 @@ class CronReceiver implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
-        $ticker = new TickerCron();
-        $interruptor = new Process(function () use ($ticker){
-            $ticker->everyMin();
-        });
-        $interruptor("start");
+        try {
+            $cronManager = new CronManager($this->secMultiplexor, $this->minMultiplexor);
+            $cronManager("start");
+        } catch (\Exception $exception) {
+            return new JsonResponse(['error' => $exception->getMessage()]);
+        }
         return new JsonResponse(['']);
     }
 }

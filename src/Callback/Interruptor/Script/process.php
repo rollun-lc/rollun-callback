@@ -8,10 +8,12 @@
 chdir(__DIR__ . '/../../../../');
 
 require './vendor/autoload.php';
+require_once 'config/env_configurator.php';
 
 use rollun\callback\Callback\CallbackException;
 use rollun\dic\InsideConstruct;
 use rollun\callback\Callback\Interruptor\Job;
+use rollun\logger\Exception\LogExceptionLevel;
 
 /** @var Zend\ServiceManager\ServiceManager $container */
 $container = include './config/container.php';
@@ -21,7 +23,7 @@ $paramsString = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : null;
 
 try {
     if (is_null($paramsString)) {
-        throw new CallbackException('There is not params string');
+        throw new CallbackException('There is not params string', LogExceptionLevel::CRITICAL);
     }
     /* @var $job Job */
     $job = Job::unserializeBase64($paramsString);

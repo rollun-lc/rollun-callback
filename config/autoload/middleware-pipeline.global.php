@@ -32,6 +32,14 @@ return [
         // defined in multiple configuration files/locations. This file defines
         // some conventional keys for middleware to execute early, routing
         // middleware, and error middleware.
+        'api.http.callback' => [
+            'name' => 'api.interrupt.callback',
+            'path' => '/api/interrupt/callback',
+            'middleware' => [
+                \rollun\callback\Middleware\HttpCallbackReceiver::class
+            ],
+            'allowed_methods' => ['POST'],
+        ],
         'always' => [
             'middleware' => [
                 // Add more middleware here that you want to execute on

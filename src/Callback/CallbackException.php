@@ -9,13 +9,9 @@
 
 namespace rollun\callback\Callback;
 
-/**
- * Exception class for Callback
- *
- * @category   callback
- * @package    zaboy
- */
-class CallbackException extends \Exception
+use rollun\logger\Exception\LoggedException;
+
+class CallbackException extends LoggedException
 {
 
 }

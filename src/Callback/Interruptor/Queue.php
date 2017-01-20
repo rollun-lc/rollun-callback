@@ -9,7 +9,6 @@
 namespace rollun\callback\Callback\Interruptor;
 
 use rollun\callback\Callback\Callback;
-use rollun\callback\Callback\InterruptorInterface;
 use rollun\callback\Queues\QueueInterface;
 
 class Queue extends InterruptorAbstract implements InterruptorInterface

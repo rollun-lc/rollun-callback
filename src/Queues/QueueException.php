@@ -8,7 +8,9 @@
 
 namespace rollun\callback\Queues;
 
-class QueueException extends \Exception
+use rollun\logger\Exception\LoggedException;
+
+class QueueException extends LoggedException
 {
 
 }
