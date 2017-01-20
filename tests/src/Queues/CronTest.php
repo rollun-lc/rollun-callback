@@ -13,8 +13,10 @@ use rollun\callback\Queues\Extractor;
 use rollun\callback\Queues\Queue;
 use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
 use rollun\dic\InsideConstruct;
-use rollun\callback\Ticker\Example\TickerCron;
 use rollun\installer\Command;
+use Zend\Expressive\Helper\UrlHelper;
+use Zend\Expressive\Router\Route;
+use Zend\Expressive\Router\RouteResult;
 use Zend\Http\Client;
 
 class CronTest extends \PHPUnit_Framework_TestCase
@@ -37,9 +39,10 @@ class CronTest extends \PHPUnit_Framework_TestCase
         /** @var ContainerInterface $container */
         $container = include 'config/container.php';
         $this->config = $container->get('config');
-        $this->url = $this->config['cronQueue']['url'];
-        InsideConstruct::setContainer($container);
 
+        $this->url = 'http://' . constant("HOST") . '/api/cron';
+
+        InsideConstruct::setContainer($container);
         $this->deleteJob();
         fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min', 'w');
         fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec', 'w');
@@ -55,7 +58,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function test__cron()
+    public function testCron()
     {
         $this->setJob();
         $httpClient = new Client($this->url);
@@ -67,7 +70,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($req->isOk());
 
-        sleep(3);
+        sleep(5);
 
         $minFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
         $secFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');

@@ -9,10 +9,10 @@
 namespace rollun\callback\Queues;
 
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
+use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use Xiag\Rql\Parser\Query;
 use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\InterruptorInterface;
 use rollun\callback\Callback\Promiser;
 use rollun\callback\Callback\PromiserInterface;
 

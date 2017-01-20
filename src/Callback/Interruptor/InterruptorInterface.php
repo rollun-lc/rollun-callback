@@ -6,7 +6,7 @@
  * Time: 13:18
  */
 
-namespace rollun\callback\Callback;
+namespace rollun\callback\Callback\Interruptor;
 
 interface InterruptorInterface
 {

@@ -95,4 +95,34 @@
 
 ## Queue
 
-**Interruptor** который позволяет положить callback в очередь.
+**Interruptor** который позволяет положить **Callback** в очередь.
+
+## Ticker 
+
+**Interruptor** который вызовет переданый **Callback** заданое количество раз, с заданым интервалом.
+
+#CronManager
+
+**Interruptor** который позволяет сконфигурировать и запустить минтутный и секундный **Ticker**.  
+**Ticker** в свою очередь запустить минутный **Multiplexer** и который запустит секундный **Ticker** 
+внутри которого 60 раз будет запущен секундный **Multiplexer**.
+
+Сам **CronManager** принимает на вход два **Multiplexer**, первый - секундный, второй - минутный.
+
+Что бы задать минутный и секундный мультиплекторы, укажите их в конфиге [**CronReceiver**](Corn.md).
+Пример:
+```php
+'dependencies' => [
+        //example cron multiplexer
+        'invokables' => [
+            'exampleSecMultiplexor' => Example\CronSecMultiplexer::class,
+            'exampleMinMultiplexor' => Example\CronMinMultiplexer::class
+        ],
+    ],
+    'cron' => [
+        CronReceiver::KEY_MIN_MULTIPLEXER => 'exampleMinMultiplexor',
+        CronReceiver::KEY_SEC_MULTIPLEXER => 'exampleSecMultiplexor',
+    ],
+```
+> По умаолчанию заданы примерочные **Multiplexer**,
+    которые в свою очередь просто запускают ектакторы для соответсвующих очередей.

@@ -6,16 +6,14 @@
  * Time: 3:10 PM
  */
 
-namespace rollun\callback\Callback\Middleware;
-
+namespace rollun\callback\Middleware;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\InterruptorInterface;
 use rollun\callback\Callback\PromiserInterface;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
@@ -70,7 +68,7 @@ class HttpCallbackReceiver implements MiddlewareInterface
                     $callback = new Process($callback);
                     $data = call_user_func($callback, $value);
                     break;
-                default :
+                default:
                     throw new CallbackException('Callback is not callable');
             }
 

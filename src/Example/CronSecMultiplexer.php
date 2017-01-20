@@ -18,7 +18,7 @@ class CronSecMultiplexer extends Multiplexer
 {
     const QUERY_NAME = 'test_cron_sec_multiplexer';
 
-    public function __construct($interruptors)
+    public function __construct(array $interruptors = [])
     {
         parent::__construct($interruptors);
         $queue = new Queue(static::QUERY_NAME);

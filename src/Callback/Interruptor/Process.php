@@ -12,7 +12,6 @@ namespace rollun\callback\Callback\Interruptor;
 use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Callback;
-use rollun\callback\Callback\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Job;
 
 /**
