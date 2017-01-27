@@ -73,17 +73,23 @@ class HttpCallbackReceiver implements MiddlewareInterface
                     throw new CallbackException('Callback is not callable', LogExceptionLevel::CRITICAL);
             }
 
-
-            return new JsonResponse([
+            $request = $request->withAttribute('responseData', [
                 'data' => $data,
                 'status' => 'complete',
-            ], 200);
+            ]);
+            $request = $request->withAttribute('status', 200);
         } catch (\Exception $e) {
-            return new JsonResponse([
+            $request = $request->withAttribute('responseData', [
+                'data' => $e->getMessage(),
                 'status' => 'error',
-                'data' => $e->getMessage()
-            ], 500);
+            ]);
+            $request = $request->withAttribute('status', 500);
         }
 
+        if (isset($out)) {
+            return $out($request, $response);
+        }
+
+        return $response;
     }
 }

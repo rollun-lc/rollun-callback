@@ -30,8 +30,9 @@
     "rollun-com/rollun-installer": "~1.0",
     "rollun-com/rollun-utils": "^1.0",
     "rollun-com/rollun-dic": "^1.0",
-    "rollun-com/rollun-promise": "^1.0",
-    "rollun-com/rollun-datastore": "^1.0",
+    "rollun-com/rollun-promise": "dev-develop",
+    "rollun-com/rollun-datastore": "dev-develop",
+    "rollun-com/rollun-actionrender": "^2.0",
     "rollun-com/rollun-logger": "^1.0"
   },
   "require-dev": {
