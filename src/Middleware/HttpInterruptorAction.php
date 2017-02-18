@@ -16,10 +16,11 @@ use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\PromiserInterface;
 use rollun\logger\Exception\LogExceptionLevel;
+use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
 
-class HttpCallbackReceiver implements MiddlewareInterface
+class HttpInterruptorAction extends InterruptorAbstract
 {
 
     /**
@@ -77,13 +78,13 @@ class HttpCallbackReceiver implements MiddlewareInterface
                 'data' => $data,
                 'status' => 'complete',
             ]);
-            $request = $request->withAttribute('status', 200);
+            $response = new EmptyResponse(200);
         } catch (\Exception $e) {
             $request = $request->withAttribute('responseData', [
                 'data' => $e->getMessage(),
                 'status' => 'error',
             ]);
-            $request = $request->withAttribute('status', 500);
+            $response = new EmptyResponse(500);
         }
 
         if (isset($out)) {

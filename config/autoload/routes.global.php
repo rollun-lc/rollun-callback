@@ -24,16 +24,10 @@ return [
         ],
         */
         [
-            'name' => 'interrupt.cron',
-            'path' => '/interrupt/cron',
-            'middleware' => 'interrupt-cron',
+            'name' => 'webhook',
+            'path' => '/webhook[/{resourceName}]',
+            'middleware' => 'webhook',
             'allowed_methods' => ['GET', 'POST'],
-        ],
-        [
-            'name' => 'interrupt.callback',
-            'path' => '/interrupt/callback',
-            'middleware' => 'interrupt-callback',
-            'allowed_methods' => ['POST'],
         ],
     ],
 ];
