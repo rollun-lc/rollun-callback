@@ -25,13 +25,13 @@
     "zendframework/zend-db": "2.8.2",
     "psr/log": "^1.0",
     "reputation-vip/queue-client": "^1.0.1",
-    "mindplay/jsonfreeze": "0.3.3.x-dev",
     "opis/closure": "^2.1.0",
     "rollun-com/rollun-installer": "~1.0",
     "rollun-com/rollun-utils": "^1.0",
     "rollun-com/rollun-dic": "^1.0",
     "rollun-com/rollun-promise": "^1.0",
-    "rollun-com/rollun-datastore": "^1.0",
+    "rollun-com/rollun-datastore": "^2.0",
+    "rollun-com/rollun-actionrender": "^2.0",
     "rollun-com/rollun-logger": "^1.0"
   },
   "require-dev": {

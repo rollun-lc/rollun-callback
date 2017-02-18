@@ -1,39 +1,35 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: root
- * Date: 04.01.17
- * Time: 17:14
+ * User: victorsecuring
+ * Date: 18.02.17
+ * Time: 1:31 PM
  */
 
 namespace rollun\callback\Middleware;
 
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use rollun\callback\Callback\Interruptor\Multiplexer;
-use rollun\callback\Callback\Interruptor\CronManager;
-use rollun\promise\Promise\Exception;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Stratigility\MiddlewareInterface;
+use rollun\callback\Callback\Interruptor\InterruptorInterface;
+use Zend\Diactoros\Response\EmptyResponse;
 
-class CronReceiver implements MiddlewareInterface
+class InterruptorCallerAction extends InterruptorAbstract
 {
-    const KEY_SEC_MULTIPLEXER = 'secMultiplexor';
 
-    const KEY_MIN_MULTIPLEXER = 'minMultiplexor';
+    /** @var  InterruptorInterface */
+    protected $interruptor;
 
-    /** @var  Multiplexer */
-    protected $secMultiplexor;
-
-    /** @var  Multiplexer */
-    protected $minMultiplexor;
-
-    public function __construct(Multiplexer $secMultiplexor, Multiplexer $minMultiplexor)
+    /**
+     * InterruptorAbstract constructor.
+     * @param InterruptorInterface $interruptor
+     */
+    public function __construct(InterruptorInterface $interruptor)
     {
-        $this->secMultiplexor = $secMultiplexor;
-        $this->minMultiplexor = $minMultiplexor;
+        $this->interruptor = $interruptor;
     }
 
+    const KEY_INTERRUPTOR_VALUE = 'interruptorValue';
     /**
      * Process an incoming request and/or response.
      *
@@ -61,20 +57,20 @@ class CronReceiver implements MiddlewareInterface
      */
     public function __invoke(Request $request, Response $response, callable $out = null)
     {
+        $value = $request->getAttribute(static::KEY_INTERRUPTOR_VALUE);
         try {
-            $cronManager = new CronManager($this->secMultiplexor, $this->minMultiplexor);
-            $data = $cronManager("start");
-
-            $request = $request->withAttribute('responseData', $data);
-            $request = $request->withAttribute('status', 200);
-        } catch (\Exception $exception) {
-            //add request status
-            $request = $request->withAttribute('responseData', ['error' => $exception->getMessage()]);
-            $request = $request->withAttribute('status', 500);
+            $result = call_user_func($this->interruptor, $value);
+            $request = $request->withAttribute('responseData', $result);
+            $response = new EmptyResponse(200);
+        }catch (\Exception $e) {
+            $request = $request->withAttribute('responseData', ['responseData', ['error' => $e->getMessage()]]);
+            $response = new EmptyResponse(500);
         }
 
-        if (isset($out)) {
-            return $out($request, $response);
+        $request = $request->withAttribute(Response::class, $response);
+
+        if(isset($out)) {
+            return $out($request,$response);
         }
 
         return $response;

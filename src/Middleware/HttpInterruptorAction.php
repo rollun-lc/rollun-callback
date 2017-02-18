@@ -16,10 +16,11 @@ use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\PromiserInterface;
 use rollun\logger\Exception\LogExceptionLevel;
+use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
 
-class HttpCallbackReceiver implements MiddlewareInterface
+class HttpInterruptorAction extends InterruptorAbstract
 {
 
     /**
@@ -73,17 +74,23 @@ class HttpCallbackReceiver implements MiddlewareInterface
                     throw new CallbackException('Callback is not callable', LogExceptionLevel::CRITICAL);
             }
 
-
-            return new JsonResponse([
+            $request = $request->withAttribute('responseData', [
                 'data' => $data,
                 'status' => 'complete',
-            ], 200);
+            ]);
+            $response = new EmptyResponse(200);
         } catch (\Exception $e) {
-            return new JsonResponse([
+            $request = $request->withAttribute('responseData', [
+                'data' => $e->getMessage(),
                 'status' => 'error',
-                'data' => $e->getMessage()
-            ], 500);
+            ]);
+            $response = new EmptyResponse(500);
         }
 
+        if (isset($out)) {
+            return $out($request, $response);
+        }
+
+        return $response;
     }
 }
