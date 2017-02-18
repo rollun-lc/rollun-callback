@@ -64,9 +64,19 @@ class CronReceiver implements MiddlewareInterface
         try {
             $cronManager = new CronManager($this->secMultiplexor, $this->minMultiplexor);
             $cronManager("start");
+
+            $request = $request->withAttribute('responseData', []);
+            $request = $request->withAttribute('status', 200);
         } catch (\Exception $exception) {
-            return new JsonResponse(['error' => $exception->getMessage()]);
+            //add request status
+            $request = $request->withAttribute('responseData', ['error' => $exception->getMessage()]);
+            $request = $request->withAttribute('status', 500);
         }
-        return new JsonResponse(['']);
+
+        if (isset($out)) {
+            return $out($request, $response);
+        }
+
+        return $response;
     }
 }

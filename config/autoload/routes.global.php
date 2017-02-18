@@ -9,11 +9,7 @@ return [
             Zend\Expressive\Router\RouterInterface::class => Zend\Expressive\Router\FastRouteRouter::class,
         ],
         'factories' => [
-            /*
-             * if you use rollun-datastore uncomment this
-             \rollun\datastore\Pipe\RestRql::class => \rollun\datastore\Pipe\Factory\RestRqlFactory::class
-             */
-            CronReceiver::class => CronReceiverFactory::class
+
         ],
     ],
 
@@ -22,16 +18,22 @@ return [
          * if you use rollun-datastore uncomment this
          [
             'name' => 'api.rest',
-            'path' => '/api/rest[/{Resource-Name}[/{id}]]',
-            'middleware' => \rollun\datastore\Pipe\RestRql::class,
+            'path' => '/api/rest[/{resourceName}[/{id}]]',
+            'middleware' => 'api-rest',
             'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         ],
         */
         [
-            'name' => 'api.cron',
-            'path' => '/api/cron',
-            'middleware' => CronReceiver::class,
+            'name' => 'interrupt.cron',
+            'path' => '/interrupt/cron',
+            'middleware' => 'interrupt-cron',
             'allowed_methods' => ['GET', 'POST'],
+        ],
+        [
+            'name' => 'interrupt.callback',
+            'path' => '/interrupt/callback',
+            'middleware' => 'interrupt-callback',
+            'allowed_methods' => ['POST'],
         ],
     ],
 ];

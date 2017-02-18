@@ -26,7 +26,7 @@ class HttpTest extends CallbackTestDataProvider
         $container = include 'config/container.php';
 
         $config = $container->get("config");
-        $this->url = 'http://' . constant("HOST") .  $config['middleware_pipeline']['api.http.callback']['path'];
+        $this->url = 'http://' . constant("HOST") . '/interrupt/callback';
     }
 
     /**
