@@ -38,7 +38,7 @@ class InterruptorDirectFactory implements FactoryInterface
         $interruptMiddleware = null;
         $resource = $container->get($resourceName);
         switch (true) {
-            case is_a($resource,InterruptorInterface::class, true):
+            case is_a($resource, InterruptorInterface::class, true):
                 $interruptMiddleware = new InterruptorCallerAction($resource);
                 break;
             case is_a($resource, InterruptorAbstract::class, true):

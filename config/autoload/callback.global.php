@@ -16,11 +16,6 @@ use rollun\callback\Middleware\CronReceiver;
 use rollun\callback\Middleware\Factory\LazyLoadAbstractFactory;
 
 return [
-    'cron' => [
-        CronReceiver::KEY_MIN_MULTIPLEXER => 'exampleMinMultiplexor',
-        CronReceiver::KEY_SEC_MULTIPLEXER => 'exampleSecMultiplexor',
-    ],
-
     'dependencies' => [
         'invokables' => [
             'cronSecMultiplexer' => Example\CronSecMultiplexer::class,
@@ -28,7 +23,6 @@ return [
                 \rollun\callback\Middleware\HttpInterruptorAction::class,
         ],
         'factories' => [
-            'cron' => \rollun\callback\Callback\Interruptor\Factory\CronMultiplexerFactory::class
         ],
         'abstract_factories' => [
             \rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory::class,
@@ -44,10 +38,6 @@ return [
         ]
     ],
 
-    MiddlewarePipeAbstractFactory::KEY_AMP => [
-
-    ],
-
     ResponseRendererAbstractFactory::KEY_RESPONSE_RENDERER => [
         'webhookJsonRender' => [
             ResponseRendererAbstractFactory::KEY_ACCEPT_TYPE_PATTERN => [
@@ -56,22 +46,9 @@ return [
             ]
         ]
     ],
+
     ActionRenderAbstractFactory::KEY_AR_SERVICE => [
-        /*'interrupt-cron' => [
-            ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
-                ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE =>
-                    \rollun\callback\Middleware\CronReceiver::class,
-                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'interruptJsonRender'
-            ]
-        ],
-        'interrupt-callback' => [
-            ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
-                ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE =>
-                    \rollun\callback\Middleware\HttpInterruptorAction::class,
-                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'interruptJsonRender'
-            ]
-        ],*/
-        'webhook' => [
+        'webhookActionRender' => [
             ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
                 ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLazyLoad',
                 ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRender'
@@ -84,5 +61,8 @@ return [
             LazyLoadAbstractFactory::KEY_DIRECT_FACTORY =>
                 \rollun\callback\Middleware\Factory\InterruptorDirectFactory::class
         ]
-    ]
+    ],
+
+    MiddlewarePipeAbstractFactory::KEY_AMP => [
+    ],
 ];
