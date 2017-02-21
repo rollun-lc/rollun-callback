@@ -39,7 +39,7 @@ class LazyLoadAbstractFactory implements AbstractFactoryInterface
     }
 
     /**
-     * Create an object
+     * Create middleware by DirectFactor.
      *
      * @param  ContainerInterface $container
      * @param  string $requestedName

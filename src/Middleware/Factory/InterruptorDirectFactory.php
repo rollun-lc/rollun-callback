@@ -19,8 +19,8 @@ class InterruptorDirectFactory implements FactoryInterface
 {
 
     /**
-     * Create an object
-     *
+     * Direct factory is factory who create middleware by $resourceName in path.
+     * Create interruptor middleware by $resourceName in path.
      * @param  ContainerInterface $container
      * @param  string $requestedName
      * @param  null|array $options
