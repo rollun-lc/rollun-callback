@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.22.7",
+            "version": "3.22.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "eea83aaac2b6c86f72a5c85c54d1839b70d4fd21"
+                "reference": "b69d6ef0eb99ca1996d2b2e7ebf7e573415d0a18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/eea83aaac2b6c86f72a5c85c54d1839b70d4fd21",
-                "reference": "eea83aaac2b6c86f72a5c85c54d1839b70d4fd21",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b69d6ef0eb99ca1996d2b2e7ebf7e573415d0a18",
+                "reference": "b69d6ef0eb99ca1996d2b2e7ebf7e573415d0a18",
                 "shasum": ""
             },
             "require": {
@@ -85,7 +85,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2017-02-17 20:09:40"
+            "time": "2017-02-21 21:11:29"
         },
         {
             "name": "composer/ca-bundle",
@@ -1861,16 +1861,16 @@
         },
         {
             "name": "rollun-com/rollun-actionrender",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-actionrender.git",
-                "reference": "5cb8400783705736347a971ecebda6316a1b989b"
+                "reference": "6b243a74b96062e036cb34499eb133f81fc8f085"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-actionrender/zipball/5cb8400783705736347a971ecebda6316a1b989b",
-                "reference": "5cb8400783705736347a971ecebda6316a1b989b",
+                "url": "https://api.github.com/repos/rollun-com/rollun-actionrender/zipball/6b243a74b96062e036cb34499eb133f81fc8f085",
+                "reference": "6b243a74b96062e036cb34499eb133f81fc8f085",
                 "shasum": ""
             },
             "require": {
@@ -1913,20 +1913,20 @@
                 }
             ],
             "description": "Skeleton for app or lib",
-            "time": "2017-02-06 16:36:39"
+            "time": "2017-02-22 15:10:55"
         },
         {
             "name": "rollun-com/rollun-datastore",
-            "version": "2.1.5",
+            "version": "2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-datastore.git",
-                "reference": "a0bc6e8e9d35f94b515b021c1f456da40b2e5b2e"
+                "reference": "876124e897f4de84bbd2dbf1fcd801c706af7a02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/a0bc6e8e9d35f94b515b021c1f456da40b2e5b2e",
-                "reference": "a0bc6e8e9d35f94b515b021c1f456da40b2e5b2e",
+                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/876124e897f4de84bbd2dbf1fcd801c706af7a02",
+                "reference": "876124e897f4de84bbd2dbf1fcd801c706af7a02",
                 "shasum": ""
             },
             "require": {
@@ -1976,7 +1976,7 @@
                 }
             ],
             "description": "Datastore",
-            "time": "2017-02-18 09:35:11"
+            "time": "2017-02-21 09:06:08"
         },
         {
             "name": "rollun-com/rollun-dic",
@@ -4227,16 +4227,16 @@
     "packages-dev": [
         {
             "name": "filp/whoops",
-            "version": "2.1.5",
+            "version": "2.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "2abce9d956589122c6443d6265f01cf7e9388e3c"
+                "reference": "92bdc6800ac6e233c9e161a1768e082389a73530"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/2abce9d956589122c6443d6265f01cf7e9388e3c",
-                "reference": "2abce9d956589122c6443d6265f01cf7e9388e3c",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/92bdc6800ac6e233c9e161a1768e082389a73530",
+                "reference": "92bdc6800ac6e233c9e161a1768e082389a73530",
                 "shasum": ""
             },
             "require": {
@@ -4283,7 +4283,7 @@
                 "whoops",
                 "zf2"
             ],
-            "time": "2016-12-26 16:13:31"
+            "time": "2017-02-18 14:22:27"
         },
         {
             "name": "squizlabs/php_codesniffer",

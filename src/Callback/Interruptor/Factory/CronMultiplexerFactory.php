@@ -8,7 +8,6 @@
 
 namespace rollun\callback\Callback\Interruptor\Factory;
 
-
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use rollun\callback\Callback\Interruptor\Multiplexer;

@@ -1,3 +1,10 @@
+# webhook
+
+**webhook** подвид [interruptor](./Callback.md#Interruptor) который вызываються с помощью http запроса.
+Сам **Callback** может быть переданым в запросе, либо вызван как удаленная процедура. 
+
+## Введение
+
 Существуют несколько типов роутов.
 Системные и пользовательские, системные - которые используют скрипты(ajax запросы) для работы и получения данных.
 И пользовательские - используются пользователями для получения отрендереной html странички.
@@ -5,11 +12,15 @@
 Системные в большинстве случаев возвращают json ответ либо ответ возвращаться пустым или не имеет особого значения.
 В данном примере мы рассмотрим один из системных роутов которые возвращают пустой ответ.
 
-Роут  `/webhook[/{resourceName}]`  используется для получения interrupt вызовов.
+Роут  `/webhook[/{resourceName}]`  используется для получения **interrupt**(**webhook**) вызовов.
 Где  interrupt-name  - имя требуемого interruptor.
 
 Используя принцип **action-render middleware** мы разделяем обработку запроса на 2 pipe первый выполняет action,
 а второй готовит и возвращает результат. Так как в данном роуте ответ не столь важен, мы подробно рассмотрим только action часть.
+
+## webhook - **action-rendermiddleware**
+
+### Router
 Итак, давайте взглянем на конфиг роута
 
 ```php
@@ -22,8 +33,11 @@
         ],
     ],    
 ```
-
 Мы можем видеть что тут используется `webhookActionRender` middleware. 
+
+### ActionRender
+
+
 Давайте посмотрим теперь найдет его настройки.
 
 ```php
@@ -41,6 +55,8 @@ ActionRenderAbstractFactory::KEY_AR_SERVICE => [
 `ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLazyLoad'`, 
 и рассмотрим Action часть нашего `webhookActionRender`.
 
+### LazyLoadAbstractFactory
+
 И так вот конфиг `LazyLoadAbstractFactory`. 
 ```php
 LazyLoadAbstractFactory::KEY_LAZY_LOAD => [
@@ -53,6 +69,7 @@ LazyLoadAbstractFactory::KEY_LAZY_LOAD => [
 Данная фабрика позволяет нам создавать Middleware на основе переданной ей  directFactory ,
 в которую она передает `resourceName` в качестве запрашиваемого сервиса.
 Как мы можем увидеть middleware создается с помощью `InterruptorDirectFactory` .
+
 Давайте рассмотрим ее по подробнее:
 
 ```php

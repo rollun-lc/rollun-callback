@@ -9,11 +9,10 @@
 use rollun\actionrender\Factory\ActionRenderAbstractFactory;
 use rollun\actionrender\Factory\MiddlewarePipeAbstractFactory;
 use rollun\actionrender\Renderer\ResponseRendererAbstractFactory;
+use rollun\actionrender\Factory\LazyLoadDirectAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\AbstractMultiplexerFactory;
 use rollun\callback\Callback\Interruptor\Factory\CronMultiplexerFactory;
 use rollun\callback\Example;
-use rollun\callback\Middleware\CronReceiver;
-use rollun\callback\Middleware\Factory\LazyLoadAbstractFactory;
 
 return [
     'dependencies' => [
@@ -23,10 +22,11 @@ return [
                 \rollun\callback\Middleware\HttpInterruptorAction::class,
         ],
         'factories' => [
+            CronMultiplexerFactory::KEY_CRON => CronMultiplexerFactory::class,
         ],
         'abstract_factories' => [
             \rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory::class,
-            \rollun\callback\Middleware\Factory\LazyLoadAbstractFactory::class
+            \rollun\actionrender\Factory\LazyLoadDirectAbstractFactory::class
         ]
     ],
 
@@ -56,13 +56,14 @@ return [
         ]
     ],
 
-    LazyLoadAbstractFactory::KEY_LAZY_LOAD => [
+    LazyLoadDirectAbstractFactory::KEY_LAZY_LOAD => [
         'webhookLazyLoad' => [
-            LazyLoadAbstractFactory::KEY_DIRECT_FACTORY =>
+            LazyLoadDirectAbstractFactory::KEY_DIRECT_FACTORY =>
                 \rollun\callback\Middleware\Factory\InterruptorDirectFactory::class
         ]
     ],
 
     MiddlewarePipeAbstractFactory::KEY_AMP => [
+
     ],
 ];
