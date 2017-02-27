@@ -1,22 +1,5 @@
 # rollun-callback
 
----
-## [Оглавление](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Contents.md)
-
----
-
-Каркас для создания приложений. 
-
-* [Стандарты](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Standarts.md)
-
-* [rollun-callback README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Callback.md)
-
-* [Webhook README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
-
-* [Queue README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
-
-* [CronMultiplexer README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
-
 ## Callback
  
 Это invockable объект -  обертка для **Callable**.   
@@ -47,3 +30,22 @@
 Если нужен результат выполнения **Callable**, используйте **Promise**.
 
 > Более детально вохможно ознакомиться [тут 'Callback README'](https://github.com/rollun-com/rollun-callback/blob/master/docs/Callback.md)
+
+
+---
+## [Оглавление](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Contents.md)
+
+---
+
+Каркас для создания приложений. 
+
+* [Стандарты](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Standarts.md)
+
+* [rollun-callback README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Callback.md)
+
+* [Webhook README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
+
+* [Queue README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
+
+* [CronMultiplexer README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
+
