@@ -10,6 +10,8 @@ namespace rollun\callback\Middleware\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Http\Middleware\MiddlewareInterface;
+use rollun\actionrender\Factory\DirectFactoryException;
+use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Middleware\InterruptorAbstract;
 use rollun\callback\Middleware\InterruptorCallerAction;
@@ -31,7 +33,7 @@ class InterruptorDirectFactory implements FactoryInterface
     {
         $resourceName = $requestedName;
         if (!$container->has($resourceName)) {
-            throw new DirectFactoryException(
+            throw new CallbackException(
                 'Can\'t make Middleware\InterruptorAbstract for resource: ' . $resourceName
             );
         }
@@ -63,7 +65,7 @@ class InterruptorDirectFactory implements FactoryInterface
                 break;*/
             default:
                 if (!isset($interruptMiddleware)) {
-                    throw new DirectFactoryException(
+                    throw new CallbackException(
                         'Can\'t make Middleware\InterruptorAbstract'
                         . ' for resource: ' . $resourceName
                     );
