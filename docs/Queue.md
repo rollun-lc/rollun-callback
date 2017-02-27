@@ -1,4 +1,5 @@
-## Queue 
+## Queue
+
 Реализация очереди для **callback**.
 
 ## Message

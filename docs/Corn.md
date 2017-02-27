@@ -1,18 +1,27 @@
-#CronReceiver
+# CronMultiplexer
 
-**Middleware** которы получает запросы от крона, создает и запускает **CronManager**.
+Multiplexer создаеться с помощью фабрики `CronMultiplexerFactory`, 
+и имеет ряд дополнительных конфигов в отличии от обычных multiplexer. 
 
-**CronReceiver** - Получает в качетсве зависимости два **Multiplexer**.
-Первый - секундный, а второй минутный. Соответсввенно при кажом вызове **CronReceiver**, 
-будет срабатывать один раз минутный **Multiplexer** и 60 раз секудный.
-
-**Multiplexer** будут переданы ему фабрикой - **CronReceiverFactory**, а задать их можно в конфиге.
-Пример
+Глянем его конфиг:
 
 ```php
-    'cron' => [
-        CronReceiver::KEY_MIN_MULTIPLEXER => 'exampleMinMultiplexor',
-        CronReceiver::KEY_SEC_MULTIPLEXER => 'exampleSecMultiplexor',
+AbstractMultiplexerFactory::KEY_MULTIPLEXER => [
+        CronMultiplexerFactory::KEY_CRON => [
+            CronMultiplexerFactory::KEY_CLASS => Example\CronMinMultiplexer::class,//not require
+            CronMultiplexerFactory::KEY_SECOND_MULTIPLEXER_SERVICE => 'cronSecMultiplexer', //not require
+            //CronMultiplexerFactory::KEY_INTERRUPTERS_SERVICE => [] not require
+        ]
     ],
 ```
-> По умолчанию используються **exampleMultiplexor**.
+Давайте разберем структуру конфига
+* CronMultiplexerFactory::KEY_CLASS - Класс мультиплексера который будет использован.
+> Данный параметр не обязателен, по умолчанию будет миспользован стандартный клаас Multiplexer.  
+* CronMultiplexerFactory::KEY_SECOND_MULTIPLEXER_SERVICE - имя сервиса секундного мультиплексера.
+> Мультиплексер который будет запущен каждую секунду, в течении минуты. Данный параметр не обязателен
+* CronMultiplexerFactory::KEY_INTERRUPTERS_SERVICE - имена сервисов мультиплексеров
+которые будут переданы в основной multiplexer.
+> Данный параметр не обязателен.
+
+Тем самым CronMultiplexer отличаеться от обычного Multiplexer тем что умеет скомпоновать два независимых Multiplexer, 
+и вызывать их с опредленным периодом.
