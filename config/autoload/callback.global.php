@@ -47,7 +47,7 @@ return [
         ]
     ],
 
-    ActionRenderAbstractFactory::KEY_AR_SERVICE => [
+    ActionRenderAbstractFactory::KEY_AR => [
         'webhookActionRender' => [
             ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
                 ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLazyLoad',
@@ -64,6 +64,5 @@ return [
     ],
 
     MiddlewarePipeAbstractFactory::KEY_AMP => [
-
     ],
 ];

@@ -42,12 +42,12 @@ class Ticker implements InterruptorInterface
 
     /**
      * Ticker constructor.
-     * @param InterruptorInterface $tickerCallback
+     * @param callable|InterruptorInterface $tickerCallback
      * @param int $ticksCount
      * @param int $tickDuration
      * @param int $delayMC
      */
-    public function __construct(InterruptorInterface $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMC = 0)
+    public function __construct(callable $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMC = 0)
     {
         $this->tickerCallback = $tickerCallback;
         $this->ticksCount = $ticksCount;
