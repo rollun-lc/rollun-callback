@@ -20,7 +20,7 @@ return [
             Logger::class => LoggerFactory::class,
         ],
         'aliases' =>[
-            FileLogWriter::class => \rollun\logger\LogWriter\LogWriterInterface::DEFAULT_LOG_WRITER_SERVICE,
+             \rollun\logger\LogWriter\LogWriterInterface::DEFAULT_LOG_WRITER_SERVICE => FileLogWriter::class,
         ]
     ]
 ];
