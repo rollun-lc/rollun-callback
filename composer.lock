@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "630c2d54cc0b630da52986c6e0e2324f",
-    "content-hash": "381b7b4f6e40597b9733536eb093e38d",
+    "hash": "2e084bbcdf39c626201d688d28b6b355",
+    "content-hash": "465afaf241835323119461d9e50d15f7",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1867,16 +1867,16 @@
         },
         {
             "name": "rollun-com/rollun-actionrender",
-            "version": "2.3.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-actionrender.git",
-                "reference": "d47714c900ab1dd9bcbd52d45a6ae6a6a0443d75"
+                "reference": "8bcaebe3409e4369737a2f79e2bfc99d9b9bfbb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-actionrender/zipball/d47714c900ab1dd9bcbd52d45a6ae6a6a0443d75",
-                "reference": "d47714c900ab1dd9bcbd52d45a6ae6a6a0443d75",
+                "url": "https://api.github.com/repos/rollun-com/rollun-actionrender/zipball/8bcaebe3409e4369737a2f79e2bfc99d9b9bfbb7",
+                "reference": "8bcaebe3409e4369737a2f79e2bfc99d9b9bfbb7",
                 "shasum": ""
             },
             "require": {
@@ -1919,20 +1919,20 @@
                 }
             ],
             "description": "Skeleton for app or lib",
-            "time": "2017-03-01 12:35:46"
+            "time": "2017-03-04 10:42:28"
         },
         {
             "name": "rollun-com/rollun-datastore",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-datastore.git",
-                "reference": "1e2ef550f0628e05cd4a0ed1a0aebbdc515596f7"
+                "reference": "eb6d323ce6af5e430acb1fd3901b54af03a57df7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/1e2ef550f0628e05cd4a0ed1a0aebbdc515596f7",
-                "reference": "1e2ef550f0628e05cd4a0ed1a0aebbdc515596f7",
+                "url": "https://api.github.com/repos/rollun-com/rollun-datastore/zipball/eb6d323ce6af5e430acb1fd3901b54af03a57df7",
+                "reference": "eb6d323ce6af5e430acb1fd3901b54af03a57df7",
                 "shasum": ""
             },
             "require": {
@@ -1940,7 +1940,7 @@
                 "phpunit/phpunit": "^4.0",
                 "psr/log": "^1.0",
                 "roave/security-advisories": "dev-master",
-                "rollun-com/rollun-actionrender": "^2.1",
+                "rollun-com/rollun-actionrender": "^3",
                 "rollun-com/rollun-installer": "^1.0",
                 "rollun-com/rollun-logger": "^1.0",
                 "rollun-com/rollun-utils": "^1.0",
@@ -1982,7 +1982,7 @@
                 }
             ],
             "description": "Datastore",
-            "time": "2017-02-27 14:22:54"
+            "time": "2017-03-04 10:56:09"
         },
         {
             "name": "rollun-com/rollun-dic",
@@ -2097,16 +2097,16 @@
         },
         {
             "name": "rollun-com/rollun-logger",
-            "version": "1.2.2",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollun-com/rollun-logger.git",
-                "reference": "736a3316ff08878d501140362194bc514d29d12d"
+                "reference": "8b5f1adf05840f0673f05c3f5460a59068a92e2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollun-com/rollun-logger/zipball/736a3316ff08878d501140362194bc514d29d12d",
-                "reference": "736a3316ff08878d501140362194bc514d29d12d",
+                "url": "https://api.github.com/repos/rollun-com/rollun-logger/zipball/8b5f1adf05840f0673f05c3f5460a59068a92e2e",
+                "reference": "8b5f1adf05840f0673f05c3f5460a59068a92e2e",
                 "shasum": ""
             },
             "require": {
@@ -2150,7 +2150,7 @@
                 }
             ],
             "description": "Logger",
-            "time": "2017-02-18 09:05:37"
+            "time": "2017-03-04 11:10:52"
         },
         {
             "name": "rollun-com/rollun-promise",
