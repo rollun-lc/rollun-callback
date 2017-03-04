@@ -23,10 +23,12 @@ class Installer extends InstallerAbstract
 {
     public function install()
     {
-        if (!file_exists(getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_DATA . Process::FILE_NAME)) {
+        $reflection = new \ReflectionClass(self::class);
+        $scriptFile = realpath(dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . Process::FILE_NAME);
+        if (!file_exists($scriptFile)) {
             @mkdir(Process::PATH_SCRIPT_DATA, 0777, true);
             copy(
-                getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_SRC . Process::FILE_NAME,
+                $scriptFile,
                 getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_DATA . Process::FILE_NAME
             );
         }
