@@ -22,6 +22,8 @@ use rollun\utils\Time\UtcTime;
  */
 class Ticker implements InterruptorInterface
 {
+    const DEFAULT_INTERRUPTOR_CLASS = Process::class;
+
     /**
      * @var InterruptorInterface $tickerCallback
      */
@@ -42,12 +44,12 @@ class Ticker implements InterruptorInterface
 
     /**
      * Ticker constructor.
-     * @param InterruptorInterface $tickerCallback
+     * @param callable|InterruptorInterface $tickerCallback
      * @param int $ticksCount
      * @param int $tickDuration
      * @param int $delayMC
      */
-    public function __construct(InterruptorInterface $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMC = 0)
+    public function __construct(callable $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMC = 0)
     {
         $this->tickerCallback = $tickerCallback;
         $this->ticksCount = $ticksCount;
@@ -76,14 +78,20 @@ class Ticker implements InterruptorInterface
      */
     public function __invoke($value)
     {
-        $result = [];
-        for ($index = 0; $index < $this->ticksCount; $index++) {
-            $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
-            $result[$startTime]['data'] = $this->tick($value);
-            $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
-            $sleepTime = $sleepTime <= 0 ? 0 : $sleepTime;
-            usleep($sleepTime * 1000000);
-        }
-        return $result;
+        $function = function($value) {
+            usleep($this->delayMS);
+            $result = [];
+            for ($index = 0; $index < $this->ticksCount; $index++) {
+                $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
+                $result[$startTime]['data'] = $this->tick($value);
+                $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
+                $sleepTime = $sleepTime <= 0 ? 0 : $sleepTime;
+                usleep($sleepTime * 1000000);
+            }
+            return $result;
+        };
+        $class = static::DEFAULT_INTERRUPTOR_CLASS;
+        $call = new $class($function->bindTo($this));
+        return $call($value);
     }
 }

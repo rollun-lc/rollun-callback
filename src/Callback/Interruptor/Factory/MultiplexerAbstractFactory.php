@@ -15,21 +15,11 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class MultiplexerAbstractFactory extends AbstractMultiplexerFactory implements AbstractFactoryInterface
+class MultiplexerAbstractFactory extends AbstractInterruptorAbstractFactory
 {
+    const KEY_INTERRUPTERS_SERVICE = 'interrupters';
 
-    /**
-     * Can the factory create an instance for the service?
-     *
-     * @param  ContainerInterface $container
-     * @param  string $requestedName
-     * @return bool
-     */
-    public function canCreate(ContainerInterface $container, $requestedName)
-    {
-        $config = $container->get('config');
-        return isset($config[static::KEY_MULTIPLEXER][$requestedName]);
-    }
+    const DEFAULT_CLASS = Multiplexer::class;
 
     /**
      * Create an object
@@ -46,7 +36,21 @@ class MultiplexerAbstractFactory extends AbstractMultiplexerFactory implements A
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config');
-        $factoryConfig = $config[static::KEY_MULTIPLEXER][$requestedName];
-        return $this->getMultiplexer($container, $factoryConfig);
+        $factoryConfig = $config[static::KEY][$requestedName];
+
+        $interrupters = [];
+        if (isset($factoryConfig[static::KEY_INTERRUPTERS_SERVICE])) {
+            $interruptersService = $factoryConfig[static::KEY_INTERRUPTERS_SERVICE];
+            foreach ($interruptersService as $interrupterService) {
+                if ($container->has($interrupterService)) {
+                    $interrupters[] = $container->get($interrupterService);
+                }
+            }
+        }
+
+        $class = $factoryConfig[static::KEY_CLASS];
+        $multiplexer = new $class($interrupters);
+
+        return $multiplexer;
     }
 }
