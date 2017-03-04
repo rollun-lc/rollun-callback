@@ -79,6 +79,7 @@ class Ticker implements InterruptorInterface
     public function __invoke($value)
     {
         $function = function($value) {
+            usleep($this->delayMS);
             $result = [];
             for ($index = 0; $index < $this->ticksCount; $index++) {
                 $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);

@@ -47,5 +47,5 @@
 
 * [Queue README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
 
-* [CronMultiplexer README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
+* [InterruptorFactory README](https://github.com/rollun-com/rollun-callback/blob/master/docs/InterruptorFactory.md)
 
