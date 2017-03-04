@@ -10,31 +10,46 @@ use rollun\actionrender\Factory\ActionRenderAbstractFactory;
 use rollun\actionrender\Factory\MiddlewarePipeAbstractFactory;
 use rollun\actionrender\Renderer\ResponseRendererAbstractFactory;
 use rollun\actionrender\Factory\LazyLoadDirectAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\AbstractInterruptorAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\AbstractMultiplexerFactory;
 use rollun\callback\Callback\Interruptor\Factory\CronMultiplexerFactory;
+use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
 use rollun\callback\Example;
 
 return [
     'dependencies' => [
         'invokables' => [
-            'cronSecMultiplexer' => Example\CronSecMultiplexer::class,
             'httpCallback' =>
                 \rollun\callback\Middleware\HttpInterruptorAction::class,
         ],
-        'factories' => [
-            CronMultiplexerFactory::KEY_CRON => CronMultiplexerFactory::class,
-        ],
         'abstract_factories' => [
             \rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory::class,
-            \rollun\actionrender\Factory\LazyLoadDirectAbstractFactory::class
+            \rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory::class,
+            \rollun\actionrender\Factory\LazyLoadDirectAbstractFactory::class,
         ]
     ],
 
-    AbstractMultiplexerFactory::KEY_MULTIPLEXER => [
-        CronMultiplexerFactory::KEY_CRON => [
-            CronMultiplexerFactory::KEY_CLASS => Example\CronMinMultiplexer::class,//not require
-            CronMultiplexerFactory::KEY_SECOND_MULTIPLEXER_SERVICE => 'cronSecMultiplexer', //not require
-            //CronMultiplexerFactory::KEY_INTERRUPTERS_SERVICE => [] not require
+    AbstractInterruptorAbstractFactory::KEY => [
+        'sec_multiplexer' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Example\CronSecMultiplexer::class,
+        ],
+        'min_multiplexer' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Example\CronMinMultiplexer::class,
+            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                'cron_sec_ticker'
+            ]
+        ],
+        'cron_sec_ticker' => [
+            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
+            TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
+        ],
+        'cron' => [
+            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
+            TickerAbstractFactory::KEY_CALLBACK => 'min_multiplexer',
+            TickerAbstractFactory::KEY_TICKS_COUNT => 1,
         ]
     ],
 
@@ -61,8 +76,5 @@ return [
             LazyLoadDirectAbstractFactory::KEY_DIRECT_FACTORY =>
                 \rollun\callback\Middleware\Factory\InterruptorDirectFactory::class
         ]
-    ],
-
-    MiddlewarePipeAbstractFactory::KEY_AMP => [
     ],
 ];

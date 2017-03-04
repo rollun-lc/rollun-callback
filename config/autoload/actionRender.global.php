@@ -47,7 +47,7 @@ return [
             ]
         ]
     ],
-    ActionRenderAbstractFactory::KEY_AR_SERVICE => [
+    ActionRenderAbstractFactory::KEY_AR => [
         /*'home' => [
             ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
                 ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => '',
