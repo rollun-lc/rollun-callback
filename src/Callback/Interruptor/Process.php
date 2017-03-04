@@ -34,6 +34,7 @@ class Process extends InterruptorAbstract implements InterruptorInterface
     //
     const PATH_SCRIPT_SRC = 'src/Callback/Interruptor/Script/';
     const PATH_SCRIPT_DATA = 'data/Callback/Interruptor/Script/';
+
     const FILE_NAME = 'process.php';
 
     public function __invoke($value)

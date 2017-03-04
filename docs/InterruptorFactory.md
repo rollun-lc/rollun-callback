@@ -11,7 +11,7 @@
 ```php
     AbstractInterruptorAbstractFactory::KEY => [
         'min_multiplexer' => [
-            MultiplexerAbstractFactory::KEY_CLASS => Example\CronMinMultiplexer::class,
+            MultiplexerAbstractFactory::KEY_CLASS => Example\CronMinMultiplexer: :class,
             MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
                 'cron_sec_ticker'
             ]
