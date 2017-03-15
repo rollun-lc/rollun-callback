@@ -7,29 +7,31 @@
  */
 
 use rollun\actionrender\Factory\ActionRenderAbstractFactory;
+use rollun\actionrender\Factory\LazyLoadPipeAbstractFactory;
 use rollun\actionrender\Factory\LazyLoadResponseRendererAbstractFactory;
 use rollun\actionrender\Factory\MiddlewarePipeAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlewareGetterAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 
 return [
     'dependencies' => [
         'abstract_factories' => [
-            \rollun\actionrender\Factory\MiddlewarePipeAbstractFactory::class,
-            \rollun\actionrender\Factory\ActionRenderAbstractFactory::class,
-            \rollun\actionrender\Factory\LazyLoadResponseRendererAbstractFactory::class
+            MiddlewarePipeAbstractFactory::class,
+            ActionRenderAbstractFactory::class,
         ],
         'invokables' => [
             \rollun\actionrender\Renderer\Html\HtmlParamResolver::class =>
                 \rollun\actionrender\Renderer\Html\HtmlParamResolver::class,
             \rollun\actionrender\Renderer\Json\JsonRendererAction::class =>
                 \rollun\actionrender\Renderer\Json\JsonRendererAction::class,
-            \rollun\actionrender\ReturnMiddleware::class =>
-                \rollun\actionrender\ReturnMiddleware::class
         ],
         'factories' => [
             \rollun\actionrender\Renderer\Html\HtmlRendererAction::class =>
                 \rollun\actionrender\Renderer\Html\HtmlRendererFactory::class
         ],
     ],
+
     MiddlewarePipeAbstractFactory::KEY => [
         'htmlReturner' => [
             'middlewares' => [
@@ -38,19 +40,27 @@ return [
             ]
         ]
     ],
-    LazyLoadResponseRendererAbstractFactory::KEY => [
+
+    AbstractLazyLoadMiddlewareGetterAbstractFactory::KEY => [
+
         'simpleHtmlJsonRenderer' => [
-            LazyLoadResponseRendererAbstractFactory::KEY_ACCEPT_TYPE_PATTERN => [
-                //pattern => middleware-Service-Name
+            ResponseRendererAbstractFactory::KEY_MIDDLEWARE => [
                 '/application\/json/' => \rollun\actionrender\Renderer\Json\JsonRendererAction::class,
                 '/text\/html/' => 'htmlReturner'
-            ]
-        ]
+            ],
+            ResponseRendererAbstractFactory::KEY_CLASS => \rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer::class,
+        ],
+        ''
     ],
+
+    LazyLoadPipeAbstractFactory::KEY => [
+        'simpleHtmlJsonRendererLLPipe' => 'simpleHtmlJsonRenderer'
+    ],
+
     ActionRenderAbstractFactory::KEY => [
-        /*'home' => [
-            ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => '',
-            ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'simpleHtmlJsonRenderer'
+        /*'home-page' => [
+                ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => '',
+                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'simpleHtmlJsonRenderer'
         ],*/
     ]
 ];

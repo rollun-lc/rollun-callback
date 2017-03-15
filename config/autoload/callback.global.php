@@ -7,27 +7,19 @@
  */
 
 use rollun\actionrender\Factory\ActionRenderAbstractFactory;
-use rollun\actionrender\Factory\LazyLoadDirectAbstractFactory;
-use rollun\actionrender\Factory\LazyLoadResponseRendererAbstractFactory;
+use rollun\actionrender\Factory\LazyLoadPipeAbstractFactory;
+use rollun\actionrender\Factory\MiddlewarePipeAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlewareGetterAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeSwitchAbstractFactory;
+use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\AbstractInterruptorAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
 use rollun\callback\Example;
+use rollun\callback\LazyLoadInterruptMiddlewareGetter;
 
 return [
-    'dependencies' => [
-        'invokables' => [
-            'httpCallback' =>
-                \rollun\callback\Middleware\HttpInterruptorAction::class,
-        ],
-        'abstract_factories' => [
-            \rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory::class,
-            \rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory::class,
-            \rollun\actionrender\Factory\LazyLoadDirectAbstractFactory::class,
-            \rollun\actionrender\Factory\LazyLoadResponseRendererAbstractFactory::class
-        ]
-    ],
-
     AbstractInterruptorAbstractFactory::KEY => [
         'sec_multiplexer' => [
             MultiplexerAbstractFactory::KEY_CLASS => Example\CronSecMultiplexer::class,
@@ -51,27 +43,50 @@ return [
         ]
     ],
 
-    LazyLoadResponseRendererAbstractFactory::KEY => [
-        'webhookJsonRender' => [
-            LazyLoadResponseRendererAbstractFactory::KEY_ACCEPT_TYPE_PATTERN => [
-                //pattern => middleware-Service-Name
-                '/application\/json/' => \rollun\actionrender\Renderer\Json\JsonRendererAction::class,
-            ]
+    'dependencies' => [
+        'invokables' => [
+            LazyLoadInterruptMiddlewareGetter::class =>
+                LazyLoadInterruptMiddlewareGetter::class,
+            'httpCallback' =>
+                \rollun\callback\Middleware\HttpInterruptorAction::class,
+            \rollun\datastore\Middleware\ResourceResolver::class =>
+                \rollun\datastore\Middleware\ResourceResolver::class,
+            \rollun\datastore\Middleware\RequestDecoder::class => \rollun\datastore\Middleware\RequestDecoder::class,
+        ],
+        'factories' => [
+            \rollun\datastore\Middleware\HtmlDataStoreRendererAction::class =>
+                \rollun\datastore\Middleware\Factory\HtmlDataStoreRendererFactory::class
+        ],
+        'abstract_factories' => [
+            MiddlewarePipeAbstractFactory::class,
+            ActionRenderAbstractFactory::class,
+            AttributeAbstractFactory::class,
+            ResponseRendererAbstractFactory::class,
+            LazyLoadPipeAbstractFactory::class,
+            AttributeSwitchAbstractFactory::class,
+            \rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory::class,
+            \rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory::class,
         ]
+    ],
+
+    AbstractLazyLoadMiddlewareGetterAbstractFactory::KEY => [
+        'webhookJsonRender' => [
+            ResponseRendererAbstractFactory::KEY_MIDDLEWARE => [
+                '/application\/json/' => \rollun\actionrender\Renderer\Json\JsonRendererAction::class,
+            ],
+            ResponseRendererAbstractFactory::KEY_CLASS => \rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer::class,
+        ],
+    ],
+
+    LazyLoadPipeAbstractFactory::KEY => [
+        'webhookLLPipe' => LazyLoadInterruptMiddlewareGetter::class,
+        'webhookJsonRenderLLPipe' => 'webhookJsonRender'
     ],
 
     ActionRenderAbstractFactory::KEY => [
         'webhookActionRender' => [
-            ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLazyLoad',
-            ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRender'
-
-        ]
-    ],
-
-    LazyLoadDirectAbstractFactory::KEY => [
-        'webhookLazyLoad' => [
-            LazyLoadDirectAbstractFactory::KEY_DIRECT_FACTORY =>
-                \rollun\callback\Middleware\Factory\InterruptorDirectFactory::class
-        ]
+            ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
+            ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRenderLLPipe'
+        ],
     ],
 ];

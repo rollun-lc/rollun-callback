@@ -17,7 +17,7 @@ use rollun\callback\Middleware\InterruptorAbstract;
 use rollun\callback\Middleware\InterruptorCallerAction;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
-class InterruptorDirectFactory implements FactoryInterface
+class InterruptorMiddlewareFactory implements FactoryInterface
 {
 
     /**
