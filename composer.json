@@ -26,13 +26,13 @@
     "psr/log": "^1.0",
     "reputation-vip/queue-client": "^1.0.1",
     "opis/closure": "^2.1.0",
-    "rollun-com/rollun-installer": "~1.0",
-    "rollun-com/rollun-utils": "^1.0",
+    "rollun-com/rollun-installer": "^2.0",
+    "rollun-com/rollun-utils": "^2.0",
     "rollun-com/rollun-dic": "^1.0",
-    "rollun-com/rollun-promise": "^1.0",
-    "rollun-com/rollun-datastore": "^2.0",
-    "rollun-com/rollun-actionrender": "^3",
-    "rollun-com/rollun-logger": "^1.4"
+    "rollun-com/rollun-promise": "^2.0",
+    "rollun-com/rollun-datastore": "^3.0",
+    "rollun-com/rollun-actionrender": "^4.0",
+    "rollun-com/rollun-logger": "^2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.0",
@@ -51,8 +51,6 @@
   },
   "scripts": {
     "serve": "php -S 127.0.0.1:8080 -t public public/index.php",
-    "lib-install": "rollun\\installer\\Command::install",
-    "lib-uninstall": "rollun\\installer\\Command::uninstall",
-    "lib-reinstall": "rollun\\installer\\Command::reinstall"
+    "lib": "rollun\\installer\\Command::command"
   }
 }

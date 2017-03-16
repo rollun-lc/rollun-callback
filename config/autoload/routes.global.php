@@ -14,20 +14,6 @@ return [
     ],
 
     'routes' => [
-        /*
-         * if you use rollun-datastore uncomment this
-         [
-            'name' => 'api.rest',
-            'path' => '/api/rest[/{resourceName}[/{id}]]',
-            'middleware' => 'api-rest',
-            'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        ],
-        */
-        [
-            'name' => 'webhook',
-            'path' => '/webhook[/{resourceName}]',
-            'middleware' => 'webhookActionRender',
-            'allowed_methods' => ['GET', 'POST'],
-        ],
+
     ],
 ];
