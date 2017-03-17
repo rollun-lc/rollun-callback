@@ -44,8 +44,8 @@
 ActionRenderAbstractFactory::KEY_AR_SERVICE => [
         'webhookActionRender' => [
             ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
-                ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLazyLoad',
-                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRender'
+                ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
+                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRenderLLPipe'
             ]
         ]
     ],
@@ -59,53 +59,14 @@ ActionRenderAbstractFactory::KEY_AR_SERVICE => [
 
 И так вот конфиг `LazyLoadAbstractFactory`. 
 ```php
-LazyLoadAbstractFactory::KEY_LAZY_LOAD => [
-        'webhookLazyLoad' => [
-            LazyLoadAbstractFactory::KEY_DIRECT_FACTORY =>
-                \rollun\callback\Middleware\Factory\InterruptorDirectFactory::class
-        ]
+LazyLoadPipeAbstractFactory::KEY => [
+        'webhookLLPipe' => LazyLoadInterruptMiddlewareGetter::class,
+        'webhookJsonRenderLLPipe' => 'webhookJsonRender'
     ],
 ```
-Данная фабрика позволяет нам создавать Middleware на основе переданной ей  directFactory ,
-в которую она передает `resourceName` в качестве запрашиваемого сервиса.
-Как мы можем увидеть middleware создается с помощью `InterruptorDirectFactory` .
+Данная фабрика позволяет получить middleware во время премя запроса, и установить их в pipe. 
 
-Давайте рассмотрим ее по подробнее:
-
-```php
-public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        $resourceName = $requestedName;
-        if (!$container->has($resourceName)) {
-            throw new DirectFactoryException(
-                'Can\'t make Middleware\InterruptorAbstract for resource: ' . $resourceName
-            );
-        }
-        $interruptMiddleware = null;
-        $resource = $container->get($resourceName);
-        switch (true) {
-            case is_a($resource, InterruptorInterface::class, true):
-                $interruptMiddleware = new InterruptorCallerAction($resource);
-                break;
-            case is_a($resource, InterruptorAbstract::class, true):
-                $interruptMiddleware = $resource;
-                break;
-            default:
-                if (!isset($interruptMiddleware)) {
-                    throw new DirectFactoryException(
-                        'Can\'t make Middleware\InterruptorAbstract'
-                        . ' for resource: ' . $resourceName
-                    );
-                }
-        }
-        return $interruptMiddleware;
-    }
-```
-
-Как мы можем увидеть данная фабрика проверяет наличие данного сервиса в контейнере, а так же проверяте его тип.
-Вслучае если это Middleware то гда он его вернет, если это interruptor он обернет его в middleware и вернет.
-
-По умелчанию используеться 2 типа interruptor middleware 
+По умолчанию используеться 2 типа interruptor middleware 
 
 * HttpInterruptorAction - обрабатывает HttpInterruptor запросы.
 

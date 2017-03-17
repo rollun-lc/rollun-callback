@@ -50,7 +50,8 @@
     }
   },
   "scripts": {
-    "serve": "php -S 127.0.0.1:8080 -t public public/index.php",
+    "run_test": "APP_ENV=dev php vendor/bin/phpunit --configuration ./phpunit.xml",
+    "server": "php -S localhost:8080 -t public public/index.php",
     "lib": "rollun\\installer\\Command::command"
   }
 }

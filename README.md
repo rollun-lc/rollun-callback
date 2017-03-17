@@ -6,6 +6,7 @@
 Умеет сериализовываться, даже если в него "обернуто" замыкание (анонимная функция).
 
 ###Как работает Callback:
+
 	$callable = function($val){return 'Hello ' . $val;};
 	$callback = new Callback($callable); // $callable - is any type of \Callable
 	var_dump($callback('World')); //'Hello World'
@@ -31,7 +32,6 @@
 
 > Более детально вохможно ознакомиться [тут 'Callback README'](https://github.com/rollun-com/rollun-callback/blob/master/docs/Callback.md)
 
-
 ---
 ## [Оглавление](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Contents.md)
 
@@ -48,4 +48,6 @@
 * [Queue README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
 
 * [InterruptorFactory README](https://github.com/rollun-com/rollun-callback/blob/master/docs/InterruptorFactory.md)
+
+* [Webhook QuickStart](https://github.com/rollun-com/rollun-callback/blob/master/docs/InterruptorFactory.md)
 
