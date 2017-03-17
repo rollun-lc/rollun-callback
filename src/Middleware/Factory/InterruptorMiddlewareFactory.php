@@ -13,6 +13,7 @@ use Interop\Http\Middleware\MiddlewareInterface;
 use rollun\actionrender\Factory\DirectFactoryException;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
+use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Middleware\InterruptorAbstract;
 use rollun\callback\Middleware\InterruptorCallerAction;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -46,10 +47,10 @@ class InterruptorMiddlewareFactory implements FactoryInterface
             case is_a($resource, InterruptorAbstract::class, true):
                 $interruptMiddleware = $resource;
                 break;
-            /*case is_callable($resource):
+            case is_callable($resource):
                 //todo: make util method for check instance closure for declare interface
                 //check if closure is middleware
-                $reflectionFunction = new \ReflectionFunction($resource);
+                /*$reflectionFunction = new \ReflectionFunction($resource);
                 $reflectionMiddleware = new \ReflectionClass(MiddlewareInterface::class);
                 $reflectionMethod = $reflectionMiddleware->getMethod("__invoke");
                 $paramsActual = $reflectionFunction->getParameters();
@@ -61,8 +62,9 @@ class InterruptorMiddlewareFactory implements FactoryInterface
                         }
                     }
                     $interruptMiddleware = $resource;
-                }
-                break;*/
+                }*/
+                $interruptMiddleware = new InterruptorCallerAction(new Process($resource));
+                break;
             default:
                 if (!isset($interruptMiddleware)) {
                     throw new CallbackException(

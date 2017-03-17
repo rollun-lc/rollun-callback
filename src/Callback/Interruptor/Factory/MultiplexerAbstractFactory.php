@@ -11,6 +11,7 @@ namespace rollun\callback\Callback\Interruptor\Factory;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use rollun\callback\Callback\Interruptor\Multiplexer;
+use rollun\callback\Callback\Interruptor\Process;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
@@ -41,9 +42,11 @@ class MultiplexerAbstractFactory extends AbstractInterruptorAbstractFactory
         $interrupters = [];
         if (isset($factoryConfig[static::KEY_INTERRUPTERS_SERVICE])) {
             $interruptersService = $factoryConfig[static::KEY_INTERRUPTERS_SERVICE];
-            foreach ($interruptersService as $interrupterService) {
-                if ($container->has($interrupterService)) {
-                    $interrupters[] = $container->get($interrupterService);
+            foreach ($interruptersService as $interrupter) {
+                if(is_callable($interrupter)) {
+                    $interrupters[] = new Process($interrupter);
+                } else if ($container->has($interrupter)) {
+                    $interrupters[] = $container->get($interrupter);
                 }
             }
         }

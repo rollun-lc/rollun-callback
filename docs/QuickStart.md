@@ -82,6 +82,50 @@ WebHook - роут который преднозначен для обработ
 Соответственно наше приложение должно отреагировать на это запустить интераптор с именем `corn`.
 > Имя интерапптора - `cron`, потому что оно береться из url - `localhost:8080\webhook\{interruptor-name}`.
 
+Для обработки данного запроса давайте напишим обычную анонимную функцию.
+
+```php
+<?php
+     return [
+        'dependencies' =>  [
+            'invokables' => [
+                'cron' => function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ],
+        ],
+     ];
+```
+
+Теперь при каждой нотификации крона, в файл будет записано время когда оно было обработано.
+
+Так, а что есл нам нужно запустить сразу списко функций ?
+Тогда мы можем воспользоваться однм из инерапторов **Multiplexer**, он позволяет нам выполнить целый список фукнций-обработчиков.
+
+Создать мы его можем используя Абстракную фабрику. Более подробно можно [прочесть тут]().
+
+```php
+    AbstractInterruptorAbstractFactory::KEY => [
+        'cron' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
+            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ]
+        ],
+    ],
+```
+
+Тпереь после каждого обращения в крон, мы будем запускать сразу две функции. 
+И у нас будут созданы 2 файла в который будет записанно время когда они были обработаны.
+
 И так, давайте посмотрим на интераптор для обработки нотификации от cron.
 
 ```php
