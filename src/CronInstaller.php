@@ -51,10 +51,7 @@ class CronInstaller extends InstallerAbstract
             ],
 
             AbstractInterruptorAbstractFactory::KEY => [
-                'sec_multiplexer' => [
-                    MultiplexerAbstractFactory::KEY_CLASS => CronSecMultiplexer::class,
-                ],
-                'min_multiplexer' => [
+                'cron' => [
                     MultiplexerAbstractFactory::KEY_CLASS => CronMinMultiplexer::class,
                     MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
                         'cron_sec_ticker'
@@ -62,15 +59,11 @@ class CronInstaller extends InstallerAbstract
                 ],
                 'cron_sec_ticker' => [
                     TickerAbstractFactory::KEY_CLASS => Ticker::class,
-                    TickerAbstractFactory::KEY_WRAPPER_CLASS => Process::class,
                     TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
                 ],
-                'cron' => [
-                    TickerAbstractFactory::KEY_CLASS => Ticker::class,
-                    TickerAbstractFactory::KEY_WRAPPER_CLASS => Process::class,
-                    TickerAbstractFactory::KEY_CALLBACK => 'min_multiplexer',
-                    TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-                ]
+                'sec_multiplexer' => [
+                    MultiplexerAbstractFactory::KEY_CLASS => CronSecMultiplexer::class,
+                ],
             ],
         ];
     }

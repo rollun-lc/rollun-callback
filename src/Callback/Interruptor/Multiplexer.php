@@ -14,6 +14,8 @@ use rollun\callback\Callback\PromiserInterface;
 //TODO: обернуть в процес вызов всех переданых callback
 class Multiplexer implements InterruptorInterface
 {
+    const DEFAULT_WRAPPER = Process::class;
+
     /**
      * @var InterruptorInterface|PromiserInterface[]
      */
@@ -58,18 +60,23 @@ class Multiplexer implements InterruptorInterface
      */
     public function __invoke($value)
     {
-        $result = [];
-        ksort($this->interruptors);
-        foreach ($this->interruptors as $interruptor) {
-            try {
-                $result['data'][] = $interruptor($value);
-            } catch (\Exception $e) {
-                $result['data'][] = $e;
+        $async = function ($value) {
+            $result = [];
+            ksort($this->interruptors);
+            foreach ($this->interruptors as $interruptor) {
+                try {
+                    $result['data'][] = $interruptor($value);
+                } catch (\Exception $e) {
+                    $result['data'][] = $e;
+                }
             }
-        }
-        $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
-        $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
-        return $result;
+            $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
+            $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
+            return $result;
+        };
+        $class = static::DEFAULT_WRAPPER;
+        $interrupt = new $class($async);
+        return $interrupt();
     }
 
     /**
