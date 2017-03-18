@@ -18,7 +18,7 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactor
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
 use rollun\actionrender\Renderer\Json\JsonRendererAction;
-use rollun\callback\Callback\Interruptor\Factory\AbstractInterruptorAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\InterruptorAbstractFactoryAbstract;
 use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;
@@ -50,7 +50,7 @@ class CronInstaller extends InstallerAbstract
                 ]
             ],
 
-            AbstractInterruptorAbstractFactory::KEY => [
+            InterruptorAbstractFactoryAbstract::KEY => [
                 'cron' => [
                     MultiplexerAbstractFactory::KEY_CLASS => CronMinMultiplexer::class,
                     MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
@@ -107,10 +107,10 @@ class CronInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         return (
             isset($config['dependencies']['abstract_factories']) &&
-            isset($config[AbstractInterruptorAbstractFactory::KEY]['sec_multiplexer']) &&
-            isset($config[AbstractInterruptorAbstractFactory::KEY]['min_multiplexer']) &&
-            isset($config[AbstractInterruptorAbstractFactory::KEY]['cron_sec_ticker']) &&
-            isset($config[AbstractInterruptorAbstractFactory::KEY]['cron']) &&
+            isset($config[InterruptorAbstractFactoryAbstract::KEY]['sec_multiplexer']) &&
+            isset($config[InterruptorAbstractFactoryAbstract::KEY]['min_multiplexer']) &&
+            isset($config[InterruptorAbstractFactoryAbstract::KEY]['cron_sec_ticker']) &&
+            isset($config[InterruptorAbstractFactoryAbstract::KEY]['cron']) &&
             in_array(AttributeAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(MultiplexerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories'])

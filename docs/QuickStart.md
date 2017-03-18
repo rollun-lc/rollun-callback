@@ -43,10 +43,9 @@ WebHook - роут который преднозначен для обработ
 * `rollun.actionrender.MiddlewarePipe.dist.local.php`
 * `rollun.callback.Cron.dist.local.php`
 * `rollun.callback.MiddlewareInterruptor.dist.local.php`
-* `rollun.logger..dist.local.php`
+* `rollun.logger.Logger.dist.local.php`
 * `rollun.promise.Entity.dist.local.php`
 * `rollun.promise.Promise.dist.local.php`
-
 
 5)
 
@@ -212,7 +211,7 @@ WebHook - роут который преднозначен для обработ
     ]
 ```
 
-И так, как мы можем увидеть мы создали два мультиплексера,  
+И так, как мы можем увидеть мы создали два мультиплексора, один 
 
 
 Как мы можем заметить для того что бы добавить новый обработчик, нам достаточно иметь возромжность достать его из контейнера(SM) по имени.

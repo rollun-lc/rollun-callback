@@ -13,7 +13,7 @@ use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 
-abstract class AbstractInterruptorAbstractFactory implements AbstractFactoryInterface
+abstract class InterruptorAbstractFactoryAbstract implements AbstractFactoryInterface
 {
     const KEY = 'interruptor';
 

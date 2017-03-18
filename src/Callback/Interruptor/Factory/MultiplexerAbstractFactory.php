@@ -16,7 +16,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class MultiplexerAbstractFactory extends AbstractInterruptorAbstractFactory
+class MultiplexerAbstractFactory extends InterruptorAbstractFactoryAbstract
 {
     const KEY_INTERRUPTERS_SERVICE = 'interrupters';
 

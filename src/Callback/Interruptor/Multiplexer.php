@@ -60,6 +60,7 @@ class Multiplexer implements InterruptorInterface
      */
     public function __invoke($value)
     {
+        $result = [];
         $async = function ($value) {
             $result = [];
             ksort($this->interruptors);
@@ -70,13 +71,16 @@ class Multiplexer implements InterruptorInterface
                     $result['data'][] = $e;
                 }
             }
-            $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
-            $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
             return $result;
         };
         $class = static::DEFAULT_WRAPPER;
-        $interrupt = new $class($async);
-        return $interrupt();
+
+        $interrupt = new $class($async->bindTo($this));
+
+        $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
+        $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
+        $result['data'] = $interrupt($value);
+        return $result;
     }
 
     /**

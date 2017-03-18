@@ -16,7 +16,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class TickerAbstractFactory extends AbstractInterruptorAbstractFactory
+class TickerAbstractFactory extends InterruptorAbstractFactoryAbstract
 {
 
     const KEY_CALLBACK = 'callback';
