@@ -18,7 +18,7 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactor
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
 use rollun\actionrender\Renderer\Json\JsonRendererAction;
-use rollun\callback\Callback\Interruptor\Factory\AbstractInterruptorAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\InterruptorAbstractFactoryAbstract;
 use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;

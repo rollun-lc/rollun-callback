@@ -20,6 +20,7 @@ use rollun\promise\Promise\Promise;
  * @category   callback
  * @package    zaboy
  */
+//TODO: add interface without param
 class Callback
 {
 

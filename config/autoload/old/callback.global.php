@@ -13,14 +13,14 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlew
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeSwitchAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
-use rollun\callback\Callback\Interruptor\Factory\AbstractInterruptorAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\InterruptorAbstractFactoryAbstract;
 use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
 use rollun\callback\Example;
 use rollun\callback\LazyLoadInterruptMiddlewareGetter;
 
 return [
-    AbstractInterruptorAbstractFactory::KEY => [
+    InterruptorAbstractFactoryAbstract::KEY => [
         'sec_multiplexer' => [
             MultiplexerAbstractFactory::KEY_CLASS => Example\CronSecMultiplexer::class,
         ],

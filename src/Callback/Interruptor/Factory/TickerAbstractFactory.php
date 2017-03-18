@@ -16,7 +16,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class TickerAbstractFactory extends AbstractInterruptorAbstractFactory
+class TickerAbstractFactory extends InterruptorAbstractFactoryAbstract
 {
 
     const KEY_CALLBACK = 'callback';
@@ -27,6 +27,9 @@ class TickerAbstractFactory extends AbstractInterruptorAbstractFactory
 
     const KEY_TICK_DURATION = 'tick_duration';
 
+    /**
+     * @deprecate KEY_WRAPPER_CLASS
+     */
     const KEY_WRAPPER_CLASS = 'wrapper_class';
 
     const KEY_DELAY_MC = 'delay_MC';
@@ -58,11 +61,6 @@ class TickerAbstractFactory extends AbstractInterruptorAbstractFactory
         }
         $tickerCallback = $container->get($factoryConfig[static::KEY_CALLBACK]);
         $class = $factoryConfig[static::KEY_CLASS];
-
-        if($factoryConfig[static::KEY_WRAPPER_CLASS] &&
-            is_a($factoryConfig[static::KEY_WRAPPER_CLASS], InterruptorInterface::class, true)) {
-            $tickerCallback = new $factoryConfig[static::KEY_WRAPPER_CLASS]($tickerCallback);
-        }
 
         return new $class($tickerCallback, $ticksCount, $tickDuration, $delayMC);
     }

@@ -43,10 +43,9 @@ WebHook - роут который преднозначен для обработ
 * `rollun.actionrender.MiddlewarePipe.dist.local.php`
 * `rollun.callback.Cron.dist.local.php`
 * `rollun.callback.MiddlewareInterruptor.dist.local.php`
-* `rollun.logger..dist.local.php`
+* `rollun.logger.Logger.dist.local.php`
 * `rollun.promise.Entity.dist.local.php`
 * `rollun.promise.Promise.dist.local.php`
-
 
 5)
 
@@ -82,73 +81,139 @@ WebHook - роут который преднозначен для обработ
 Соответственно наше приложение должно отреагировать на это запустить интераптор с именем `corn`.
 > Имя интерапптора - `cron`, потому что оно береться из url - `localhost:8080\webhook\{interruptor-name}`.
 
-И так, давайте посмотрим на интераптор для обработки нотификации от cron.
+Для обработки данного запроса давайте напишим обычную анонимную функцию.
+
+```php
+<?php
+     return [
+        'dependencies' =>  [
+            'invokables' => [
+                'cron' => function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ],
+        ],
+     ];
+```
+
+Теперь при каждой нотификации крона, в файл будет записано время когда оно было обработано.
+
+Так, а что есл нам нужно запустить сразу списко функций ?
+Тогда мы можем воспользоваться однм из инерапторов **Multiplexer**, он позволяет нам выполнить целый список фукнций-обработчиков.
+
+Создать мы его можем используя Абстракную фабрику. Более подробно можно [прочесть тут]().
 
 ```php
     AbstractInterruptorAbstractFactory::KEY => [
-        'min_multiplexer' => [
-            MultiplexerAbstractFactory::KEY_CLASS => Example\CronMinMultiplexer::class,
+        'cron' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
             MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
-                
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
             ]
         ],
-        'cron' => [
-            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
-            TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
-            TickerAbstractFactory::KEY_CALLBACK => 'min_multiplexer',
-            TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-        ]
     ],
 ```
 
-Мы видим тут два интераптора:
-1) мультиплексор - будет запускать все задачи которые нужно выполнять каждую минуту.
-2) тикер - интераптор который запустить указанный [callback]() определенное количество раз с заданным интервалом.
-Собственно он и запустит наш мультиплексор.
+Тпереь после каждого обращения в крон, мы будем запускать сразу две функции. 
+И у нас будут созданы 2 файла в который будет записанно время когда они были обработаны.
 
-Давайте усложним нашу задачу. Допустим нам нужно обрабатывать задачу каждую секунду.
+А что если нам нужно отреагировать на один вызов крона, много кратным вызовом наших функций-калбеков.
+Допустим нам нужно обрабатывать задачу каждую секунду.  
 В этом случае, крон нам не поможет, так как минимально может отправлять только минутные запросы.
 И так, для того что бы добавить возможность запуска ежесекундных операции, нам нужно создать секундный тикер.
 
 ```php
     AbstractInterruptorAbstractFactory::KEY => [
-        'cron_sec_ticker' => [
+        'cron' => [
             TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
-            TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
-            TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
+            TickerAbstractFactory::KEY_CALLBACK => 'cron_multiplexer',
         ],
     ]
 ```
 
-> Более детально о настройке multiplexer или interruptor [можно почитаь тут](./InterruptorFactory.md)
+Мы переименовали наш пердыдущий multiplexer с именем `cron` в `cron_multiplexer`, а интерраптор тикера назвали `cron`.
+Это сделано для того что бы при запросе на `localhost:8080/webhook/cron` у нас запускался ticker и он уже в 
+свою очередь запустит наш мультиплексор заданное количество раз.
 
+> Как мы помним, имя интерапптора - `cron`, береться из url - `localhost:8080\webhook\{interruptor-name}`.
 
-Теперь нужно создать наш мультиплексор - который будет запускать пул задать на выполнение, и добавить на выполнение в минутный мультиплексор.
+> Более детально о настройке ticker [можно почитаь тут](./InterruptorFactory.md#TickerAbstractFactory)
+
+Конфиг целиком
 
 ```php
     AbstractInterruptorAbstractFactory::KEY => [
-       'sec_multiplexer' => [
-                   MultiplexerAbstractFactory::KEY_CLASS => Example\CronSecMultiplexer::class,
-       ],
-       'min_multiplexer' => [
-           MultiplexerAbstractFactory::KEY_CLASS => Example\CronMinMultiplexer::class,
-           MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
-               'cron_sec_ticker'
-           ]
-       ],
-       'cron_sec_ticker' => [
-           TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
-           TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
-           TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
-       ],
-       'cron' => [
-           TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
-           TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
-           TickerAbstractFactory::KEY_CALLBACK => 'min_multiplexer',
-           TickerAbstractFactory::KEY_TICKS_COUNT => 1,
-       ]
+        'cron' => [
+            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_CALLBACK => 'cron_multiplexer',
+        ],
+        'cron_multiplexer' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
+            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ]
+        ],
+    ],
+```
+А теперь давайте попробуем скомбенировать все вместе, и при каждом вызове `cron` мы будем запукать один раз мультиплексор крона, 
+и шестдесят раз секундный мультиплексор. 
+  
+Для этого нам нужно два мультплексера и один тикер для умножения частоты возовов. 
+
+```php
+    AbstractInterruptorAbstractFactory::KEY => [
+        'cron' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
+            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                "sec_ticker",
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ]
+        ],
+        'sec_ticker' => [
+            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
+        ],
+        'sec_multiplexer' => [
+            MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
+            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+                function ($value) { 
+                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
+                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                },
+            ]
+        ],
     ]
 ```
+
+И так, как мы можем увидеть мы создали два мультиплексора, один 
+
+
 Как мы можем заметить для того что бы добавить новый обработчик, нам достаточно иметь возромжность достать его из контейнера(SM) по имени.
 ## WebHook - interrupter receiver 
 

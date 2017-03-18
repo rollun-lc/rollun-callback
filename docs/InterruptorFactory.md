@@ -22,7 +22,7 @@
 * `'min_multiplexer'` - имя по которому можно будет построить(запросить) данный Multiplexer из ServiceManager.
 * `CronMultiplexerFactory::KEY_CLASS` - Класс interruptor который будет использован.
 > Так как мы рассматриваем Multiplexer, то кданный класс должен быть его наследником.
-* `CronMultiplexerFactory::KEY_INTERRUPTERS_SERVICE` - имена сервисов мультиплексеров
+* `CronMultiplexerFactory::KEY_INTERRUPTERS_SERVICE` - имена сервисов мультиплексоров
 которые будут переданы в multiplexer.
 > Данный параметр не обязателен.
 
@@ -36,7 +36,6 @@
     AbstractInterruptorAbstractFactory::KEY => [
         'cron' => [
             TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
-            TickerAbstractFactory::KEY_WRAPPER_CLASS => \rollun\callback\Callback\Interruptor\Process::class,
             TickerAbstractFactory::KEY_CALLBACK => 'min_multiplexer',
             TickerAbstractFactory::KEY_TICKS_COUNT => 60,
             TickerAbstractFactory::KEY_TICK_DURATION => 1,
@@ -49,8 +48,6 @@
 * `'cron'` - имя по которому можно будет построить(запросить) данный Ticker из ServiceManager.
 * `TickerAbstractFactory::KEY_CLASS` - Класс interruptor который будет использован.
  > Так как мы рассматриваем Ticker, то кданный класс должен быть его наследником.
-* `TickerAbstractFactory::KEY_WRAPPER_CLASS` - имя interruptor класса обертки для вызываемого функции(callback).
- > Данный параметр не является обязательным. 
 * `TickerAbstractFactory::KEY_CALLBACK` - Имя сервиса по которому можно получить функцию(callback) которую хотим вызвать внутри Ticker.
 * `TickerAbstractFactory::KEY_TICKS_COUNT` - Количество вызовов функции(callback).   
  > Данный параметр не является обязательным. 
