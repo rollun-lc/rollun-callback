@@ -23,6 +23,10 @@ use rollun\callback\Callback\Example\SecCallback;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\HttpAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\InterruptAbstractFactoryAbstract;
+use rollun\callback\Callback\Interruptor\Factory\ProcessAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\QueueAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Interruptor\Script\ProcessInstaller;
 use rollun\callback\Callback\Multiplexer;
@@ -51,35 +55,50 @@ class CronInstaller extends InstallerAbstract
                     AttributeAbstractFactory::class,
                     MultiplexerAbstractFactory::class,
                     TickerAbstractFactory::class,
+                    ProcessAbstractFactory::class,
+                    QueueAbstractFactory::class,
+                    HttpAbstractFactory::class,
+                ],
+                'invokables' => [
+                    MinCallback::class => MinCallback::class,
+                    SecCallback::class => SecCallback::class,
                 ]
             ],
             CallbackAbstractFactoryAbstract::KEY => [
-                'cron' => [
+                'min_multiplexer' => [
                     MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
                     MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
-                        'cron_sec_ticker'
+                        'interrupt_cron_sec_ticker'
                     ],
-                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
-
                 ],
                 'cron_sec_ticker' => [
                     TickerAbstractFactory::KEY_CLASS => Ticker::class,
-                    TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
-                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
-
+                    TickerAbstractFactory::KEY_CALLBACK => 'interrupt_sec_multiplexer',
                 ],
                 'sec_multiplexer' => [
                     MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
-
                 ],
             ],
+            InterruptAbstractFactoryAbstract::KEY => [
+                'cron' => [
+                    ProcessAbstractFactory::KEY_CLASS => Process::class,
+                    ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'min_multiplexer'
+                ],
+                'interrupt_cron_sec_ticker' => [
+                    ProcessAbstractFactory::KEY_CLASS => Process::class,
+                    ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'cron_sec_ticker'
+                ],
+                'interrupt_sec_multiplexer' => [
+                    ProcessAbstractFactory::KEY_CLASS => Process::class,
+                    ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'sec_multiplexer'
+                ]
+            ]
         ];
 
         if ($this->consoleIO->askConfirmation("Install cron multiplexer with Examples ? (Yes/No)")) {
-            $config[CallbackAbstractFactoryAbstract::KEY]['cron']
+            $config[CallbackAbstractFactoryAbstract::KEY]['min_multiplexer']
             [MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE] = [
-                'cron_sec_ticker',
+                'interrupt_cron_sec_ticker',
                 MinCallback::class,
                 MinCallback::class,
                 MinCallback::class,

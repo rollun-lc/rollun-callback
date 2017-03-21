@@ -63,6 +63,6 @@ class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
         $class = $factoryConfig[static::KEY_CLASS];
 
         $ticker = new $class($tickerCallback, $ticksCount, $tickDuration, $delayMC);
-        return $this->wrappedCallback($ticker, $factoryConfig);
+        return $ticker;
     }
 }

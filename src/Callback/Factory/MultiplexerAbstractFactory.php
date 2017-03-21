@@ -62,6 +62,6 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
         $class = $factoryConfig[static::KEY_CLASS];
         $multiplexer = new $class($callbacks);
 
-        return $this->wrappedCallback($multiplexer, $factoryConfig);
+        return $multiplexer;
     }
 }
