@@ -6,7 +6,7 @@
  * Time: 11:03 AM
  */
 
-namespace rollun\callback\Callback\Factory;
+namespace rollun\callback\Callback\Interruptor\Factory;
 
 
 use rollun\callback\Callback\Callback;
@@ -16,13 +16,15 @@ use rollun\callback\Callback\Interruptor\Process;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 
-abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterface
+abstract class InterruptAbstractFactoryAbstract implements AbstractFactoryInterface
 {
-    const KEY = 'callback';
+    const KEY = 'interrupt';
 
     const KEY_CLASS = 'class';
 
-    const DEFAULT_CLASS = CallbackInterface::class;
+    const KEY_CALLBACK_SERVICE = 'callbackService';
+
+    const DEFAULT_CLASS = InterruptorInterface::class;
 
     /**
      * Can the factory create an instance for the service?
@@ -37,4 +39,5 @@ abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterfa
         return (isset($config[static::KEY][$requestedName]) &&
             is_a($config[static::KEY][$requestedName][static::KEY_CLASS], static::DEFAULT_CLASS, true));
     }
+
 }

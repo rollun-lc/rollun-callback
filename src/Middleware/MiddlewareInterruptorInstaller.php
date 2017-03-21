@@ -108,9 +108,7 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         return (
             isset($config['dependencies']['invokables']) &&
-            isset($config[AbstractLazyLoadMiddlewareGetterAbstractFactory::KEY]['webhookJsonRender']) &&
             isset($config[LazyLoadPipeAbstractFactory::KEY]['webhookLLPipe']) &&
-            isset($config[LazyLoadPipeAbstractFactory::KEY]['webhookJsonRenderLLPipe']) &&
             isset($config[ActionRenderAbstractFactory::KEY]['webhookActionRender']) &&
             isset($config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class]) &&
             $config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class] ===
