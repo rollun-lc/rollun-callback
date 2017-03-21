@@ -10,7 +10,6 @@ namespace rollun\callback\Middleware\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Http\Middleware\MiddlewareInterface;
-use rollun\actionrender\Factory\DirectFactoryException;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Process;
@@ -28,7 +27,7 @@ class InterruptorMiddlewareFactory implements FactoryInterface
      * @param  string $requestedName
      * @param  null|array $options
      * @return object
-     * @throws DirectFactoryException
+     * @throws CallbackException
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {

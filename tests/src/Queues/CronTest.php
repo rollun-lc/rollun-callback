@@ -33,9 +33,6 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->secQueue = new Queue('test_cron_sec_multiplexer');
-        $this->minQueue = new Queue('test_cron_min_multiplexer');
-
         /** @var ContainerInterface $container */
         $container = include 'config/container.php';
         $this->config = $container->get('config');
@@ -44,8 +41,6 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         InsideConstruct::setContainer($container);
         $this->deleteJob();
-        fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min', 'w');
-        fopen(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec', 'w');
     }
 
     protected function deleteJob()
@@ -60,7 +55,6 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
     public function testCron()
     {
-        $this->setJob();
         $httpClient = new Client($this->url);
         $headers['Content-Type'] = 'text/text';
         $headers['Accept'] = 'application/json';
@@ -70,43 +64,15 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($req->isOk());
 
-        sleep(5);
+        sleep(60);
 
         $minFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
         $secFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
-        $data = explode(';', $minFileData);
-        $this->assertEquals(1, count(array_diff($data, [''])));
-        $this->assertEquals(2, count(array_diff(explode(';', $secFileData), [''])));
+        $data = explode("\n", $minFileData);
+        $this->assertEquals(4, count(array_diff($data, [''])));
+        $this->assertEquals(120, count(array_diff(explode("\n", $secFileData), [''])));
 
-        $this->deleteJob();
+        //$this->deleteJob();
     }
 
-    protected function setJob()
-    {
-        $interruptorSecQueue = new QueueInterruptor(function ($value) {
-            file_put_contents(
-                Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec',
-                "SEC_FILE_NAME: $value" . ";",
-                FILE_APPEND
-            );
-        }, $this->secQueue);
-
-        $interruptorMinQueue = new QueueInterruptor(function ($value) {
-            file_put_contents(
-                Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min',
-                "MIN_FILE_NAME: $value" . ";",
-                FILE_APPEND
-            );
-        }, $this->minQueue);
-
-        $this->callJob($interruptorMinQueue, 3);
-        $this->callJob($interruptorSecQueue, 2);
-    }
-
-    protected function callJob(callable $callback, $count)
-    {
-        for ($i = 0; $i < $count; $i++) {
-            call_user_func($callback, $i + 1 . ":$count");
-        }
-    }
 }

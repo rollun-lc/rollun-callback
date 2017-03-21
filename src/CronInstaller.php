@@ -18,11 +18,15 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactor
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
 use rollun\actionrender\Renderer\Json\JsonRendererAction;
-use rollun\callback\Callback\Interruptor\Factory\InterruptorAbstractFactoryAbstract;
-use rollun\callback\Callback\Interruptor\Factory\MultiplexerAbstractFactory;
-use rollun\callback\Callback\Interruptor\Factory\TickerAbstractFactory;
+use rollun\callback\Callback\Example\MinCallback;
+use rollun\callback\Callback\Example\SecCallback;
+use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
+use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
+use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\Interruptor\Ticker;
+use rollun\callback\Callback\Interruptor\Script\ProcessInstaller;
+use rollun\callback\Callback\Multiplexer;
+use rollun\callback\Callback\Ticker;
 use rollun\callback\Example\CronMinMultiplexer;
 use rollun\callback\Example\CronSecMultiplexer;
 use rollun\callback\LazyLoadInterruptMiddlewareGetter;
@@ -41,7 +45,7 @@ class CronInstaller extends InstallerAbstract
      */
     public function install()
     {
-        return [
+        $config = [
             'dependencies' => [
                 'abstract_factories' => [
                     AttributeAbstractFactory::class,
@@ -49,23 +53,45 @@ class CronInstaller extends InstallerAbstract
                     TickerAbstractFactory::class,
                 ]
             ],
-
-            InterruptorAbstractFactoryAbstract::KEY => [
+            CallbackAbstractFactoryAbstract::KEY => [
                 'cron' => [
-                    MultiplexerAbstractFactory::KEY_CLASS => CronMinMultiplexer::class,
+                    MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
                     MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
                         'cron_sec_ticker'
-                    ]
+                    ],
+                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
+
                 ],
                 'cron_sec_ticker' => [
                     TickerAbstractFactory::KEY_CLASS => Ticker::class,
                     TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
+                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
+
                 ],
                 'sec_multiplexer' => [
-                    MultiplexerAbstractFactory::KEY_CLASS => CronSecMultiplexer::class,
+                    MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
+                    CallbackAbstractFactoryAbstract::WRAPPED_CLASS => true,
+
                 ],
             ],
         ];
+
+        if ($this->consoleIO->askConfirmation("Install cron multiplexer with Examples ? (Yes/No)")) {
+            $config[CallbackAbstractFactoryAbstract::KEY]['cron']
+            [MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE] = [
+                'cron_sec_ticker',
+                MinCallback::class,
+                MinCallback::class,
+                MinCallback::class,
+                MinCallback::class,
+            ];
+            $config[CallbackAbstractFactoryAbstract::KEY]['sec_multiplexer']
+            [MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE] = [
+                SecCallback::class,
+                SecCallback::class,
+            ];
+        }
+        return $config;
     }
 
     /**
@@ -98,6 +124,7 @@ class CronInstaller extends InstallerAbstract
     public function getDependencyInstallers()
     {
         return [
+            ProcessInstaller::class,
             MiddlewareInterruptorInstaller::class,
         ];
     }
@@ -107,10 +134,10 @@ class CronInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         return (
             isset($config['dependencies']['abstract_factories']) &&
-            isset($config[InterruptorAbstractFactoryAbstract::KEY]['sec_multiplexer']) &&
-            isset($config[InterruptorAbstractFactoryAbstract::KEY]['min_multiplexer']) &&
-            isset($config[InterruptorAbstractFactoryAbstract::KEY]['cron_sec_ticker']) &&
-            isset($config[InterruptorAbstractFactoryAbstract::KEY]['cron']) &&
+            isset($config[CallbackAbstractFactoryAbstract::KEY]['sec_multiplexer']) &&
+            isset($config[CallbackAbstractFactoryAbstract::KEY]['min_multiplexer']) &&
+            isset($config[CallbackAbstractFactoryAbstract::KEY]['cron_sec_ticker']) &&
+            isset($config[CallbackAbstractFactoryAbstract::KEY]['cron']) &&
             in_array(AttributeAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(MultiplexerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories'])
