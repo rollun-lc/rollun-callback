@@ -11,7 +11,7 @@ namespace rollun\callback\Callback\Interruptor;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Queues\QueueInterface;
 
-class Queue extends InterruptorAbstract implements InterruptorInterface
+class Queue extends InterruptorAbstract
 {
     /** @var  QueueInterface */
     protected $queue;

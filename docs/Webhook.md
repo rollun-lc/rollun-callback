@@ -45,7 +45,7 @@ ActionRenderAbstractFactory::KEY_AR_SERVICE => [
         'webhookActionRender' => [
             ActionRenderAbstractFactory::KEY_AR_MIDDLEWARE => [
                 ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
-                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => 'webhookJsonRenderLLPipe'
+                ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => JsonRendererAction::class
             ]
         ]
     ],
@@ -61,7 +61,6 @@ ActionRenderAbstractFactory::KEY_AR_SERVICE => [
 ```php
 LazyLoadPipeAbstractFactory::KEY => [
         'webhookLLPipe' => LazyLoadInterruptMiddlewareGetter::class,
-        'webhookJsonRenderLLPipe' => 'webhookJsonRender'
     ],
 ```
 Данная фабрика позволяет получить middleware во время премя запроса, и установить их в pipe. 

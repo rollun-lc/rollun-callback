@@ -6,17 +6,17 @@
  * Time: 17:01
  */
 
-namespace rollun\callback\Callback\Interruptor\Factory;
+namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
-use rollun\callback\Callback\Interruptor\Ticker;
+use rollun\callback\Callback\Ticker;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class TickerAbstractFactory extends InterruptorAbstractFactoryAbstract
+class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
 
     const KEY_CALLBACK = 'callback';
@@ -53,15 +53,16 @@ class TickerAbstractFactory extends InterruptorAbstractFactoryAbstract
         $ticksCount = isset($factoryConfig[static::KEY_TICKS_COUNT]) ? $factoryConfig[static::KEY_TICKS_COUNT] : 60;
         $tickDuration = isset($factoryConfig[static::KEY_TICK_DURATION]) ? $factoryConfig[static::KEY_TICK_DURATION] : 1;
         $delayMC = isset($factoryConfig[static::KEY_DELAY_MC]) ? $factoryConfig[static::KEY_DELAY_MC] : 0;
-        if(!isset($factoryConfig[static::KEY_CALLBACK])) {
+        if (!isset($factoryConfig[static::KEY_CALLBACK])) {
             throw new ServiceNotCreatedException('Callback not set.');
         }
-        if(!$container->has($factoryConfig[static::KEY_CALLBACK])) {
+        if (!$container->has($factoryConfig[static::KEY_CALLBACK])) {
             throw new ServiceNotFoundException($factoryConfig[static::KEY_CALLBACK] . ' service not found.');
         }
         $tickerCallback = $container->get($factoryConfig[static::KEY_CALLBACK]);
         $class = $factoryConfig[static::KEY_CLASS];
 
-        return new $class($tickerCallback, $ticksCount, $tickDuration, $delayMC);
+        $ticker = new $class($tickerCallback, $ticksCount, $tickDuration, $delayMC);
+        return $this->wrappedCallback($ticker, $factoryConfig);
     }
 }

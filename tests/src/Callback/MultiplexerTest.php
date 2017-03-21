@@ -6,10 +6,10 @@
  * Time: 17:11
  */
 
-namespace rollun\test\callback\Callback\Interruptor;
+namespace rollun\test\callback\Callback;
 
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
-use rollun\callback\Callback\Interruptor\Multiplexer;
+use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Promiser;
 use rollun\dic\InsideConstruct;
@@ -29,7 +29,5 @@ class MultiplexerTest extends CallbackTestDataProvider
         $multiplexer = new Multiplexer($interruptors);
         $result = $multiplexer($val);
         $this->assertTrue(isset($result['data']));
-        $this->assertTrue(isset($result[InterruptorAbstract::MACHINE_NAME_KEY]));
-        $this->assertEquals(Multiplexer::class, $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY]);
     }
 }
