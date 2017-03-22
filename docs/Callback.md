@@ -1,4 +1,4 @@
-#Callback , Interruptor и Promiser   
+# Callback , Interruptor и Promiser   
 
 ----------
 
@@ -52,7 +52,7 @@ Interruptor разновидность **Callback** для "параллельн
 
 Реализует интерфейс `PromiserInterface`.
 
-###Если результат нужен в виде Promise:
+### Если результат нужен в виде Promise:
 	$callable = function($val){return 'Hello ' . $val;};
     $promiser = new Promiser($callable);
 	$resultPromise = $promiser('World');

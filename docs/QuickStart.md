@@ -83,7 +83,38 @@ WebHook - роут который преднозначен для обработ
 Соответственно наше приложение должно отреагировать на это запустить интераптор с именем `corn`.
 > Имя интерапптора - `cron`, потому что, оно берется из url - `localhost:8080\webhook\{interruptor-name}`.
 
-Для обработки данного запроса давайте напишим обычную анонимную функцию.
+Для обработки данного запроса давайте напишим middleware 
+```php
+<?php
+     use Psr\Http\Message\ServerRequestInterface as Request;
+     use Psr\Http\Message\ResponseInterface as Response;
+     
+     class CronMiddleware implements \Zend\Stratigility\MiddlewareInterface {
+         public function __invoke(Request $request, Response $response, callable $out = null) {
+            file_put_contents(\rollun\installer\Command::getDataDir() . "cron", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
+         }
+     }
+```
+
+И Добавить его в конфиг контейнера(ServiceManager).
+
+```php
+<?php
+     return [
+        'dependencies' =>  [
+            'invokables' => [
+                'cron' => CronMiddleware::class
+            ],
+        ],
+     ];
+```
+
+Если бы мы использовали чистый zend, нам бы пришлось добавлять конфиг роута, указываяю туда данный сервис. Но так как мы импользуем библиотеку
+**rollun-callback**, она сделать это за нас. Так же она позволяет нам не создавать подобные middleware, а просто описать нужный **callback**
+и положить его в конфиг container с тем именем, по которому мы хотим к нему обратиться по http.
+Она сама обернет его в middleware который его выполнит.
+
+Давайте заменим написанный нами middleware на анонимную функцию(callback).
 
 ```php
 <?php
@@ -91,8 +122,7 @@ WebHook - роут который преднозначен для обработ
         'dependencies' =>  [
             'invokables' => [
                 'cron' => function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
                 },
             ],
         ],
@@ -107,17 +137,15 @@ WebHook - роут который преднозначен для обработ
 Создать мы его можем используя Абстракную фабрику. Более подробно можно [прочесть тут]().
 
 ```php
-    AbstractInterruptorAbstractFactory::KEY => [
+    CallbackAbstractFactoryAbstract::KEY => [
         'cron' => [
             MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+            MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron1", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
                 },
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron2", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
                 },
             ]
         ],
@@ -133,9 +161,9 @@ WebHook - роут который преднозначен для обработ
 И так, для того что бы добавить возможность запуска ежесекундных операции, нам нужно создать секундный тикер.
 
 ```php
-    AbstractInterruptorAbstractFactory::KEY => [
+    CallbackAbstractFactoryAbstract::KEY => [
         'cron' => [
-            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_CLASS => Ticker::class,
             TickerAbstractFactory::KEY_CALLBACK => 'cron_multiplexer',
         ],
     ]
@@ -152,21 +180,21 @@ WebHook - роут который преднозначен для обработ
 Конфиг целиком
 
 ```php
-    AbstractInterruptorAbstractFactory::KEY => [
+    CallbackAbstractFactoryAbstract::KEY => [
         'cron' => [
-            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_CLASS => Ticker::class,
             TickerAbstractFactory::KEY_CALLBACK => 'cron_multiplexer',
         ],
         'cron_multiplexer' => [
             MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+            MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron1", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_sec]\n");
+
                 },
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron2", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_sec]\n");
+
                 },
             ]
         ],
@@ -178,48 +206,41 @@ WebHook - роут который преднозначен для обработ
 Для этого нам нужно два мультплексера и один тикер для умножения частоты возовов. 
 
 ```php
-    AbstractInterruptorAbstractFactory::KEY => [
+    CallbackAbstractFactoryAbstract::KEY => [
         'cron' => [
             MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+            MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
+                function ($value) { 
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron1", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
+                },
+                function ($value) { 
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron2", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_min]\n");
+                },
                 "sec_ticker",
-                function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
-                },
-                function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
-                },
             ]
         ],
         'sec_ticker' => [
-            TickerAbstractFactory::KEY_CLASS => \rollun\callback\Callback\Interruptor\Ticker::class,
+            TickerAbstractFactory::KEY_CLASS => Ticker::class,
             TickerAbstractFactory::KEY_CALLBACK => 'sec_multiplexer',
         ],
         'sec_multiplexer' => [
             MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-            MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+            MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron1", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron1", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_sec]\n");
                 },
                 function ($value) { 
-                    $file = fopen(\rollun\installer\Command::getDataDir() . "cron2", "w+");
-                    fwrite($file, (new DateTime())->format("Y-m-d H:i:s") . "\n");
-                },
+                    file_put_contents(\rollun\installer\Command::getDataDir() . "cron2", (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_sec]\n");
+                }
             ]
         ],
     ]
 ```
 
-И так, как мы можем увидеть мы создали два мультиплексора, один 
-
-
 Как мы можем заметить для того что бы добавить новый обработчик, нам достаточно иметь возромжность достать его из контейнера(SM) по имени.
 ## WebHook - interrupter receiver 
 
-Как мы говорили ранее, **webhook** так же может принимать interruptor и выполнять их. 
+Как мы говорили ранее, **webhook** так же может выполнить пришедший в запрсе сериализованный callback. 
 > Более детально оп принципе работы можно [прочесть тут](./Webhook.md)
 
 Для того что бы выполнить запрос на удаленном ресурсе, можно использовать [**Http** Interruptor](./Callback.md#Http).
@@ -236,8 +257,7 @@ $container = require 'config/container.php';
 \rollun\dic\InsideConstruct::setContainer($container);
 
 $httpInterrupt = new \rollun\callback\Callback\Interruptor\Http(function($value) {
-      $file = fopen(\rollun\installer\Command::getDataDir() . $value, "w+");
-      fwrite($file, "$value");
+    file_put_contents(\rollun\installer\Command::getDataDir() . $value, (new DateTime())->format("Y-m-d H:i:s") . "|[Cron_sec]\n");
 }, "http://localhost:8080/webhook/httpCallback");
 $httpInterrupt("first");
 ```

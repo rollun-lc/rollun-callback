@@ -47,6 +47,8 @@
 
 * [Queue README](https://github.com/rollun-com/rollun-callback/blob/master/docs/Webhook.md)
 
+* [CallbackFactory README](https://github.com/rollun-com/rollun-callback/blob/master/docs/CallbackFactory.md)
+
 * [InterruptorFactory README](https://github.com/rollun-com/rollun-callback/blob/master/docs/InterruptorFactory.md)
 
 * [Webhook QuickStart](https://github.com/rollun-com/rollun-callback/blob/master/docs/InterruptorFactory.md)
