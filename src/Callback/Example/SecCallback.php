@@ -13,9 +13,9 @@ use rollun\installer\Command;
 
 class SecCallback implements InterruptorInterface
 {
-    const PREFIX_TEXT = 'SEC_FILE_NAME';
-
     const FILE = 'interrupt_sec';
+
+    const PREFIX_TEXT = 'SEC_FILE_NAME';
     /**
      * @param $value
      * @return array

@@ -67,7 +67,7 @@ class CronInstaller extends InstallerAbstract
             CallbackAbstractFactoryAbstract::KEY => [
                 'min_multiplexer' => [
                     MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
-                    MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE => [
+                    MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
                         'interrupt_cron_sec_ticker'
                     ],
                 ],
@@ -97,7 +97,7 @@ class CronInstaller extends InstallerAbstract
 
         if ($this->consoleIO->askConfirmation("Install cron multiplexer with Examples ? (Yes/No)")) {
             $config[CallbackAbstractFactoryAbstract::KEY]['min_multiplexer']
-            [MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE] = [
+            [MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES] = [
                 'interrupt_cron_sec_ticker',
                 MinCallback::class,
                 MinCallback::class,
@@ -105,7 +105,7 @@ class CronInstaller extends InstallerAbstract
                 MinCallback::class,
             ];
             $config[CallbackAbstractFactoryAbstract::KEY]['sec_multiplexer']
-            [MultiplexerAbstractFactory::KEY_INTERRUPTERS_SERVICE] = [
+            [MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES] = [
                 SecCallback::class,
                 SecCallback::class,
             ];

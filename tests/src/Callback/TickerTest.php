@@ -39,7 +39,7 @@ class TickerTest extends CallbackTestDataProvider
         $finishTime = microtime(true);
         
         $workTimeDiff = abs(($finishTime - $startTime) - $sleepTime);
-        $this->assertTrue($workTimeDiff >= 0 && $workTimeDiff <= 0.01);
+        $this->assertTrue($workTimeDiff >= 0 && $workTimeDiff <= 0.03);
 
         $data = array_diff(explode("\n", file_get_contents($file)), [""]);
         $this->assertTrue(count($data) == $ticksCount);

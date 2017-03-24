@@ -9,20 +9,12 @@
 namespace rollun\callback\Middleware;
 
 
-use Psr\Http\Message\ResponseInterface as Response;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
-use Zend\Stratigility\MiddlewareInterface;
 
 abstract class InterruptorAbstract implements MiddlewareInterface
 {
-
-    /**
-     * Abstaract middleware for Interruptor handler
-     * @param Request $request
-     * @param Response $response
-     * @param null|callable $out
-     * @return null|Response
-     */
-    abstract public function __invoke(Request $request, Response $response, callable $out = null);
+    abstract  public function process(Request $request, DelegateInterface $delegate);
 }

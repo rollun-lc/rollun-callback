@@ -22,7 +22,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
-    const KEY_INTERRUPTERS_SERVICE = 'interrupters';
+    const KEY_CALLBACKS_SERVICES = 'interrupters';
 
     const DEFAULT_CLASS = Multiplexer::class;
 
@@ -46,8 +46,8 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
         $factoryConfig = $config[static::KEY][$requestedName];
 
         $callbacks = [];
-        if (isset($factoryConfig[static::KEY_INTERRUPTERS_SERVICE])) {
-            $callbackService = $factoryConfig[static::KEY_INTERRUPTERS_SERVICE];
+        if (isset($factoryConfig[static::KEY_CALLBACKS_SERVICES])) {
+            $callbackService = $factoryConfig[static::KEY_CALLBACKS_SERVICES];
             foreach ($callbackService as $callback) {
                 if (is_callable($callback)) {
                     $callbacks[] = $callback instanceof Callback ? $callback : new Callback($callback);
