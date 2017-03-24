@@ -9,7 +9,6 @@
 namespace rollun\callback\Middleware\Factory;
 
 use Interop\Container\ContainerInterface;
-use Interop\Http\Middleware\MiddlewareInterface;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Process;

@@ -27,3 +27,9 @@
  */
 
 /*$app->get('/', App\Action\HomePageAction::class, 'home');*/
+$app->route(
+    '/webhook[/{resourceName}]',
+    'webhookActionRender',
+    ['GET', 'POST'],
+    'webhook'
+);
