@@ -17,6 +17,7 @@ phpunit.xml.dist
 composer.lock
 .idea/workspace.xml
 .idea/*
+.idea/vcs.xml
 
 # Sensitive or high-churn files:
 .idea/dataSources/

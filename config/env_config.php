@@ -11,5 +11,4 @@ return [
     'MACHINE_NAME' => '',
     'HOST' => 'localhost:8080',
     'LANG' => 'ru'
-
 ];
