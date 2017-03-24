@@ -8,6 +8,7 @@
 
 namespace rollun\callback\Middleware;
 
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use rollun\callback\Callback\CallbackException;
@@ -27,11 +28,12 @@ class HttpInterruptorAction extends InterruptorAbstract
      * Call Interruptor or callback who sent in http body.
      * Read [HttpInterruptor](src\Callback\Interruptor\Http.php).
      * @param Request $request
-     * @param Response $response
-     * @param null|callable $out
+     * @param DelegateInterface $delegate
      * @return null|Response
+     * @internal param Response $response
+     * @internal param callable|null $out
      */
-    public function __invoke(Request $request, Response $response, callable $out = null)
+    public function process(Request $request, DelegateInterface $delegate)
     {
         $callback = $request->getBody()->getContents();
 
@@ -73,10 +75,9 @@ class HttpInterruptorAction extends InterruptorAbstract
             $response = new EmptyResponse(500);
         }
 
-        if (isset($out)) {
-            return $out($request, $response);
-        }
+        $response = $delegate->process($request);
 
         return $response;
     }
+
 }

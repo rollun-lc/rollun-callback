@@ -10,6 +10,7 @@ namespace rollun\callback\Middleware;
 
 
 use Exception;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
@@ -35,11 +36,10 @@ class InterruptorCallerAction extends InterruptorAbstract
     /**
      * Call interrupt with value.
      * @param Request $request
-     * @param Response $response
-     * @param null|callable $out
-     * @return null|Response
+     * @param DelegateInterface $delegate
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $out = null)
+    public function process(Request $request, DelegateInterface $delegate)
     {
         $value = $request->getAttribute(static::KEY_INTERRUPTOR_VALUE);
         try {
@@ -53,9 +53,7 @@ class InterruptorCallerAction extends InterruptorAbstract
 
         $request = $request->withAttribute(Response::class, $response);
 
-        if (isset($out)) {
-            return $out($request, $response);
-        }
+        $response = $delegate->process($request);
 
         return $response;
     }
