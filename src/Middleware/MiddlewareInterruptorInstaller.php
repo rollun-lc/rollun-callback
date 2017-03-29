@@ -36,16 +36,6 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
     public function install()
     {
         return [
-
-            'routes' => [
-                [
-                    'name' => 'webhook',
-                    'path' => '/webhook[/{resourceName}]',
-                    'middleware' => 'webhookActionRender',
-                    'allowed_methods' => ['GET', 'POST'],
-                ],
-            ],
-
             'dependencies' => [
                 'invokables' => [
                     LazyLoadInterruptMiddlewareGetter::class => LazyLoadInterruptMiddlewareGetter::class,
@@ -53,11 +43,9 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
                 ],
 
             ],
-
             LazyLoadPipeAbstractFactory::KEY => [
                 'webhookLLPipe' => LazyLoadInterruptMiddlewareGetter::class,
             ],
-
             ActionRenderAbstractFactory::KEY => [
                 'webhookActionRender' => [
                     ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
@@ -113,8 +101,7 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
             isset($config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class]) &&
             $config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class] ===
             LazyLoadInterruptMiddlewareGetter::class &&
-            isset($config['dependencies']['invokables']['httpCallback']) &&
-            $config['dependencies']['invokables']['httpCallback'] === HttpInterruptorAction::class
+            isset($config['dependencies']['invokables']['httpCallback'])
         );
     }
 
