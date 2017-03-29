@@ -8,16 +8,7 @@
 
 namespace rollun\callback;
 
-use rollun\actionrender\Factory\ActionRenderAbstractFactory;
-use rollun\actionrender\Factory\LazyLoadPipeAbstractFactory;
-use rollun\actionrender\Installers\ActionRenderInstaller;
-use rollun\actionrender\Installers\BasicRenderInstaller;
-use rollun\actionrender\Installers\MiddlewarePipeInstaller;
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlewareGetterAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
-use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
-use rollun\actionrender\Renderer\Json\JsonRendererAction;
 use rollun\callback\Callback\Example\MinCallback;
 use rollun\callback\Callback\Example\SecCallback;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
@@ -31,14 +22,8 @@ use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Interruptor\Script\ProcessInstaller;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Callback\Ticker;
-use rollun\callback\Example\CronMinMultiplexer;
-use rollun\callback\Example\CronSecMultiplexer;
-use rollun\callback\LazyLoadInterruptMiddlewareGetter;
-use rollun\callback\Middleware\HttpInterruptorAction;
 use rollun\callback\Middleware\MiddlewareInterruptorInstaller;
 use rollun\installer\Install\InstallerAbstract;
-use rollun\promise\Entity\EntityInstaller;
-use rollun\promise\Promise\PromiseInstaller;
 
 class CronInstaller extends InstallerAbstract
 {
@@ -153,13 +138,25 @@ class CronInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         return (
             isset($config['dependencies']['abstract_factories']) &&
+
             isset($config[CallbackAbstractFactoryAbstract::KEY]['sec_multiplexer']) &&
             isset($config[CallbackAbstractFactoryAbstract::KEY]['min_multiplexer']) &&
             isset($config[CallbackAbstractFactoryAbstract::KEY]['cron_sec_ticker']) &&
-            isset($config[CallbackAbstractFactoryAbstract::KEY]['cron']) &&
+
+            isset($config[InterruptAbstractFactoryAbstract::KEY]['cron']) &&
+            isset($config[InterruptAbstractFactoryAbstract::KEY]['interrupt_cron_sec_ticker']) &&
+            isset($config[InterruptAbstractFactoryAbstract::KEY]['interrupt_sec_multiplexer']) &&
+
             in_array(AttributeAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(MultiplexerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories'])
+            in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
+            in_array(ProcessAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
+            in_array(QueueAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
+            in_array(HttpAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
+
+            isset($config['dependencies']['invokables'][MinCallback::class]) &&
+            isset($config['dependencies']['invokables'][SecCallback::class])
+
         );
     }
 
