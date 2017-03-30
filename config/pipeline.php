@@ -13,7 +13,7 @@ use Zend\Stratigility\Middleware\ErrorHandler;
 
 // The error handler should be the first (most outer) middleware to catch
 // all Exceptions.
-
+/** @var $app \Zend\Expressive\Application */
 $app->pipe(ErrorHandler::class);
 $app->pipe(ServerUrlMiddleware::class);
 

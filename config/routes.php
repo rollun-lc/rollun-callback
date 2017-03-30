@@ -27,6 +27,7 @@
  */
 
 /*$app->get('/', App\Action\HomePageAction::class, 'home');*/
+/** @var $app \Zend\Expressive\Application */
 $app->route(
     '/webhook[/{resourceName}]',
     'webhookActionRender',
