@@ -18,6 +18,7 @@ use rollun\logger\Exception\LogExceptionLevel;
 /** @var Zend\ServiceManager\ServiceManager $container */
 $container = include './config/container.php';
 InsideConstruct::setContainer($container);
+$logger = new \rollun\logger\Logger();
 
 $paramsString = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : null;
 
@@ -29,9 +30,11 @@ try {
     $job = Job::unserializeBase64($paramsString);
     $callback = $job->getCallback();
     $value = $job->getValue();
+    $logger->info("process with job [$paramsString] start.");
     call_user_func($callback, $value);
+    $logger->info("process with job [$paramsString] finish.");
     exit(0);
 } catch (\Exception $e) {
+    $logger->error($e->getMessage());
     exit(1);
 }
-
