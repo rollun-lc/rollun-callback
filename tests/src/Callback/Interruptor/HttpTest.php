@@ -26,7 +26,7 @@ class HttpTest extends CallbackTestDataProvider
         $container = include 'config/container.php';
 
         $config = $container->get("config");
-        $this->url = 'http://' . constant("HOST") . '/webhook/httpCallback';
+        $this->url = 'http://' . constant("HOST") . '/api/webhook/httpCallback';
     }
 
     /**

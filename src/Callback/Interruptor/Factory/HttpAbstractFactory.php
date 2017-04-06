@@ -12,12 +12,15 @@ use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\Callback\Interruptor\Http;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
 class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
 {
     const KEY_URL = 'url';
+
+    const DEFAULT_CLASS = Http::class;
 
     /**
      * Create an object
