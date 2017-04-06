@@ -12,6 +12,8 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactor
 use rollun\callback\Callback\Example\MinCallback;
 use rollun\callback\Callback\Example\SecCallback;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
+use rollun\callback\Callback\Factory\Installer\MultiplexerInstaller;
+use rollun\callback\Callback\Factory\Installer\TickerInstaller;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\HttpAbstractFactory;
@@ -38,11 +40,6 @@ class CronInstaller extends InstallerAbstract
             'dependencies' => [
                 'abstract_factories' => [
                     AttributeAbstractFactory::class,
-                    MultiplexerAbstractFactory::class,
-                    TickerAbstractFactory::class,
-                    ProcessAbstractFactory::class,
-                    QueueAbstractFactory::class,
-                    HttpAbstractFactory::class,
                 ],
                 'invokables' => [
                     MinCallback::class => MinCallback::class,
@@ -130,6 +127,8 @@ class CronInstaller extends InstallerAbstract
         return [
             ProcessInstaller::class,
             MiddlewareInterruptorInstaller::class,
+            MultiplexerInstaller::class,
+            TickerInstaller::class
         ];
     }
 

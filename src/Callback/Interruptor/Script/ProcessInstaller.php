@@ -10,6 +10,7 @@
 namespace rollun\callback\Callback\Interruptor\Script;
 
 use Interop\Container\ContainerInterface;
+use rollun\callback\Callback\Interruptor\Factory\ProcessAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\installer\Install\InstallerAbstract;
 use rollun\promise\Entity\EntityInstaller;
@@ -25,6 +26,14 @@ class ProcessInstaller extends InstallerAbstract
 {
     public function install()
     {
+        $config = [
+            'dependencies' => [
+                'abstract_factories' => [
+                    ProcessAbstractFactory::class,
+                ],
+            ],
+        ];
+
         $reflection = new \ReflectionClass(self::class);
         $scriptFile = realpath(dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . Process::FILE_NAME);
         if (file_exists($scriptFile)) {
@@ -40,6 +49,7 @@ class ProcessInstaller extends InstallerAbstract
                 . getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_DATA . Process::FILE_NAME
             );
         }
+        return $config;
     }
 
     /**
@@ -72,7 +82,13 @@ class ProcessInstaller extends InstallerAbstract
 
     public function isInstall()
     {
-        return (file_exists(getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_DATA . Process::FILE_NAME));
+        $result = (file_exists(getcwd() . DIRECTORY_SEPARATOR . Process::PATH_SCRIPT_DATA . Process::FILE_NAME));
+        $config = $this->container->get('config');
+        $result &= (
+            isset($config['dependencies']['abstract_factories']) &&
+            in_array(ProcessAbstractFactory::class, $config['dependencies']['abstract_factories'])
+        );
+        return $result;
     }
 
     public function getDependencyInstallers()

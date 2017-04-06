@@ -37,7 +37,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
         $container = include 'config/container.php';
         $this->config = $container->get('config');
 
-        $this->url = 'http://' . constant("HOST") . '/webhook/cron';
+        $this->url = 'http://' . constant("HOST") . '/api/webhook/cron';
 
         InsideConstruct::setContainer($container);
         $this->deleteJob();
