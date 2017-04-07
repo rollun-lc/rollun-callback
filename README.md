@@ -5,20 +5,20 @@
 Это invockable объект -  обертка для **Callable**.   
 Умеет сериализовываться, даже если в него "обернуто" замыкание (анонимная функция).
 
-###Как работает Callback:
+### Как работает Callback:
 
 	$callable = function($val){return 'Hello ' . $val;};
 	$callback = new Callback($callable); // $callable - is any type of \Callable
 	var_dump($callback('World')); //'Hello World'
 
-###Если результат нужен в виде Promise:
+### Если результат нужен в виде Promise:
 	...
     $promise = new Promise();
 	$resultPromise = $promise->then($callback);
 	$promise->resolve('World'); //run!
 	var_dump($resultPromise->wait()); //'Hello World'
 
-##Interruptor
+## Interruptor
 
 Реализует интерфейс `InterruptorInterface`.
 Так же существует абстрайктный - `InterruptorAbstract` клас который основан на `Callback` 
