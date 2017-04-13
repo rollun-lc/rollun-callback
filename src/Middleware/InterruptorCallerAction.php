@@ -14,6 +14,7 @@ use Interop\Http\ServerMiddleware\DelegateInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
+use rollun\utils\Json\Serializer;
 use Zend\Diactoros\Response\EmptyResponse;
 
 class InterruptorCallerAction extends InterruptorAbstract
@@ -41,7 +42,13 @@ class InterruptorCallerAction extends InterruptorAbstract
      */
     public function process(Request $request, DelegateInterface $delegate)
     {
-        $value = $request->getAttribute(static::KEY_INTERRUPTOR_VALUE);
+        if($request->getMethod() === "GET")
+        {
+            $value = $request->getQueryParams();
+        } else {
+            $body = $request->getParsedBody();
+            $value = is_string($body) ? Serializer::jsonUnserialize($body) : $body;
+        }
         try {
             $result = call_user_func($this->interruptor, $value);
             $request = $request->withAttribute('responseData', $result);
