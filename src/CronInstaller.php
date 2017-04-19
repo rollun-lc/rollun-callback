@@ -125,10 +125,10 @@ class CronInstaller extends InstallerAbstract
     public function getDependencyInstallers()
     {
         return [
-            ProcessInstaller::class,
             MiddlewareInterruptorInstaller::class,
+            TickerInstaller::class,
+            ProcessInstaller::class,
             MultiplexerInstaller::class,
-            TickerInstaller::class
         ];
     }
 
@@ -150,8 +150,6 @@ class CronInstaller extends InstallerAbstract
             in_array(MultiplexerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
             in_array(ProcessAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(QueueAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(HttpAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
 
             isset($config['dependencies']['invokables'][MinCallback::class]) &&
             isset($config['dependencies']['invokables'][SecCallback::class])
