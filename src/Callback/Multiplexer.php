@@ -55,9 +55,9 @@ class Multiplexer implements CallbackInterface
     {
         $result = [];
         ksort($this->callbacks);
-        foreach ($this->callbacks as $interruptor) {
+        foreach ($this->callbacks as $callback) {
             try {
-                $result['data'][] = $interruptor($value);
+                $result['data'][] = $callback($value);
             } catch (\Exception $e) {
                 $result['data'][] = $e;
             }

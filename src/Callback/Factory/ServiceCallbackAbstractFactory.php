@@ -22,6 +22,14 @@ class ServiceCallbackAbstractFactory extends CallbackAbstractFactoryAbstract
 
     const DEFAULT_CLASS = Callback::class;
 
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        $config = $container->get('config');
+        return (isset($config[static::KEY][$requestedName]) &&
+            $config[static::KEY][$requestedName][static::KEY_CLASS] === static::DEFAULT_CLASS
+        );
+    }
+
     /**
      * Create an object
      *
