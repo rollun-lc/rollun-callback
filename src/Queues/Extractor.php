@@ -8,6 +8,7 @@
 
 namespace rollun\callback\Queues;
 
+use rollun\callback\Callback\CallbackInterface;
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\logger\Exception\LogExceptionLevel;
@@ -17,7 +18,7 @@ use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Promiser;
 use rollun\callback\Callback\PromiserInterface;
 
-class Extractor implements InterruptorInterface
+class Extractor implements CallbackInterface
 {
 
     const KEY_MESSAGE_ID = 'message_id';

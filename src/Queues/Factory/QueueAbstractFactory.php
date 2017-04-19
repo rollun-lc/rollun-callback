@@ -2,32 +2,38 @@
 /**
  * Created by PhpStorm.
  * User: root
- * Date: 05.04.17
- * Time: 20:55
+ * Date: 19.04.17
+ * Time: 10:42
  */
 
-namespace rollun\callback\Callback\Factory;
+namespace rollun\callback\Queues\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use rollun\callback\Callback\Callback;
+use rollun\callback\Queues\Queue;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class ServiceCallbackAbstractFactory extends CallbackAbstractFactoryAbstract
+class QueueAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_SERVICE_NAME = 'serviceName';
+    const KEY = 'keyQueues';
 
-    const KEY_CALLBACK_METHOD = 'callbackMethod';
+    const KEY_DELAY = 'keyDelay';
 
-    const DEFAULT_CLASS = Callback::class;
+    //const KEY_QUEUE_NAME = 'keyQueueName';
 
+    /**
+     * Can the factory create an instance for the service?
+     *
+     * @param  ContainerInterface $container
+     * @param  string $requestedName
+     * @return bool
+     */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
         $config = $container->get('config');
-        return (isset($config[static::KEY][$requestedName]) &&
-            $config[static::KEY][$requestedName][static::KEY_CLASS] === static::DEFAULT_CLASS
-        );
+        return isset($config[static::KEY][$requestedName]);
     }
 
     /**
@@ -50,12 +56,11 @@ class ServiceCallbackAbstractFactory extends CallbackAbstractFactoryAbstract
         } else {
             $serviceConfig = $options;
         }
-
-        $class = $serviceConfig[static::KEY_CLASS];
-
-        //todo: add check param in array and method has
-        $service = $container->get($serviceConfig[static::KEY_SERVICE_NAME]);
-        return new $class([$service, $serviceConfig[static::KEY_CALLBACK_METHOD]]);
+        if(isset($serviceConfig[static::KEY_DELAY])){
+            $queue = new Queue($requestedName, $serviceConfig[static::KEY_DELAY]);
+        } else {
+            $queue = new Queue($requestedName);
+        }
+        return $queue;
     }
 }
-
