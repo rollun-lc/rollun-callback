@@ -10,10 +10,11 @@ namespace rollun\callback\Callback\Interruptor\Factory\Installer;
 
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\HttpAbstractFactory;
+use rollun\callback\Callback\Interruptor\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Multiplexer;
 use rollun\installer\Install\InstallerAbstract;
 
-class HttpInstaller extends InstallerAbstract
+class HttpClientInstaller extends InstallerAbstract
 {
 
     /**
@@ -25,7 +26,7 @@ class HttpInstaller extends InstallerAbstract
         $config = [
             'dependencies' => [
                 'abstract_factories' => [
-                    HttpAbstractFactory::class,
+                    HttpClientAbstractFactory::class,
                 ],
             ],
         ];
@@ -54,7 +55,7 @@ class HttpInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         $result = (
             isset($config['dependencies']['abstract_factories']) &&
-            in_array(HttpAbstractFactory::class, $config['dependencies']['abstract_factories'])
+            in_array(HttpClientAbstractFactory::class, $config['dependencies']['abstract_factories'])
         );
         /*if($result) {
             $clientName = $this->getName();
@@ -81,7 +82,7 @@ class HttpInstaller extends InstallerAbstract
     {
         switch ($lang) {
             case "ru":
-                $description = "Предоставляет возможность отправлять выполнятся callback на удаленный сервер.";
+                $description = "Предоставляет возможность использовать клиент для http вызовов.";
                 break;
             default:
                 $description = "Does not exist.";
