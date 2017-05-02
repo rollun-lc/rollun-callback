@@ -2,27 +2,22 @@
 /**
  * Created by PhpStorm.
  * User: root
- * Date: 21.03.17
- * Time: 18:40
+ * Date: 02.05.17
+ * Time: 18:48
  */
 
 namespace rollun\callback\Callback\Interruptor\Factory;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interruptor\Http;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use rollun\callback\Callback\Interruptor\HttpClient;
 
-class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
+class HttpClientAbstractFactory extends InterruptAbstractFactoryAbstract
 {
     const KEY_URL = 'url';
-
     const KEY_OPTIONS = 'options';
 
-    const DEFAULT_CLASS = Http::class;
+    const DEFAULT_CLASS = HttpClient::class;
 
     /**
      * Create an object
@@ -38,18 +33,12 @@ class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
         $config = $container->get('config');
         $factoryConfig = $config[static::KEY][$requestedName];
         $class = $factoryConfig[static::KEY_CLASS];
-        $callback = $factoryConfig[static::KEY_CALLBACK_SERVICE];
         if(!isset($factoryConfig[static::KEY_URL])){
             throw new CallbackException(static::KEY_URL . " not been set.");
         }
-        $url = $factoryConfig[static::KEY_URL];
-        if(!$container->has($callback)) {
-            throw new CallbackException("Service with name '$callback' hasn't found.");
-        }
-        $callback = $container->get($callback);
-
         $options = isset($factoryConfig[static::KEY_OPTIONS]) ? $factoryConfig[static::KEY_OPTIONS] : [];
 
-        return new $class(new Callback($callback), $url, $options);
+        $url = $factoryConfig[static::KEY_URL];
+        return new $class($url, $options);
     }
 }
