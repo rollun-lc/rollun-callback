@@ -9,7 +9,16 @@ namespace rollun\callback\Queues;
 
 interface QueueInterface
 {
+    /**
+     * @param null $priority
+     * @return Message
+     */
     public function getMessage($priority = null);
 
+    /**
+     * @param $message
+     * @param null $priority
+     * @return mixed
+     */
     public function addMessage($message, $priority = null);
 }
