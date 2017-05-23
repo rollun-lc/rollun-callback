@@ -1,7 +1,7 @@
-<phpunit bootstrap="tests/bootstrap.php" colors="true">
+<phpunit bootstrap="test/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="rollun\\test\\callback\\">
-            <directory>./tests/src/</directory>
+            <directory>./test/Callback/</directory>
         </testsuite>
     </testsuites>
 

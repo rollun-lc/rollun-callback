@@ -5,7 +5,7 @@
 //    $path = dirname(getcwd());
 //}
 //chdir($path);
-chdir(__DIR__ . '/../../../../');
+chdir(__DIR__ . '/../../../rollun-callback/');
 
 require './vendor/autoload.php';
 require_once 'config/env_configurator.php';

@@ -43,17 +43,17 @@ class Extractor implements CallbackInterface
     {
         try {
             $message = $this->queue->getMessage();
-        } catch (\Exception $e) {
-            throw new QueueException("Extract queue error!", LogExceptionLevel::ERROR, $e);
-        }
-        if (isset($message)) {
-            $job = Job::unserializeBase64($message->getData());
-            try {
-                $resp = call_user_func($job->getCallback(), $job->getValue());
-            } catch (\Exception $e) {
-                throw new QueueException("Function error!", LogExceptionLevel::ERROR, $e);
+            if (isset($message)) {
+                $job = Job::unserializeBase64($message->getData());
+                try {
+                    $resp = call_user_func($job->getCallback(), $job->getValue());
+                } catch (\Throwable $e) {
+                    throw new QueueException("Function error!", LogExceptionLevel::ERROR, $e);
+                }
+                return $resp;
             }
-            return $resp;
+        } catch (\Throwable $e) {
+            throw new QueueException("Extract queue error!", LogExceptionLevel::ERROR, $e);
         }
         return null;
     }
@@ -70,22 +70,21 @@ class Extractor implements CallbackInterface
         try {
             /** @var Message $message */
             $message = $this->queue->getMessage();
-        } catch (\Exception $e) {
+            if (isset($message)) {
+                $job = Job::unserializeBase64($message->getData());
+                $result[static::KEY_MESSAGE_ID] = $message->getId();
+                try {
+                    $result['data'][] = call_user_func($job->getCallback(), $job->getValue());
+                } catch (\Throwable $e) {
+                    $result['data'][] = $e;
+                }
+            }
+
+            $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
+            $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
+        } catch (\Throwable $e) {
             throw new QueueException("Extract queue error!", LogExceptionLevel::ERROR, $e);
         }
-
-        if (isset($message)) {
-            $job = Job::unserializeBase64($message->getData());
-            $result[static::KEY_MESSAGE_ID] = $message->getId();
-            try {
-                $result['data'][] = call_user_func($job->getCallback(), $job->getValue());
-            } catch (\Exception $e) {
-                $result['data'][] = $e;
-            }
-        }
-
-        $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
-        $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
 
         return $return;
     }

@@ -37,4 +37,5 @@ abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterfa
         return (isset($config[static::KEY][$requestedName]) &&
             is_a($config[static::KEY][$requestedName][static::KEY_CLASS], static::DEFAULT_CLASS, true));
     }
+
 }

@@ -13,7 +13,6 @@ use Zend\Stratigility\Middleware\ErrorHandler;
 
 // The error handler should be the first (most outer) middleware to catch
 // all Exceptions.
-/** @var $app \Zend\Expressive\Application */
 $app->pipe(ErrorHandler::class);
 $app->pipe(ServerUrlMiddleware::class);
 
@@ -33,6 +32,9 @@ $app->pipe(ServerUrlMiddleware::class);
 // - $app->pipe('/api', $apiMiddleware);
 // - $app->pipe('/docs', $apiDocMiddleware);
 // - $app->pipe('/files', $filesMiddleware);
+if($container->has('permissionPipe')) {
+    $app->pipe('permissionPipe');
+}
 
 // Register the routing middleware in the middleware pipeline
 $app->pipeRoutingMiddleware();
