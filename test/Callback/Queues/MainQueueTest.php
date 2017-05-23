@@ -39,8 +39,10 @@ class MainQueueTest extends \PHPUnit_Framework_TestCase
 
     public function testInterruptCallback()
     {
-        $file = Command::getDataDir() . DIRECTORY_SEPARATOR . static::FILE;
-        unlink($file);
+        $file = Command::getDataDir() . static::FILE;
+        if(file_exists($file)) {
+            unlink($file);
+        }
         $callback = function ($value) use ($file) {
             $time = microtime(true);
             file_put_contents(

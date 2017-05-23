@@ -44,7 +44,7 @@ class Extractor implements CallbackInterface
         try {
             $message = $this->queue->getMessage();
             if (isset($message)) {
-                $job = Job::unserializeBase64($message->get());
+                $job = Job::unserializeBase64($message->getData());
                 try {
                     $resp = call_user_func($job->getCallback(), $job->getValue());
                 } catch (\Throwable $e) {

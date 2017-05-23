@@ -2,7 +2,7 @@
 
 namespace rollun\test\callback\Callback;
 
-require_once './src/Callback/Example/CallMe.php';
+require_once './src/Callback/src/Callback/Example/CallMe.php';
 
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\Example\CallMe;
