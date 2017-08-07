@@ -86,8 +86,6 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         return [
             ActionRenderInstaller::class,
             BasicRenderInstaller::class,
-            PromiseInstaller::class,
-            EntityInstaller::class,
         ];
     }
 
