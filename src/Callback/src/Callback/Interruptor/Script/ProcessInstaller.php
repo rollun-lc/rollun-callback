@@ -94,8 +94,6 @@ class ProcessInstaller extends InstallerAbstract
     public function getDependencyInstallers()
     {
         return [
-            PromiseInstaller::class,
-            EntityInstaller::class,
         ];
     }
 
