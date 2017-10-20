@@ -1,11 +1,11 @@
 <?php
 
-//$path = getcwd();
-//if (!is_file($path . '/vendor/autoload.php')) {
-//    $path = dirname(getcwd());
-//}
-//chdir($path);
-chdir(__DIR__ . '/../../../rollun-callback/');
+$path = getcwd();
+if (!is_file($path . '/vendor/autoload.php')) {
+    $path = dirname(getcwd());
+}
+chdir($path);
+//chdir(__DIR__ . '/../../../rollun-callback/');
 
 require './vendor/autoload.php';
 require_once 'config/env_configurator.php';
