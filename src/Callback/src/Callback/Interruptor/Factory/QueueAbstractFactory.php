@@ -12,12 +12,17 @@ use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\Callback\CallbackInterface;
+use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
 class QueueAbstractFactory extends InterruptAbstractFactoryAbstract
 {
     const KEY_QUEUE_SERVICE = 'queue';
+
+    const DEFAULT_CLASS = QueueInterruptor::class;
+
     /**
      * Create an object
      *
@@ -37,13 +42,15 @@ class QueueAbstractFactory extends InterruptAbstractFactoryAbstract
         if(!$container->has($callback)) {
             throw new CallbackException("Service with name '$callback' - not found.");
         }
-
         $queue = $factoryConfig[static::KEY_QUEUE_SERVICE];
         if(!$container->has($queue)) {
             throw new CallbackException("Service with name '$queue' - not found.");
         }
-
+        $queue = $container->get($queue);
         $callback = $container->get($callback);
-        return new $class(new Callback($callback), $queue);
+        if(!$callback instanceof CallbackInterface){
+            $callback = new Callback($callback);
+        }
+        return new $class($callback, $queue);
     }
 }
