@@ -38,4 +38,32 @@ class Queue extends InterruptorAbstract
         $result[static::INTERRUPTOR_TYPE_KEY] = static::class;
         return $result;
     }
+
+    /**
+     * @return QueueInterface
+     */
+    protected function getQueue()
+    {
+        return $this->queue;
+    }
+
+    /**
+     * ["callback", "queue"]
+     * @return array
+     */
+    public function __sleep()
+    {
+        $result = parent::__sleep();
+        return array_merge($result, ["queue"]);
+    }
+
+    /**
+     * Resume callback and queue
+     */
+    public function __wakeup()
+    {
+        parent::__wakeup();
+        $this->queue = $this->getQueue();
+    }
+
 }
