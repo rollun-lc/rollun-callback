@@ -16,7 +16,6 @@
   ],
   "require": {
     "php": "^5.6 || ^7.0",
-    "roave/security-advisories": "dev-master",
     "zendframework/zend-component-installer": "^1.0 || ^0.7.0",
     "zendframework/zend-config-aggregator": "^0.2.0",
     "zendframework/zend-expressive": "^2.0.2",
@@ -30,13 +29,13 @@
     "zendframework/zend-http": "^2.5",
     "reputation-vip/queue-client": "^1.0.1",
     "opis/closure": "^2.1.0",
-    "rollun-com/rollun-installer": "^3.0",
-    "rollun-com/rollun-utils": "^3.0",
-    "rollun-com/rollun-dic": "^2.0",
-    "rollun-com/rollun-promise": "^3.0",
-    "rollun-com/rollun-datastore": "^4.0",
-    "rollun-com/rollun-actionrender": "^5.0",
-    "rollun-com/rollun-logger": "^3.0",
+    "rollun-com/rollun-installer": "^3.2",
+    "rollun-com/rollun-utils": "^3.2",
+    "rollun-com/rollun-dic": "^2.2",
+    "rollun-com/rollun-promise": "^3.2",
+    "rollun-com/rollun-datastore": "^4.2",
+    "rollun-com/rollun-actionrender": "^5.1",
+    "rollun-com/rollun-logger": "^3.2",
     "zendframework/zend-json": "^3.0"
   },
   "require-dev": {
