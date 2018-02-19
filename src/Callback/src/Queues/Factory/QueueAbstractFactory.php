@@ -15,6 +15,11 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
+/**
+ * Class QueueAbstractFactory
+ * @package rollun\callback\Queues\Factory
+ * @deprecated
+ */
 class QueueAbstractFactory implements AbstractFactoryInterface
 {
     const KEY = 'keyQueues';
