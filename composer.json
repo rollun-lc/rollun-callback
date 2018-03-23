@@ -33,12 +33,10 @@
     "rollun-com/rollun-installer": "^3.2",
     "rollun-com/rollun-utils": "^3.2",
     "rollun-com/rollun-dic": "^2.2",
-    "rollun-com/rollun-promise": "^3.2",
     "rollun-com/rollun-datastore": "^4.2",
     "rollun-com/rollun-actionrender": "^5.1",
     "rollun-com/rollun-logger": "^3.2",
-    "zendframework/zend-json": "^3.0",
-    "http-interop/http-middleware": "0.4.1"
+    "zendframework/zend-json": "^3.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7.15",
