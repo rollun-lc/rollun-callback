@@ -15,8 +15,6 @@ use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Job;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\PromiserInterface;
-use rollun\logger\Exception\LogExceptionLevel;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Stratigility\MiddlewareInterface;
@@ -47,10 +45,6 @@ class HttpInterruptorAction extends InterruptorAbstract
              * Different callback called differently
              */
             switch ($callback) {
-                case $callback instanceof PromiserInterface:
-                    call_user_func($callback, $value);
-                    $data = $callback->getInterruptorResult();
-                    break;
                 case $callback instanceof InterruptorInterface:
                     $data = call_user_func($callback, $value);
                     break;

@@ -8,7 +8,6 @@
 
 namespace rollun\callback;
 
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
 use rollun\callback\Callback\Example\MinCallback;
 use rollun\callback\Callback\Example\SecCallback;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
@@ -16,10 +15,8 @@ use rollun\callback\Callback\Factory\Installer\MultiplexerInstaller;
 use rollun\callback\Callback\Factory\Installer\TickerInstaller;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
-use rollun\callback\Callback\Interruptor\Factory\HttpAbstractFactory;
 use rollun\callback\Callback\Interruptor\Factory\InterruptAbstractFactoryAbstract;
 use rollun\callback\Callback\Interruptor\Factory\ProcessAbstractFactory;
-use rollun\callback\Callback\Interruptor\Factory\QueueAbstractFactory;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Callback\Interruptor\Script\ProcessInstaller;
 use rollun\callback\Callback\Multiplexer;
@@ -39,7 +36,6 @@ class CronInstaller extends InstallerAbstract
         $config = [
             'dependencies' => [
                 'abstract_factories' => [
-                    AttributeAbstractFactory::class,
                 ],
                 'invokables' => [
                     MinCallback::class => MinCallback::class,
@@ -145,11 +141,6 @@ class CronInstaller extends InstallerAbstract
             isset($config[InterruptAbstractFactoryAbstract::KEY]['cron']) &&
             isset($config[InterruptAbstractFactoryAbstract::KEY]['interrupt_cron_sec_ticker']) &&
             isset($config[InterruptAbstractFactoryAbstract::KEY]['interrupt_sec_multiplexer']) &&
-
-            in_array(AttributeAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(MultiplexerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(TickerAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
-            in_array(ProcessAbstractFactory::class, $config['dependencies']['abstract_factories']) &&
 
             isset($config['dependencies']['invokables'][MinCallback::class]) &&
             isset($config['dependencies']['invokables'][SecCallback::class])

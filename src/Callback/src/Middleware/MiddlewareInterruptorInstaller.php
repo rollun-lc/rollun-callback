@@ -9,23 +9,17 @@
 namespace rollun\callback\Middleware;
 
 use rollun\actionrender\Factory\ActionRenderAbstractFactory;
-use rollun\actionrender\Factory\LazyLoadPipeAbstractFactory;
+use rollun\actionrender\Factory\LazyLoadMiddlewareAbstractFactory;
 use rollun\actionrender\Installers\ActionRenderInstaller;
 use rollun\actionrender\Installers\BasicRenderInstaller;
-use rollun\actionrender\Installers\MiddlewarePipeInstaller;
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlewareGetterAbstractFactory;
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
-use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
-use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
+use rollun\actionrender\MiddlewareDeterminator\Factory\AbstractMiddlewareDeterminatorAbstractFactory;
+use rollun\actionrender\MiddlewareDeterminator\Factory\AttributeParamAbstractFactory;
+use rollun\actionrender\MiddlewareDeterminator\Installers\AttributeParamInstaller;
+use rollun\actionrender\MiddlewareDeterminator\Installers\HeaderSwitchInstaller;
 use rollun\actionrender\Renderer\Json\JsonRenderer;
-use rollun\actionrender\Renderer\Json\JsonRendererAction;
-use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Example\CronMinMultiplexer;
-use rollun\callback\Example\CronSecMultiplexer;
 use rollun\callback\InterruptMiddlewareDeterminator;
+use rollun\callback\Middleware\Factory\ImplicitInterruptorMiddlewareAbstractFactory;
 use rollun\installer\Install\InstallerAbstract;
-use rollun\promise\Entity\EntityInstaller;
-use rollun\promise\Promise\PromiseInstaller;
 
 class MiddlewareInterruptorInstaller extends InstallerAbstract
 {
@@ -39,13 +33,22 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         return [
             'dependencies' => [
                 'invokables' => [
-                    InterruptMiddlewareDeterminator::class => InterruptMiddlewareDeterminator::class,
                     'httpCallback' => HttpInterruptorAction::class,
                 ],
-
+                "abstract_factories" => [
+                    ImplicitInterruptorMiddlewareAbstractFactory::class,
+                ]
             ],
-            LazyLoadPipeAbstractFactory::KEY => [
-                'webhookLLPipe' => InterruptMiddlewareDeterminator::class,
+            AbstractMiddlewareDeterminatorAbstractFactory::class => [
+                InterruptMiddlewareDeterminator::class => [
+                    AttributeParamAbstractFactory::KEY_NAME => "resourceName",
+                    AttributeParamAbstractFactory::KEY_CLASS => InterruptMiddlewareDeterminator::class,
+                ],
+            ],
+            LazyLoadMiddlewareAbstractFactory::KEY => [
+                'webhookLLPipe' => [
+                        LazyLoadMiddlewareAbstractFactory::KEY_MIDDLEWARE_DETERMINATOR => InterruptMiddlewareDeterminator::class
+                    ],
             ],
             ActionRenderAbstractFactory::KEY => [
                 'webhookActionRender' => [
@@ -87,6 +90,8 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         return [
             ActionRenderInstaller::class,
             BasicRenderInstaller::class,
+            HeaderSwitchInstaller::class,
+            AttributeParamInstaller::class,
         ];
     }
 
@@ -95,7 +100,7 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         $config = $this->container->get('config');
         return (
             isset($config['dependencies']['invokables']) &&
-            isset($config[LazyLoadPipeAbstractFactory::KEY]['webhookLLPipe']) &&
+            isset($config[LazyLoadMiddlewareAbstractFactory::KEY]['webhookLLPipe']) &&
             isset($config[ActionRenderAbstractFactory::KEY]['webhookActionRender']) &&
             isset($config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class]) &&
             $config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class] ===
