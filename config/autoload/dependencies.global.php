@@ -11,6 +11,7 @@ return [
     // We recommend using fully-qualified class names whenever possible as
     // service names.
     'dependencies' => [
+        "abstract_factories" => [],
         // Use 'aliases' to alias a service name to another service. The
         // key is the alias name, the value is the service to which it points.
         'aliases' => [

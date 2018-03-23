@@ -59,7 +59,7 @@ class HttpInterruptorAction extends InterruptorAbstract
                     $data = call_user_func($callback, $value);
                     break;
                 default:
-                    throw new CallbackException('Callback is not callable', LogExceptionLevel::CRITICAL);
+                    throw new CallbackException('Callback is not callable');
             }
 
             $request = $request->withAttribute('responseData', [

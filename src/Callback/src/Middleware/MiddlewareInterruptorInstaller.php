@@ -17,11 +17,12 @@ use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AbstractLazyLoadMiddlew
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\AttributeAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\Factory\ResponseRendererAbstractFactory;
 use rollun\actionrender\LazyLoadMiddlewareGetter\ResponseRenderer;
+use rollun\actionrender\Renderer\Json\JsonRenderer;
 use rollun\actionrender\Renderer\Json\JsonRendererAction;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Example\CronMinMultiplexer;
 use rollun\callback\Example\CronSecMultiplexer;
-use rollun\callback\LazyLoadInterruptMiddlewareGetter;
+use rollun\callback\InterruptMiddlewareDeterminator;
 use rollun\installer\Install\InstallerAbstract;
 use rollun\promise\Entity\EntityInstaller;
 use rollun\promise\Promise\PromiseInstaller;
@@ -38,18 +39,18 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
         return [
             'dependencies' => [
                 'invokables' => [
-                    LazyLoadInterruptMiddlewareGetter::class => LazyLoadInterruptMiddlewareGetter::class,
+                    InterruptMiddlewareDeterminator::class => InterruptMiddlewareDeterminator::class,
                     'httpCallback' => HttpInterruptorAction::class,
                 ],
 
             ],
             LazyLoadPipeAbstractFactory::KEY => [
-                'webhookLLPipe' => LazyLoadInterruptMiddlewareGetter::class,
+                'webhookLLPipe' => InterruptMiddlewareDeterminator::class,
             ],
             ActionRenderAbstractFactory::KEY => [
                 'webhookActionRender' => [
                     ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
-                    ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => JsonRendererAction::class
+                    ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => JsonRenderer::class
                 ],
             ],
         ];
@@ -96,9 +97,9 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
             isset($config['dependencies']['invokables']) &&
             isset($config[LazyLoadPipeAbstractFactory::KEY]['webhookLLPipe']) &&
             isset($config[ActionRenderAbstractFactory::KEY]['webhookActionRender']) &&
-            isset($config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class]) &&
-            $config['dependencies']['invokables'][LazyLoadInterruptMiddlewareGetter::class] ===
-            LazyLoadInterruptMiddlewareGetter::class &&
+            isset($config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class]) &&
+            $config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class] ===
+            InterruptMiddlewareDeterminator::class &&
             isset($config['dependencies']['invokables']['httpCallback'])
         );
     }
