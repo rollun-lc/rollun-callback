@@ -49,7 +49,8 @@ class TickerTest extends CallbackTestDataProvider
             $currTime = $data[$i];
             $diff = ((float)$currTime - (float)$prevTime) - $tickDuration;
             $this->assertTrue($diff >= 0);
-            $this->assertTrue($diff <= 0.05);
+            $this->assertGreaterThanOrEqual(0, $diff);
+            $this->assertLessThanOrEqual(0.05, $diff);
         }
     }
 }

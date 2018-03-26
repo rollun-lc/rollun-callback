@@ -55,7 +55,7 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
     public function testCron()
     {
-        $httpClient = new Client($this->url);
+        $httpClient = new Client($this->url, ["timeout" => 65]);
         $headers['Content-Type'] = 'text/text';
         $headers['Accept'] = 'application/json';
         $httpClient->setHeaders($headers);

@@ -19,9 +19,6 @@ use Zend\Diactoros\Response\EmptyResponse;
 
 class InterruptorCallerAction extends InterruptorAbstract
 {
-
-    const KEY_INTERRUPTOR_VALUE = 'interruptorValue';
-
     /** @var  InterruptorInterface */
     protected $interruptor;
 
@@ -42,13 +39,7 @@ class InterruptorCallerAction extends InterruptorAbstract
      */
     public function process(Request $request, DelegateInterface $delegate)
     {
-        if($request->getMethod() === "GET")
-        {
-            $value = $request->getQueryParams();
-        } else {
-            $body = $request->getParsedBody();
-            $value = is_string($body) ? Serializer::jsonUnserialize($body) : $body;
-        }
+        $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
         try {
             $result = call_user_func($this->interruptor, $value);
             $request = $request->withAttribute('responseData', $result);

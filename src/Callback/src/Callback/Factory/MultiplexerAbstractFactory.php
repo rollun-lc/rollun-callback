@@ -10,6 +10,7 @@ namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\CallbackInterface;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
@@ -33,16 +34,14 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
      * @param  string $requestedName
      * @param  null|array $options
      * @return CallbackInterface|InterruptorInterface
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     *     creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $logger = new Logger();
 
         $config = $container->get('config');
+        $logger = $container->get(LoggerInterface::class);
         $factoryConfig = $config[static::KEY][$requestedName];
 
         $callbacks = [];
@@ -54,7 +53,7 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
                 } else if ($container->has($callback)) {
                     $callbacks[] = ($container->get($callback));
                 } else {
-                    $logger->alert("callback with name $callback not found in container.");
+                    $logger->alert("Callback with name $callback not found in container.");
                 }
             }
         }

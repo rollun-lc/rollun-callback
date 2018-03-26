@@ -10,8 +10,11 @@ namespace rollun\callback\Middleware;
 
 use rollun\actionrender\Factory\ActionRenderAbstractFactory;
 use rollun\actionrender\Factory\LazyLoadMiddlewareAbstractFactory;
+use rollun\actionrender\Factory\MiddlewarePipeAbstractFactory;
 use rollun\actionrender\Installers\ActionRenderInstaller;
 use rollun\actionrender\Installers\BasicRenderInstaller;
+use rollun\actionrender\Installers\LazyLoadMiddlewareInstaller;
+use rollun\actionrender\Installers\MiddlewarePipeInstaller;
 use rollun\actionrender\MiddlewareDeterminator\Factory\AbstractMiddlewareDeterminatorAbstractFactory;
 use rollun\actionrender\MiddlewareDeterminator\Factory\AttributeParamAbstractFactory;
 use rollun\actionrender\MiddlewareDeterminator\Installers\AttributeParamInstaller;
@@ -20,6 +23,7 @@ use rollun\actionrender\Renderer\Json\JsonRenderer;
 use rollun\callback\InterruptMiddlewareDeterminator;
 use rollun\callback\Middleware\Factory\ImplicitInterruptorMiddlewareAbstractFactory;
 use rollun\installer\Install\InstallerAbstract;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 class MiddlewareInterruptorInstaller extends InstallerAbstract
 {
@@ -30,13 +34,15 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
      */
     public function install()
     {
-        return [
+        $config = [
             'dependencies' => [
-                'invokables' => [
-                    'httpCallback' => HttpInterruptorAction::class,
-                ],
+                'invokables' => [],
                 "abstract_factories" => [
                     ImplicitInterruptorMiddlewareAbstractFactory::class,
+                ],
+                "factories" => [
+                    GetParamsResolver::class => InvokableFactory::class,
+                    PostParamsResolver::class => InvokableFactory::class,
                 ]
             ],
             AbstractMiddlewareDeterminatorAbstractFactory::class => [
@@ -46,17 +52,32 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
                 ],
             ],
             LazyLoadMiddlewareAbstractFactory::KEY => [
-                'webhookLLPipe' => [
-                        LazyLoadMiddlewareAbstractFactory::KEY_MIDDLEWARE_DETERMINATOR => InterruptMiddlewareDeterminator::class
+                'webhookExecuteLazyLoad' => [
+                    LazyLoadMiddlewareAbstractFactory::KEY_MIDDLEWARE_DETERMINATOR => InterruptMiddlewareDeterminator::class
+                ],
+            ],
+            MiddlewarePipeAbstractFactory::KEY => [
+                "webhookPipe" => [
+                    MiddlewarePipeAbstractFactory::KEY_MIDDLEWARES => [
+                        GetParamsResolver::class,
+                        PostParamsResolver::class,
+                        'webhookExecuteLazyLoad'
                     ],
+                ]
             ],
             ActionRenderAbstractFactory::KEY => [
                 'webhookActionRender' => [
-                    ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookLLPipe',
+                    ActionRenderAbstractFactory::KEY_ACTION_MIDDLEWARE_SERVICE => 'webhookPipe',
                     ActionRenderAbstractFactory::KEY_RENDER_MIDDLEWARE_SERVICE => JsonRenderer::class
                 ],
             ],
         ];
+        if ($this->consoleIO->askConfirmation("You wont install HttpInterruptor executor 
+        (Not security!!!. Add access exec received serialize php code)", false)) {
+            $config["dependencies"]["factories"][HttpInterruptorAction::class] = InvokableFactory::class;
+            $config["dependencies"]["aliases"]['HttpInterruptor' ] = HttpInterruptorAction::class;
+        }
+        return $config;
     }
 
     /**
@@ -89,6 +110,8 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
     {
         return [
             ActionRenderInstaller::class,
+            MiddlewarePipeInstaller::class,
+            LazyLoadMiddlewareInstaller::class,
             BasicRenderInstaller::class,
             HeaderSwitchInstaller::class,
             AttributeParamInstaller::class,
@@ -99,13 +122,7 @@ class MiddlewareInterruptorInstaller extends InstallerAbstract
     {
         $config = $this->container->get('config');
         return (
-            isset($config['dependencies']['invokables']) &&
-            isset($config[LazyLoadMiddlewareAbstractFactory::KEY]['webhookLLPipe']) &&
-            isset($config[ActionRenderAbstractFactory::KEY]['webhookActionRender']) &&
-            isset($config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class]) &&
-            $config['dependencies']['invokables'][InterruptMiddlewareDeterminator::class] ===
-            InterruptMiddlewareDeterminator::class &&
-            isset($config['dependencies']['invokables']['httpCallback'])
+            isset($config[ActionRenderAbstractFactory::KEY]['webhookActionRender'])
         );
     }
 

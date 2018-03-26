@@ -8,8 +8,7 @@
 
 namespace rollun\callback\Callback\Interruptor;
 
-use Opis\Closure\SerializableClosure;
-use rollun\callback\Callback\Callback;
+
 use rollun\callback\Callback\CallbackException;
 use Zend\Http\Client;
 use Zend\Json\Json;
