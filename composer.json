@@ -23,7 +23,7 @@
     "reputation-vip/queue-client": "^2.0",
     "opis/closure": "^2.1.0",
     "rollun-com/rollun-utils": "^4.0",
-    "rollun-com/rollun-actionrender": "dev-refactor-features",
+    "rollun-com/rollun-actionrender": "^6.0",
     "rollun-com/rollun-logger": "^4.0",
     "http-interop/http-middleware": "0.4.1",
     "zendframework/zend-json": "^3.1"
