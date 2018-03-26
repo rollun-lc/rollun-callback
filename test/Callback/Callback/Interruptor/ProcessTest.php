@@ -3,10 +3,8 @@
 namespace rollun\test\callback\Interruptor\Callback;
 
 use rollun\callback\Callback\Callback;
-use rollun\promise\Promise\Promise;
+use rollun\installer\Command;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\dic\InsideConstruct;
-use rollun\callback\Callback\Promiser;
 use rollun\test\callback\Callback\CallbackTestDataProvider;
 
 /**
@@ -17,54 +15,27 @@ class ProcessTest extends CallbackTestDataProvider
 
     protected function setUp()
     {
-        $container = include 'config/container.php';
-        InsideConstruct::setContainer($container);
+        //$container = include 'config/container.php';
+       //InsideConstruct::setContainer($container);
     }
+    
 
-    /**
-     * @covers       Callback::__wakeup
-     * @dataProvider provider_mainType()
-     * @param $callable
-     * @param $val
-     * @param $expected
-     */
-    public function test__wakeupWithPromise($callable, $val, $expected)
+    public function test__parallelProcess()
     {
-        $callback = new Callback($callable);
-        $wakeupedCallback = unserialize(serialize($callback));
-        $promiser = new Promiser($wakeupedCallback);
-        $interruptorResaltPromise = $promiser->getInterruptorResult();
-
-        $masterPromise = new Promise();
-        $slavePromise = $masterPromise->then($promiser);
-        $masterPromise->resolve($val);
-
-        $this->assertEquals($expected, $slavePromise->wait(true));
-
-        $interruptorResalt = $interruptorResaltPromise->wait();
-        $this->assertFileExists($interruptorResalt[Process::STDOUT_KEY]);
-        $this->assertFileExists($interruptorResalt[Process::STDERR_KEY]);
-        if (substr(php_uname(), 0, 7) === "Windows") {
-            $this->assertEquals('', $interruptorResalt[Process::PID_KEY]);
-        } else {
-            $this->assertNotSame('', $interruptorResalt[Process::PID_KEY]);
-        }
-    }
-
-    public function test__wakeupWithPromiseParallels()
-    {
-
-        $callback = new Callback(function ($val) {
+        $callback = new Callback(function ($file) {
             sleep(1);
-            return microtime(1);
+            $time = microtime(1);
+            file_put_contents($file, "$time\n", FILE_APPEND);
         });
 
-        $masterPromise = new Promise();
-        $slavePromise_1 = $masterPromise->then(new Promiser($callback));
-        $slavePromise_2 = $masterPromise->then(new Promiser($callback));
-        $masterPromise->resolve(1); //in sec
+        $outPutFile = Command::getDataDir() . "testOutput.dat";
 
-        if (abs($slavePromise_1->wait() - $slavePromise_2->wait()) < 0.5) {
+        (new Process($callback))($outPutFile);
+        (new Process($callback))($outPutFile);
+        sleep(3);
+        $timeData = file_get_contents($outPutFile);
+        list($firstTime, $secondTime) = explode("\n", $timeData);
+        if (abs($firstTime - $secondTime) < 0.5) {
             $result = 'parallel';
         } else {
             $result = 'in series';

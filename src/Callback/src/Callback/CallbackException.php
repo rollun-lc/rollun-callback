@@ -9,9 +9,8 @@
 
 namespace rollun\callback\Callback;
 
-use rollun\logger\Exception\LoggedException;
 
-class CallbackException extends LoggedException
+class CallbackException extends \RuntimeException
 {
 
 }

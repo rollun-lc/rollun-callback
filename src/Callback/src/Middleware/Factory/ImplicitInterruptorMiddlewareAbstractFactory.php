@@ -14,10 +14,13 @@ use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\callback\Middleware\InterruptorAbstract;
 use rollun\callback\Middleware\InterruptorCallerAction;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
-class InterruptorMiddlewareFactory implements FactoryInterface
+class ImplicitInterruptorMiddlewareAbstractFactory implements AbstractFactoryInterface
 {
+
+    const INTERRUPT_MIDDLEWARE_PREFIX = "InterruptMiddleware";
 
     /**
      * Direct factory is factory who create middleware by $resourceName in path.
@@ -26,16 +29,12 @@ class InterruptorMiddlewareFactory implements FactoryInterface
      * @param  string $requestedName
      * @param  null|array $options
      * @return object
-     * @throws CallbackException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $resourceName = $requestedName;
-        if (!$container->has($resourceName)) {
-            throw new CallbackException(
-                'Can\'t make Middleware\InterruptorAbstract for resource: ' . $resourceName
-            );
-        }
+        $resourceName = $this->getResourceName($requestedName);
         $interruptMiddleware = null;
         $resource = $container->get($resourceName);
         switch (true) {
@@ -46,21 +45,6 @@ class InterruptorMiddlewareFactory implements FactoryInterface
                 $interruptMiddleware = $resource;
                 break;
             case is_callable($resource):
-                //todo: make util method for check instance closure for declare interface
-                //check if closure is middleware
-                /*$reflectionFunction = new \ReflectionFunction($resource);
-                $reflectionMiddleware = new \ReflectionClass(MiddlewareInterface::class);
-                $reflectionMethod = $reflectionMiddleware->getMethod("__invoke");
-                $paramsActual = $reflectionFunction->getParameters();
-                $paramsExist = $reflectionMethod->getParameters();
-                if (count($paramsActual) == count($paramsExist)) {
-                    for ($i = 0; $i < count($paramsActual); $i++) {
-                        if(!$this->reflectionParamCompare($paramsActual[$i], $paramsExist[$i])) {
-                            break;
-                        }
-                    }
-                    $interruptMiddleware = $resource;
-                }*/
                 $interruptMiddleware = new InterruptorCallerAction(new Process($resource));
                 break;
             default:
@@ -74,12 +58,28 @@ class InterruptorMiddlewareFactory implements FactoryInterface
         return $interruptMiddleware;
     }
 
-    /*protected function reflectionParamCompare(\ReflectionParameter $parameter1, \ReflectionParameter $parameter2)
-    {
-        return (($parameter1->getType() == $parameter2->getType() ||
-            $parameter1->getClass() == $parameter2->getClass()) &&
-            $parameter1->getName() == $parameter2->getName()
-        );
-    }*/
+    /**
+     * @param $requestedName
+     * @return string
+     */
+    protected function getResourceName($requestedName) {
+        if(preg_match('/^(?<resourceName>[\w\W]+)'.static::INTERRUPT_MIDDLEWARE_PREFIX.'/', $requestedName, $match)) {
+            return $match["resourceName"];
+        }
+        return "";
+    }
 
+    /**
+     * Can the factory create an instance for the service?
+     *
+     * @param  ContainerInterface $container
+     * @param  string $requestedName
+     * @return bool
+     */
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        $resourceName = $this->getResourceName($requestedName);
+        if(empty($resourceName)) return false;
+        return $container->has($resourceName);
+    }
 }

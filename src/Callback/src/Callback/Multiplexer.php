@@ -11,7 +11,6 @@ namespace rollun\callback\Callback;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\PromiserInterface;
 
-//TODO: обернуть в процес вызов всех переданых callback
 class Multiplexer implements CallbackInterface
 {
     /**
