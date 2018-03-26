@@ -9,8 +9,8 @@
 
 namespace rollun\callback\Queues;
 
-use rollun\logger\Exception\LogExceptionLevel;
-use rollun\logger\Exception\LoggedException;
+
+use rollun\callback\Callback\CallbackException;
 
 class Message
 {
@@ -28,26 +28,26 @@ class Message
 
     /**
      * @return string
-     * @throws LoggedException
+     * @throws CallbackException
      */
     public function getData()
     {
         if (isset($this->message['Body'])) {
             return $this->message['Body'];
         }
-        throw new LoggedException('No "Body" in the message', LogExceptionLevel::ERROR);
+        throw new CallbackException('No "Body" in the message');
     }
 
     /**
      * @return string
-     * @throws LoggedException
+     * @throws CallbackException
      */
     public function getId()
     {
         if (isset($this->message['id'])) {
             return $this->message['id'];
         }
-        throw new LoggedException('No "id" in the message', LogExceptionLevel::ERROR);
+        throw new CallbackException('No "id" in the message');
     }
 
     /**

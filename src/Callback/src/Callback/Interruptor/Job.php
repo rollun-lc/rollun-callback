@@ -11,7 +11,6 @@ namespace rollun\callback\Callback\Interruptor;
 
 use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\CallbackException;
-use rollun\logger\Exception\LogExceptionLevel;
 
 class Job
 {
@@ -22,7 +21,7 @@ class Job
     public function __construct(callable $callback, $value)
     {
         if (!is_callable($callback)) {
-            throw new CallbackException('Callback is not callable', LogExceptionLevel::CRITICAL);
+            throw new CallbackException('Callback is not callable');
         }
         if ($callback instanceof \Closure) {
             $callback = new SerializableClosure($callback);

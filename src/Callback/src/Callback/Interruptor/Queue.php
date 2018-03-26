@@ -23,7 +23,7 @@ class Queue extends InterruptorAbstract
     }
 
     /**
-     * @param \rollun\callback\Callback\mix $value
+     * @param mixed $value
      * @return mixed
      */
     public function __invoke($value)

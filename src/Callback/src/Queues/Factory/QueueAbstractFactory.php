@@ -34,6 +34,8 @@ class QueueAbstractFactory implements AbstractFactoryInterface
      * @param  ContainerInterface $container
      * @param  string $requestedName
      * @return bool
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
@@ -48,10 +50,8 @@ class QueueAbstractFactory implements AbstractFactoryInterface
      * @param  string $requestedName
      * @param  null|array $options
      * @return object
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     *     creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {

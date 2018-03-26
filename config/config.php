@@ -1,6 +1,5 @@
 <?php
 
-use rollun\actionrender\ConfigProvider;
 use Zend\ConfigAggregator\ArrayProvider;
 use Zend\ConfigAggregator\ConfigAggregator;
 use Zend\ConfigAggregator\PhpFileProvider;
@@ -14,7 +13,9 @@ $cacheConfig = [
 $aggregator = new ConfigAggregator([
     // Include cache configuration
     new ArrayProvider($cacheConfig),
-    new ConfigProvider(),
+    new \Zend\Expressive\ConfigProvider(),
+    new \Zend\Expressive\Router\ConfigProvider(),
+    new \rollun\actionrender\ConfigProvider(),
 
     // Default App module config
 

@@ -11,8 +11,6 @@ namespace rollun\callback\Callback;
 
 use rollun\callback\Callback\CallbackException;
 use Opis\Closure\SerializableClosure;
-use rollun\logger\Exception\LogExceptionLevel;
-use rollun\promise\Promise\Promise;
 
 /**
  * Callback
@@ -50,9 +48,7 @@ class Callback
     {
         if (!is_callable($this->getCallback(), true)) {
             throw new CallbackException(
-                'There was not correct instance callable in Callback',
-                LogExceptionLevel::CRITICAL
-            );
+                'There was not correct instance callable in Callback');
         }
         try {
             $callback = $this->getCallback();
@@ -60,8 +56,7 @@ class Callback
             return $result;
         } catch (\Exception $exc) {
             throw new CallbackException(
-                'Cannot execute Callback. Reason: ' . $exc->getMessage(),
-                LogExceptionLevel::CRITICAL,
+                'Cannot execute Callback. Reason: ' . $exc->getMessage(),$exc->getCode(),
                 $exc
             );
         }
@@ -92,8 +87,7 @@ class Callback
         $callback = $this->getCallback();
         if (!is_callable($callback, true)) {
             throw new CallbackException(
-                'There is not correct instance callable in Callback',
-                LogExceptionLevel::CRITICAL
+                'There is not correct instance callable in Callback'
             );
         }
     }

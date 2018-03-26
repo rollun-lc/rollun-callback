@@ -10,13 +10,7 @@ namespace rollun\callback\Queues;
 
 use rollun\callback\Callback\CallbackInterface;
 use rollun\callback\Callback\Interruptor\InterruptorAbstract;
-use rollun\callback\Callback\Interruptor\InterruptorInterface;
-use rollun\logger\Exception\LogExceptionLevel;
-use Xiag\Rql\Parser\Query;
 use rollun\callback\Callback\Interruptor\Job;
-use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\Promiser;
-use rollun\callback\Callback\PromiserInterface;
 
 class Extractor implements CallbackInterface
 {
@@ -48,12 +42,12 @@ class Extractor implements CallbackInterface
                 try {
                     $resp = call_user_func($job->getCallback(), $job->getValue());
                 } catch (\Throwable $e) {
-                    throw new QueueException("Function error!", LogExceptionLevel::ERROR, $e);
+                    throw new QueueException("Function error!", $e->getCode(), $e);
                 }
                 return $resp;
             }
         } catch (\Throwable $e) {
-            throw new QueueException("Extract queue error!", LogExceptionLevel::ERROR, $e);
+            throw new QueueException("Extract queue error!", $e->getCode(), $e);
         }
         return null;
     }
@@ -83,7 +77,7 @@ class Extractor implements CallbackInterface
             $result[InterruptorAbstract::INTERRUPTOR_TYPE_KEY] = static::class;
             $result[InterruptorAbstract::MACHINE_NAME_KEY] = constant(InterruptorAbstract::ENV_VAR_MACHINE_NAME);
         } catch (\Throwable $e) {
-            throw new QueueException("Extract queue error!", LogExceptionLevel::ERROR, $e);
+            throw new QueueException("Extract queue error!", $e->getCode(), $e);
         }
 
         return $return;

@@ -7,7 +7,6 @@ use rollun\callback\Queues\Factory\Installer\MainQueueInstaller;
 use rollun\callback\Queues\Queue;
 use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
 use rollun\installer\Command;
-use rollun\promise\Promise\Promise;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
 use Zend\Http\Client;
@@ -58,7 +57,7 @@ class MainQueueTest extends \PHPUnit_Framework_TestCase
             $queueInterrupt($i);
         }
 
-        $httpClient = new Client($this->url);
+        $httpClient = new Client($this->url, ["timeout" => 50]);
         $headers['Content-Type'] = 'text/text';
         $headers['Accept'] = 'application/json';
         $httpClient->setHeaders($headers);
