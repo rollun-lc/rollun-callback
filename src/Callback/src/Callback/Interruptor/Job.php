@@ -11,15 +11,23 @@ namespace rollun\callback\Callback\Interruptor;
 
 use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\CallbackException;
+use rollun\dic\InsideConstruct;
+use rollun\logger\LifeCycleToken;
 
 class Job
 {
-
     protected $callback;
+
     protected $value;
 
-    public function __construct(callable $callback, $value)
+    /**
+     * @var LifeCycleToken
+     */
+    protected $lifeCycleToken;
+
+    public function __construct(callable $callback, $value, $lifeCycleToken = null)
     {
+        InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
         if (!is_callable($callback)) {
             throw new CallbackException('Callback is not callable');
         }
@@ -63,6 +71,14 @@ class Job
     public function getCallback()
     {
         return $this->callback;
+    }
+
+    /**
+     * @return LifeCycleToken
+     */
+    public function getLifeCycleToken()
+    {
+        return $this->lifeCycleToken;
     }
 
 }

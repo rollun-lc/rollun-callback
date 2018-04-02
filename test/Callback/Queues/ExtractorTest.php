@@ -44,22 +44,42 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     {
         $stdObject = (object)['prop' => 'Hello '];
         //function
-        return array(
+        return [
             [
                 [
                     function ($val) {
                         return 'Hello ' . $val;
                     },
+                ],
+                "World"
+            ],
+            [
+                [
                     new Process(function ($val) use ($stdObject) {
                         return $stdObject->prop . $val;
                     }),
+                ],
+                "World"
+            ],
+            [
+                [
                     new Process(new CallMe()),
+                ],
+                "World"
+            ],
+            [
+                [
                     new Process([new CallMe(), 'staticMethod']),
+                ],
+                "World"
+            ],
+            [
+                [
                     '\\' . CallMe::class . '::staticMethod'
                 ],
                 "World"
             ],
-        );
+        ];
     }
 
     public function addInQueue(array $callbacks, $value)
@@ -73,7 +93,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $callbacks
      * @param $value
-     * @dataProvider provider_type()
+     * @dataProvider provider_type
      */
     public function test_extractQueue(array $callbacks, $value)
     {

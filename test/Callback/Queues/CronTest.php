@@ -66,8 +66,8 @@ class CronTest extends \PHPUnit_Framework_TestCase
 
         sleep(60);
 
-        $minFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
-        $secFileData = file_get_contents(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
+        $minFileData = file_get_contents(Command::getDataDir()  . 'interrupt_min');
+        $secFileData = file_get_contents(Command::getDataDir()  . 'interrupt_sec');
         $data = explode("\n", $minFileData);
         $this->assertEquals(4, count(array_diff($data, [''])));
         $this->assertEquals(120, count(array_diff(explode("\n", $secFileData), [''])));

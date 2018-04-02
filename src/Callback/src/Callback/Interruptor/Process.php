@@ -13,6 +13,8 @@ use Opis\Closure\SerializableClosure;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Callback;
 use rollun\callback\Callback\Interruptor\Job;
+use rollun\dic\InsideConstruct;
+use rollun\logger\LifeCycleToken;
 
 
 /**
@@ -35,6 +37,22 @@ class Process extends InterruptorAbstract implements InterruptorInterface
     const PATH_SCRIPT_DATA = 'data/Callback/Interruptor/Script/';
 
     const FILE_NAME = 'process.php';
+    /**
+     * @var LifecycleToken
+     */
+    protected $lifecycleToken;
+
+    /**
+     * Process constructor.
+     * @param callable $callback
+     * @param LifecycleToken $lifecycleToken
+     */
+    public function __construct(callable $callback, LifeCycleToken $lifecycleToken = null)
+    {
+        InsideConstruct::setConstructParams(["lifecycleToken" => LifeCycleToken::class]);
+        parent::__construct($callback);
+    }
+
 
     public function __invoke($value)
     {
@@ -47,6 +65,7 @@ class Process extends InterruptorAbstract implements InterruptorInterface
 
         $serializedJob = $job->serializeBase64();
         $cmd .= ' ' . $serializedJob;
+        $cmd .= " {$this->lifecycleToken->serialize()}";
         $cmd .= ' APP_ENV=' . constant('APP_ENV');
         // Files names for stdout and stderr
         $result[self::STDOUT_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stdout_', 1);
@@ -98,6 +117,23 @@ class Process extends InterruptorAbstract implements InterruptorInterface
         if (!function_exists('posix_kill')) {
             throw new CallbackException("The function \"posix_kill\" does not exist or it is not allowed.");
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        $array = parent::__sleep();
+        return array_merge($array, ["lifecycleToken"]);
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        parent::__wakeup();
     }
 
 }

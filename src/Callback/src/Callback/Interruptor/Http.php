@@ -10,6 +10,8 @@ namespace rollun\callback\Callback\Interruptor;
 
 
 use rollun\callback\Callback\CallbackException;
+use rollun\dic\InsideConstruct;
+use rollun\logger\LifeCycleToken;
 use Zend\Http\Client;
 use Zend\Json\Json;
 
@@ -35,11 +37,22 @@ class Http extends InterruptorAbstract
      * @var string
      */
     protected $url;
+    /**
+     * @var null|LifeCycleToken
+     */
+    private $lifeCycleToken;
 
-    public function __construct(callable $callback, $url, array $options = [])
+    /**
+     * Http constructor.
+     * @param callable $callback
+     * @param $url
+     * @param array $options
+     * @param LifeCycleToken|null $lifeCycleToken
+     */
+    public function __construct(callable $callback, $url, array $options = [], LifeCycleToken $lifeCycleToken = null)
     {
         parent::__construct($callback);
-
+        InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
         if (isset($options['login']) && isset($options['password'])) {
             $this->login = $options['login'];
             $this->password = $options['password'];
@@ -86,6 +99,7 @@ class Http extends InterruptorAbstract
         $headers['Content-Type'] = 'text/text';
         $headers['Accept'] = 'application/json';
         $headers['APP_ENV'] = constant('APP_ENV');
+        $headers['LifeCycleToken'] = $this->lifeCycleToken->serialize();
         if (isset($this->login) && isset($this->password)) {
             $httpClient->setAuth($this->login, $this->password);
         }
