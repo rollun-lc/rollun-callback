@@ -9,6 +9,7 @@
 
 namespace rollun\callback\Callback;
 
+use Closure;
 use rollun\callback\Callback\CallbackException;
 use Opis\Closure\SerializableClosure;
 
@@ -75,6 +76,9 @@ class Callback
     public function __sleep()
     {
         $callback = $this->getCallback();
+        if(is_array($callback)) {
+            $callback = Closure::fromCallable($callback);
+        }
         if ($callback instanceof \Closure) {
             $callback = new SerializableClosure($callback);
             $this->setCallback($callback);
