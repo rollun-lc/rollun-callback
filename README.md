@@ -32,6 +32,8 @@
 
 > Более детально вохможно ознакомиться [тут 'Callback README'](https://github.com/rollun-com/rollun-callback/blob/master/docs/Callback.md)
 
+При использовании интерапторов для того что бы ваш каллбек имел возможность импользовать сессию, вам необходимо передавать ее вручную.
+
 ---
 ## [Оглавление](https://github.com/rollun-com/rollun-skeleton/blob/master/docs/Contents.md)
 
