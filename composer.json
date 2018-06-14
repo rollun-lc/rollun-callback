@@ -22,7 +22,7 @@
     "zendframework/zend-http": "^2.5",
     "reputation-vip/queue-client": "^2.0",
     "opis/closure": "^2.1.0",
-    "rollun-com/rollun-utils": "^4.0",
+    "rollun-com/rollun-utils": "^4.2",
     "rollun-com/rollun-actionrender": "^6.0",
     "rollun-com/rollun-logger": "^4.0",
     "http-interop/http-middleware": "0.4.1",
