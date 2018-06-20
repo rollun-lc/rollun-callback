@@ -23,8 +23,9 @@ class SQSQueue extends AbstractSerializedQueue
      * @param $queueName
      * @param int $delaySeconds
      * @param string $priorityHandlerClass
+     * @param SqsClient|null $sqsClient
      */
-    public function __construct($queueName, $delaySeconds = 0, $priorityHandlerClass = StandardPriorityHandler::class)
+    public function __construct($queueName, $delaySeconds = 0, $priorityHandlerClass = StandardPriorityHandler::class, SqsClient $sqsClient = null)
     {
         $this->queueName = $queueName;
         $this->delaySeconds = $delaySeconds;
