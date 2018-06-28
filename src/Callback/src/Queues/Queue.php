@@ -98,4 +98,11 @@ class Queue implements QueueInterface
         return Command::getDataDir() . DIRECTORY_SEPARATOR . 'queues';
     }
 
+	/**
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->queueName;
+	}
 }

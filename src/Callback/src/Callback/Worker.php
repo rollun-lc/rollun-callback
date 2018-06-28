@@ -1,11 +1,12 @@
 <?php
 
 
-namespace rollun\accounting\Callback;
+namespace rollun\callback\Callback;
 
 
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\CallbackInterface;
+use rollun\callback\Callback\Interruptor\ServiceQueue;
 use rollun\callback\Queues\AbstractQueue;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
@@ -85,7 +86,7 @@ class Worker implements CallbackInterface
      */
     private function unserialize(string $data)
     {
-        return unserialize(base64_decode($data, true));
+        return ServiceQueue::unserializeMessage($data);
     }
 
     /**

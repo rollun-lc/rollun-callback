@@ -18,13 +18,14 @@ class SQSQueue extends AbstractSerializedQueue
 {
     const SQS_CLIENT = SqsClient::class;
 
-    /**
-     * AbstractQueue constructor.
-     * @param $queueName
-     * @param int $delaySeconds
-     * @param string $priorityHandlerClass
-     * @param SqsClient|null $sqsClient
-     */
+	/**
+	 * AbstractQueue constructor.
+	 * @param $queueName
+	 * @param int $delaySeconds
+	 * @param string $priorityHandlerClass
+	 * @param SqsClient|null $sqsClient
+	 * @throws \ReflectionException
+	 */
     public function __construct($queueName, $delaySeconds = 0, $priorityHandlerClass = StandardPriorityHandler::class, SqsClient $sqsClient = null)
     {
         $this->queueName = $queueName;

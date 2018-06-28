@@ -16,6 +16,7 @@ class Extractor implements CallbackInterface
 {
 
     const KEY_MESSAGE_ID = 'message_id';
+
     /** @var QueueInterface */
     protected $queue;
 
