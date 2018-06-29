@@ -28,11 +28,11 @@ class PostParamsResolver extends AbstractParamsResolver
     {
         $contentType = $request->getHeaderLine("Content-Type");
         switch ($contentType) {
-            case preg_match('/application\/json/', $contentType):
-                $value = Serializer::jsonUnserialize($request->getBody());
+            case preg_match('/application\/json/', $contentType) != false:
+                $value = Serializer::jsonUnserialize($request->getBody()->__toString());
                 break;
-            case preg_match('/application\/x\-www\-form\-urlencoded/', $contentType):
-            case preg_match('/multipart/form-data/', $contentType):
+            case preg_match('/application\/x\-www\-form\-urlencoded/', $contentType) != false:
+            case preg_match('/multipart\/form-data/', $contentType) != false:
                 $value = $request->getParsedBody();
                 $files = $request->getUploadedFiles();
                 if (is_array($value) && !empty($files)) {
@@ -40,7 +40,7 @@ class PostParamsResolver extends AbstractParamsResolver
                 }
                 break;
             default:
-                $value = $request->getBody();
+                $value = $request->getBody()->__toString();
                 break;
         }
         return $request->withAttribute(static::ATTRIBUTE_WEBHOOK_VALUE, $value);
