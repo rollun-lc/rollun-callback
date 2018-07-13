@@ -43,20 +43,20 @@ class ServiceQueue implements InterruptorInterface
 		InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
 	}
 
-	/**
-	 * @param $message
-	 * @throws \rollun\utils\Json\Exception
-	 */
-	static public function serializeMessage($message){
-		Serializer::jsonSerialize(base64_decode($message));
-	}
+    /**
+     * @param $message
+     * @throws \rollun\utils\Json\Exception
+     */
+    static public function serializeMessage($message){
+        return base64_encode(Serializer::jsonSerialize($message));
+    }
 
-	/**
-	 * @param $message
-	 */
-	static public function unserializeMessage($message){
-		Serializer::jsonUnserialize(base64_decode($message));
-	}
+    /**
+     * @param $message
+     */
+    static public function unserializeMessage($message){
+        return Serializer::jsonUnserialize(base64_decode($message));
+    }
 
 	/**
 	 * @param mixed $value
