@@ -39,6 +39,10 @@ try {
     $logger->info("process with job [$paramsString] finish.");
     exit(0);
 } catch (\Throwable $e) {
-    $logger->error($e->getMessage());
+    $logger->error($e->getMessage(),[
+        "code" => $e->getCode(),
+        "line" => $e->getLine(),
+        "file" => $e->getFile(),
+    ]);
     exit(1);
 }
