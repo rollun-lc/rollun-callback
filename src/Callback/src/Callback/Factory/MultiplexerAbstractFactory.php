@@ -16,7 +16,6 @@ use rollun\callback\Callback\CallbackInterface;
 use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Callback\Interruptor\Process;
-use rollun\logger\Logger;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
