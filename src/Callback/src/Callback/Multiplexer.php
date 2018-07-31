@@ -100,7 +100,7 @@ class Multiplexer implements CallbackInterface
      */
     public function __sleep()
     {
-        return ["callable"];
+        return ["callbacks"];
     }
 
     /**
