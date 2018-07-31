@@ -63,11 +63,11 @@ class Multiplexer implements CallbackInterface
     {
         $result = [];
         ksort($this->callbacks);
-        foreach ($this->callbacks as $callback) {
+        foreach ($this->callbacks as $key => $callback) {
             try {
-                $result['data'][] = $callback($value);
+                $result['data'][$key] = $callback($value);
             } catch (\Exception $e) {
-                $this->logger->error("Get error {message} by handle callback.", [
+                $this->logger->error("Get error {message} by handle '$key' callback service.", [
                     "code" => $e->getCode(),
                     "line" => $e->getLine(),
                     "file" => $e->getFile(),
