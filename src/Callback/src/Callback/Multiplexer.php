@@ -8,8 +8,10 @@
 
 namespace rollun\callback\Callback;
 
+use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\PromiserInterface;
+use rollun\callback\Callback\Interruptor\Job;
+use rollun\dic\InsideConstruct;
 
 class Multiplexer implements CallbackInterface
 {
@@ -19,15 +21,22 @@ class Multiplexer implements CallbackInterface
     protected $callbacks;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * Multiplexer constructor.
      * @param callable[] $callbacks
-     * @throws CallbackException
+     * @param LoggerInterface|null $logger
+     * @throws \ReflectionException
      */
-    public function __construct(array $callbacks = [])
+    public function __construct(array $callbacks = [], LoggerInterface $logger = null)
     {
         if (!$this->checkCallable($callbacks)) {
             throw new CallbackException('Interruptors array contains non InterruptorInterface object!');
         }
+        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
         $this->callbacks = $callbacks;
     }
 
@@ -58,6 +67,12 @@ class Multiplexer implements CallbackInterface
             try {
                 $result['data'][] = $callback($value);
             } catch (\Exception $e) {
+                $this->logger->error("Get error {message} by handle callback.", [
+                    "code" => $e->getCode(),
+                    "line" => $e->getLine(),
+                    "file" => $e->getFile(),
+                    "message" => $e->getMessage()
+                ]);
                 $result['data'][] = $e;
             }
         }
@@ -78,5 +93,21 @@ class Multiplexer implements CallbackInterface
         } else {
             $this->callbacks[] = $callback;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return ["callable"];
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup(["logger" => LoggerInterface::class]);
     }
 }
