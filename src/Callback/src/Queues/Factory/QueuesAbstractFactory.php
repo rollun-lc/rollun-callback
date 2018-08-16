@@ -72,7 +72,7 @@ class QueuesAbstractFactory implements AbstractFactoryInterface
         } else {
             $params[] = 0;
         }
-        
+
         if(isset($serviceConfig[static::KEY_PRIORITY_HANDLER_CLASS])) {
             $params[] = $serviceConfig[static::KEY_PRIORITY_HANDLER_CLASS];
         }
