@@ -51,33 +51,37 @@ abstract class AbstractQueue implements QueueInterface
         }
         return true;
     }
-
     /**
      * @param null $priority
      * @return null|\rollun\callback\Queues\Message
      */
     public function getMessage($priority = null)
     {
-        function getMessage($priority) {
-            $messages = $this->queueClient->getMessages($this->queueName, 1, $priority);
-            if (isset($messages[0])) {
-                $message = new Message($messages[0]);
-                $this->queueClient->deleteMessage($this->queueName, $messages[0]);
-            } else {
-                $message = null;
-            }
-            return $message;
-        }
-
         if(is_null($priority)) {
             foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
                 if(!$this->queueClient->isEmpty($this->queueName, $priority)) {
-                    return getMessage($priority);
+                    return $this->receiveMessage($priority);
                 }
             }
             return null;
         }
-        return getMessage($priority);
+        return $this->receiveMessage($priority);
+    }
+
+    /**
+     * Receove message and remove form queue.
+     * @param $priority
+     * @return null|Message
+     */
+    protected function receiveMessage($priority) {
+        $messages = $this->queueClient->getMessages($this->queueName, 1, $priority);
+        if (isset($messages[0])) {
+            $message = new Message($messages[0]);
+            $this->queueClient->deleteMessage($this->queueName, $messages[0]);
+        } else {
+            $message = null;
+        }
+        return $message;
     }
 
     /**
