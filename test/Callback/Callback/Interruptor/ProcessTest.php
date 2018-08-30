@@ -3,6 +3,7 @@
 namespace rollun\test\callback\Interruptor\Callback;
 
 use rollun\callback\Callback\Callback;
+use rollun\dic\InsideConstruct;
 use rollun\installer\Command;
 use rollun\callback\Callback\Interruptor\Process;
 use rollun\test\callback\Callback\CallbackTestDataProvider;
@@ -13,12 +14,6 @@ use rollun\test\callback\Callback\CallbackTestDataProvider;
 class ProcessTest extends CallbackTestDataProvider
 {
 
-    protected function setUp()
-    {
-        //$container = include 'config/container.php';
-       //InsideConstruct::setContainer($container);
-    }
-    
 
     public function test__parallelProcess()
     {

@@ -22,8 +22,8 @@ class HttpTest extends CallbackTestDataProvider
 
     public function setUp()
     {
-        /** @var ContainerInterface $container */
-        $container = include 'config/container.php';
+        //Bad-bad-bad practice
+        global $container;
 
         $config = $container->get("config");
         $this->url = 'http://' . constant("HOST") . '/api/webhook/HttpInterruptor';

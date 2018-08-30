@@ -13,12 +13,6 @@ use rollun\dic\InsideConstruct;
 class CallbackTest extends CallbackTestDataProvider
 {
 
-    protected function setUp()
-    {
-        $container = include 'config/container.php';
-        InsideConstruct::setContainer($container);
-    }
-
     /**
      * @covers \rollun\callback\Callback\Callback::__invoke
      * @dataProvider provider_mainType()
@@ -53,10 +47,7 @@ class CallbackTest extends CallbackTestDataProvider
         $this->assertEquals($expected, $wakeupedCallback($val));
     }
 
-    /**
-     * @covers \rollun\callback\Callback\Callback::__wakeup
-     * @dataProvider provider_mainType()
-     */
+    /*
     public function test__wakeupWithPromise($callable, $val, $expected)
     {
         $callback = new Callback($callable);
@@ -65,6 +56,6 @@ class CallbackTest extends CallbackTestDataProvider
         $slavePromise = $masterPromise->then($wakeupedCallback);
         $masterPromise->resolve($val);
         $this->assertEquals($expected, $slavePromise->wait(false));
-    }
+    }*/
 
 }

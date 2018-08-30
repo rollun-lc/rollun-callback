@@ -77,7 +77,10 @@ class Callback
     {
         $callback = $this->getCallback();
         if(is_array($callback)) {
-            $callback = Closure::fromCallable($callback);
+            list($context, $method) = $callback;
+            $callback = function($value) use($context, $method) {
+                return call_user_func([$context, $method], $value);
+            };
         }
         if ($callback instanceof \Closure) {
             $callback = new SerializableClosure($callback);

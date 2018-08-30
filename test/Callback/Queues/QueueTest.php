@@ -17,8 +17,6 @@ class QueueTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-//        $container = include 'config/container.php';
-//        InsideConstruct::setContainer($container);
 
         $this->object = new Queue('test_queue');
         $this->object->purgeQueue('test_queue');

@@ -35,8 +35,6 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     {
         $queueName = 'test_extractor';
         $this->queue = new Queue($queueName);
-        /** @var ContainerInterface $container */
-        $container = include 'config/container.php';
        // $this->config = $container->get('config');
     }
 
