@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
 
 namespace rollun\callback\Middleware;
 
@@ -24,9 +27,10 @@ class PostParamsResolver extends AbstractParamsResolver
      * @param ServerRequestInterface $request
      * @return ServerRequestInterface
      */
-    protected function resolveParams(ServerRequestInterface $request)
+    protected function resolveParams(ServerRequestInterface $request): ServerRequestInterface
     {
         $contentType = $request->getHeaderLine("Content-Type");
+
         switch ($contentType) {
             case preg_match('/application\/json/', $contentType) != false:
                 $value = Serializer::jsonUnserialize($request->getBody()->__toString());
@@ -43,6 +47,7 @@ class PostParamsResolver extends AbstractParamsResolver
                 $value = $request->getBody()->__toString();
                 break;
         }
+
         return $request->withAttribute(static::ATTRIBUTE_WEBHOOK_VALUE, $value);
     }
 }

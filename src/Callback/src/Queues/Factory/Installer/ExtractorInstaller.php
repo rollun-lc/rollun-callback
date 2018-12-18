@@ -35,7 +35,8 @@ class ExtractorInstaller extends InstallerAbstract
         return $config;
     }
 
-    public function getName() {
+    public function getName()
+    {
 
         return static::class;
     }

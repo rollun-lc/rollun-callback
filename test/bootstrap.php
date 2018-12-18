@@ -1,23 +1,28 @@
 <?php
 global $argv;
 
-error_reporting(E_ALL | E_STRICT);
+use PHPUnit\Framework\Error\Deprecated;
+use rollun\logger\LifeCycleToken;
+
+error_reporting(E_ALL);
+Deprecated::$enabled = false;
 
 // Change to the project root, to simplify resolving paths
 chdir(dirname(__DIR__));
 
-$appEnv = getenv("APP_ENV");
-if ($appEnv != 'dev') {
+$container = require 'config/container.php';
+\rollun\dic\InsideConstruct::setContainer($container);
+
+if (getenv("APP_ENV") != 'dev') {
     echo "You cannot start test if environment var APP_ENV not set in dev!";
     exit(1);
 }
 
-// Setup autoloading
-require 'vendor/autoload.php';
-require_once 'config/env_configurator.php';
+// Init lifecycle token
+$lifeCycleToken = LifeCycleToken::generateToken();
 
-/** @var \Zend\ServiceManager\ServiceManager $container */
-$container = require 'config/container.php';
-\rollun\dic\InsideConstruct::setContainer($container);
-$lifeCycleToken = \rollun\logger\LifeCycleToken::generateToken();
-$container->setService(\rollun\logger\LifeCycleToken::class, $lifeCycleToken);
+if (LifeCycleToken::getAllHeaders() && array_key_exists("LifeCycleToken", LifeCycleToken::getAllHeaders())) {
+    $lifeCycleToken->unserialize(LifeCycleToken::getAllHeaders()["LifeCycleToken"]);
+}
+
+$container->setService(LifeCycleToken::class, $lifeCycleToken);

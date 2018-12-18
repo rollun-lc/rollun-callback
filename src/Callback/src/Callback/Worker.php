@@ -1,32 +1,31 @@
 <?php
-
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
 
 namespace rollun\callback\Callback;
 
-
 use Psr\Log\LoggerInterface;
-use rollun\callback\Callback\CallbackInterface;
-use rollun\callback\Callback\Interruptor\ServiceQueue;
-use rollun\callback\Queues\AbstractQueue;
+use rollun\callback\Callback\Interrupter\QueueFiller;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
-use rollun\utils\Json\Serializer;
 
 /**
  * Class Worker
- * @package rollun\accounting\Callback
+ * @package rollun\callback\Callback
  */
-class Worker implements CallbackInterface
+class Worker
 {
     const WORK_SECOND = 59;
 
     /**
-     * @var AbstractQueue
+     * @var QueueInterface
      */
     private $queue;
 
     /**
-     * @var CallbackInterface
+     * @var SerializedCallback
      */
     private $callback;
 
@@ -38,30 +37,27 @@ class Worker implements CallbackInterface
     /**
      * Worker constructor.
      * @param QueueInterface $queue
-     * @param CallbackInterface $callback
+     * @param callable $callback
      * @param LoggerInterface|null $logger
      * @throws \ReflectionException
      */
-    public function __construct(AbstractQueue $queue, CallbackInterface $callback, LoggerInterface $logger = null)
+    public function __construct(QueueInterface $queue, callable $callback, LoggerInterface $logger = null)
     {
         $this->queue = $queue;
+
+        if (!$callback instanceof SerializedCallback) {
+            $callback = new SerializedCallback($callback);
+        }
+
         $this->callback = $callback;
         InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
     }
 
-    /**
-     * Do callback
-     * @param $value
-     */
-    public function __invoke($value)
+    public function __invoke()
     {
-        if ($this->queue->isEmpty()) {
-            $this->logger->info("Queue {queue} is empty. Worker not started.", [
-                "queue" => $this->queue->getName()
-            ]);
-            return;
-        }
+        $callTimes = 0;
         $startTime = time();
+
         while ((time() - $startTime) < self::WORK_SECOND) {
             $message = $this->queue->getMessage();
             $value = $this->unserialize($message->getData());
@@ -75,7 +71,15 @@ class Worker implements CallbackInterface
                     "exception" => $throwable->__toString(),
                     "exception_trace" => $throwable->getTraceAsString()
                 ]);
+            } finally {
+                $callTimes++;
             }
+        }
+
+        if (!$callTimes) {
+            $this->logger->info("Queue {queue} is empty. Worker not started.", [
+                "queue" => $this->queue->getName()
+            ]);
         }
     }
 
@@ -86,7 +90,7 @@ class Worker implements CallbackInterface
      */
     private function unserialize(string $data)
     {
-        return ServiceQueue::unserializeMessage($data);
+        return QueueFiller::unserializeMessage($data);
     }
 
     /**
@@ -107,5 +111,4 @@ class Worker implements CallbackInterface
     {
         InsideConstruct::initWakeup(["logger" => LoggerInterface::class]);
     }
-
 }

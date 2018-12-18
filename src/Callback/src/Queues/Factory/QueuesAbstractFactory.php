@@ -67,13 +67,13 @@ class QueuesAbstractFactory implements AbstractFactoryInterface
         $class = $serviceConfig[static::KEY_CLASS];
         $params = [];
         $params[] = $serviceConfig[static::KEY_QUEUE_NAME];
-        if(isset($serviceConfig[static::KEY_DELAY])) {
+        if (isset($serviceConfig[static::KEY_DELAY])) {
             $params[] = $serviceConfig[static::KEY_DELAY];
         } else {
             $params[] = 0;
         }
 
-        if(isset($serviceConfig[static::KEY_PRIORITY_HANDLER_CLASS])) {
+        if (isset($serviceConfig[static::KEY_PRIORITY_HANDLER_CLASS])) {
             $params[] = $serviceConfig[static::KEY_PRIORITY_HANDLER_CLASS];
         }
         return new $class(...$params);

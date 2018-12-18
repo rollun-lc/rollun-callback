@@ -22,8 +22,8 @@ interface QueueInterface
      */
     public function addMessage($message, $priority = null);
 
-	/**
-	 * @return string
-	 */
+    /**
+     * @return string
+     */
     public function getName();
 }

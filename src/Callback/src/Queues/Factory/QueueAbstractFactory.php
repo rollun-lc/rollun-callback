@@ -10,7 +10,7 @@ namespace rollun\callback\Queues\Factory;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use rollun\callback\Queues\Queue;
+use rollun\callback\Queues\FileQueue;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
@@ -61,10 +61,10 @@ class QueueAbstractFactory implements AbstractFactoryInterface
         } else {
             $serviceConfig = $options;
         }
-        if(isset($serviceConfig[static::KEY_DELAY])){
-            $queue = new Queue($requestedName, $serviceConfig[static::KEY_DELAY]);
+        if (isset($serviceConfig[static::KEY_DELAY])) {
+            $queue = new FileQueue($requestedName, $serviceConfig[static::KEY_DELAY]);
         } else {
-            $queue = new Queue($requestedName);
+            $queue = new FileQueue($requestedName);
         }
         return $queue;
     }

@@ -1,24 +1,15 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: victorsecuring
- * Date: 18.02.17
- * Time: 2:20 PM
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Psr\Log\LoggerInterface;
-use rollun\callback\Callback\Callback;
-use rollun\callback\Callback\CallbackInterface;
-use rollun\callback\Callback\Interruptor\InterruptorInterface;
+use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Callback\Multiplexer;
-use rollun\callback\Callback\Interruptor\Process;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
@@ -27,14 +18,10 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
     const DEFAULT_CLASS = Multiplexer::class;
 
     /**
-     * Create an object
-     *
-     * @param  ContainerInterface $container
-     * @param  string $requestedName
-     * @param  null|array $options
-     * @return CallbackInterface|InterruptorInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param array|null $options
+     * @return mixed|object
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
@@ -48,11 +35,13 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
             $callbackService = $factoryConfig[static::KEY_CALLBACKS_SERVICES];
             foreach ($callbackService as $name => $callback) {
                 if (is_callable($callback)) {
-                    $callbacks[$name] = $callback instanceof Callback ? $callback : new Callback($callback);
-                } else if ($container->has($callback)) {
-                    $callbacks[$name] = ($container->get($callback));
+                    $callbacks[$name] = $callback instanceof SerializedCallback ? $callback : new SerializedCallback($callback);
                 } else {
-                    $logger->alert("Callback with name $callback not found in container.");
+                    if ($container->has($callback)) {
+                        $callbacks[$name] = ($container->get($callback));
+                    } else {
+                        $logger->alert("Callback with name $callback not found in container.");
+                    }
                 }
             }
         }

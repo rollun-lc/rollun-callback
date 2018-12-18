@@ -1,30 +1,23 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 05.01.17
- * Time: 10:30
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\test\callback\Queues;
 
 use Interop\Container\ContainerInterface;
-use rollun\callback\Queues\Extractor;
-use rollun\callback\Queues\Queue;
-use rollun\callback\Callback\Interruptor\Queue as QueueInterruptor;
+use PHPUnit\Framework\TestCase;
+use rollun\callback\Queues\FileQueue;
 use rollun\dic\InsideConstruct;
-use rollun\installer\Command;
-use Zend\Expressive\Helper\UrlHelper;
-use Zend\Expressive\Router\Route;
-use Zend\Expressive\Router\RouteResult;
 use Zend\Http\Client;
 
-class CronTest extends \PHPUnit_Framework_TestCase
+class CronTest extends TestCase
 {
-    /** @var Queue */
+    /** @var FileQueue */
     protected $minQueue;
 
-    /** @var Queue */
+    /** @var FileQueue */
     protected $secQueue;
 
     protected $url;
@@ -37,19 +30,21 @@ class CronTest extends \PHPUnit_Framework_TestCase
         $container = include 'config/container.php';
         $this->config = $container->get('config');
 
-        $this->url = 'http://' . constant("HOST") . '/api/webhook/cron';
+        $this->url = getenv("HOST") . '/api/webhook/cron';
 
         InsideConstruct::setContainer($container);
         $this->deleteJob();
     }
 
+    protected function tearDown()
+    {
+        $this->deleteJob();
+    }
+
     protected function deleteJob()
     {
-        if (file_exists(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec')) {
-            unlink(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_sec');
-        }
-        if (file_exists(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min')) {
-            unlink(Command::getDataDir() . DIRECTORY_SEPARATOR . 'interrupt_min');
+        if (file_exists('data' . DIRECTORY_SEPARATOR . 'interrupt_min')) {
+            unlink('data' . DIRECTORY_SEPARATOR . 'interrupt_min');
         }
     }
 
@@ -62,17 +57,12 @@ class CronTest extends \PHPUnit_Framework_TestCase
         $httpClient->setMethod('POST');
         $req = $httpClient->send();
 
-        $this->assertTrue($req->isOk());
+        $this->assertTrue($req->getStatusCode() > 200 && $req->getStatusCode() < 300);
 
         sleep(60);
 
-        $minFileData = file_get_contents(Command::getDataDir()  . 'interrupt_min');
-        $secFileData = file_get_contents(Command::getDataDir()  . 'interrupt_sec');
+        $minFileData = file_get_contents('data' . DIRECTORY_SEPARATOR . 'interrupt_min');
         $data = explode("\n", $minFileData);
         $this->assertEquals(4, count(array_diff($data, [''])));
-        $this->assertEquals(120, count(array_diff(explode("\n", $secFileData), [''])));
-
-        //$this->deleteJob();
     }
-
 }

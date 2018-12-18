@@ -1,25 +1,20 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 04.01.17
- * Time: 13:24
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\test\callback\Queues;
 
-
-use Interop\Container\ContainerInterface;
+use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Example\CallMe;
-use rollun\callback\Callback\Interruptor\Http;
-use rollun\callback\Callback\Interruptor\Job;
-use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Queues\Extractor;
-use rollun\callback\Queues\Queue;
+use rollun\callback\Callback\Extractor;
+use rollun\callback\Callback\Interrupter\Job;
+use rollun\callback\Callback\Interrupter\Process;
+use rollun\callback\Queues\FileQueue;
 use rollun\callback\Queues\QueueInterface;
 
-
-class ExtractorTest extends \PHPUnit_Framework_TestCase
+class ExtractorTest extends TestCase
 {
     /** @var Extractor*/
     protected $object;
@@ -34,11 +29,11 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $queueName = 'test_extractor';
-        $this->queue = new Queue($queueName);
+        $this->queue = new FileQueue($queueName);
        // $this->config = $container->get('config');
     }
 
-    public function provider_type()
+    public function providerType()
     {
         $stdObject = (object)['prop' => 'Hello '];
         //function
@@ -82,7 +77,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
 
     public function addInQueue(array $callbacks, $value)
     {
-        foreach ($callbacks as $callback){
+        foreach ($callbacks as $callback) {
             $job = new Job($callback, $value);
             $this->queue->addMessage($job->serializeBase64());
         }
@@ -91,16 +86,16 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $callbacks
      * @param $value
-     * @dataProvider provider_type
+     * @dataProvider providerType
      */
-    public function test_extractQueue(array $callbacks, $value)
+    public function testExtractQueue(array $callbacks, $value)
     {
         $this->object = new Extractor($this->queue);
 
         $this->addInQueue($callbacks, $value);
 
         $i = 0;
-        while($this->object->extract()){
+        while ($this->object->extract()) {
             $i++;
         };
         $this->assertEquals(count($callbacks), $i);

@@ -1,23 +1,26 @@
 <?php
-
 /**
- * Zaboy lib (http://zaboy.org/lib/)
- *
- * @copyright  Zaboychenko Andrey
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Queues;
-
 
 use rollun\callback\Callback\CallbackException;
 
 class Message
 {
-//TODO: counter of return in queue
     /**
+     * @var array
      *
-     * @var array [id] => test_queue100586ba95da73a60.15840006 [time-in-flight] => 1483450832 [delayed-until] => 1483450717 [Body] => test1 [priority] => 100
+     * Example
+     *  [
+     *      'id' => test_queue100586ba95da73a60.15840006,
+     *      'time-in-flight' => 1483450832,
+     *      'delayed-until' => 1483450717,
+     *      'Body' => test1,
+     *      'priority' => 100,
+     *  ]
      */
     protected $message;
 
@@ -57,5 +60,4 @@ class Message
     {
         return $this->message;
     }
-
 }

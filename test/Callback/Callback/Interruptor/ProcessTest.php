@@ -1,11 +1,13 @@
 <?php
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
 
 namespace rollun\test\callback\Interruptor\Callback;
 
-use rollun\callback\Callback\Callback;
-use rollun\dic\InsideConstruct;
-use rollun\installer\Command;
-use rollun\callback\Callback\Interruptor\Process;
+use rollun\callback\Callback\SerializedCallback;
+use rollun\callback\Callback\Interrupter\Process;
 use rollun\test\callback\Callback\CallbackTestDataProvider;
 
 /**
@@ -13,17 +15,15 @@ use rollun\test\callback\Callback\CallbackTestDataProvider;
  */
 class ProcessTest extends CallbackTestDataProvider
 {
-
-
-    public function test__parallelProcess()
+    public function testParallelProcess()
     {
-        $callback = new Callback(function ($file) {
-            sleep(1);
+        $callback = new SerializedCallback(function ($file) {
+            sleep(2);
             $time = microtime(1);
             file_put_contents($file, "$time\n", FILE_APPEND);
         });
 
-        $outPutFile = Command::getDataDir() . "testOutput.dat";
+        $outPutFile = "data/testOutput.dat";
 
         (new Process($callback))($outPutFile);
         (new Process($callback))($outPutFile);
@@ -40,6 +40,7 @@ class ProcessTest extends CallbackTestDataProvider
         } else {
             $this->assertEquals('parallel', $result);
         }
-    }
 
+        unlink($outPutFile);
+    }
 }

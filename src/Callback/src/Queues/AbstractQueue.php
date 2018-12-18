@@ -45,7 +45,7 @@ abstract class AbstractQueue implements QueueInterface
     public function isEmpty()
     {
         foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
-            if(!$this->queueClient->isEmpty($this->queueName, $priority)) {
+            if (!$this->queueClient->isEmpty($this->queueName, $priority)) {
                 return false;
             }
         }
@@ -57,9 +57,9 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function getMessage($priority = null)
     {
-        if(is_null($priority)) {
+        if (is_null($priority)) {
             foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
-                if(!$this->queueClient->isEmpty($this->queueName, $priority)) {
+                if (!$this->queueClient->isEmpty($this->queueName, $priority)) {
                     return $this->receiveMessage($priority);
                 }
             }
@@ -73,7 +73,8 @@ abstract class AbstractQueue implements QueueInterface
      * @param $priority
      * @return null|Message
      */
-    protected function receiveMessage($priority) {
+    protected function receiveMessage($priority)
+    {
         $messages = $this->queueClient->getMessages($this->queueName, 1, $priority);
         if (isset($messages[0])) {
             $message = new Message($messages[0]);
@@ -110,8 +111,8 @@ abstract class AbstractQueue implements QueueInterface
      * Return queue name;
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->queueName;
     }
-
 }

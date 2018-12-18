@@ -1,32 +1,25 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 03.01.17
- * Time: 17:11
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\test\callback\Callback;
 
-use rollun\callback\Callback\Interruptor\InterruptorAbstract;
 use rollun\callback\Callback\Multiplexer;
-use rollun\callback\Callback\Interruptor\Process;
-use rollun\callback\Callback\Promiser;
-use rollun\dic\InsideConstruct;
-use rollun\test\callback\Callback\CallbackTestDataProvider;
 
 class MultiplexerTest extends CallbackTestDataProvider
 {
-
-
     /**
-     * @param array $interruptors
+     * @dataProvider providerMultiplexerType
+     * @param array $interrupters
      * @param $val
-     * @dataProvider provider_multiplexerType()
+     * @throws \ReflectionException
      */
-    public function test(array $interruptors, $val){
+    public function test(array $interrupters, $val)
+    {
 
-        $multiplexer = new Multiplexer($interruptors);
+        $multiplexer = new Multiplexer($interrupters);
         $result = $multiplexer($val);
         $this->assertTrue(isset($result['data']));
     }

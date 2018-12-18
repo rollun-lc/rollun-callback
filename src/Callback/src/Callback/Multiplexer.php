@@ -1,19 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 03.01.17
- * Time: 16:40
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Callback;
 
 use Psr\Log\LoggerInterface;
-use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interruptor\Job;
+use ReflectionException;
 use rollun\dic\InsideConstruct;
 
-class Multiplexer implements CallbackInterface
+class Multiplexer
 {
     /**
      * @var callable[]
@@ -27,39 +24,24 @@ class Multiplexer implements CallbackInterface
 
     /**
      * Multiplexer constructor.
-     * @param callable[] $callbacks
+     * @param array $callbacks
      * @param LoggerInterface|null $logger
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct(array $callbacks = [], LoggerInterface $logger = null)
     {
-        if (!$this->checkCallable($callbacks)) {
-            throw new CallbackException('Interruptors array contains non InterruptorInterface object!');
-        }
         InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
-        $this->callbacks = $callbacks;
-    }
 
-    /**
-     * Multiplexer constructor.
-     * @param callable[] $callbacks
-     * @return bool
-     */
-    protected function checkCallable(array $callbacks)
-    {
-        foreach ($callbacks as $key => $callback) {
-            if (!is_callable($callback)) {
-                return false;
-            }
+        foreach ($callbacks as $priority => $callback) {
+            $this->addCallback($callback, $priority);
         }
-        return true;
     }
 
     /**
      * @param $value
      * @return array
      */
-    public function __invoke($value)
+    public function __invoke($value = null)
     {
         $result = [];
         ksort($this->callbacks);
@@ -67,15 +49,19 @@ class Multiplexer implements CallbackInterface
             try {
                 $result['data'][$key] = $callback($value);
             } catch (\Exception $e) {
-                $this->logger->error("Get error {message} by handle '$key' callback service.", [
-                    "code" => $e->getCode(),
-                    "line" => $e->getLine(),
-                    "file" => $e->getFile(),
-                    "message" => $e->getMessage()
-                ]);
+                $this->logger->error(
+                    "Get error {message} by handle '$key' callback service.",
+                    [
+                        "code" => $e->getCode(),
+                        "line" => $e->getLine(),
+                        "file" => $e->getFile(),
+                        "message" => $e->getMessage(),
+                    ]
+                );
                 $result['data'][] = $e;
             }
         }
+
         return $result;
     }
 
@@ -89,6 +75,11 @@ class Multiplexer implements CallbackInterface
             if (array_key_exists($priority, $this->callbacks)) {
                 $this->addCallback($this->callbacks[$priority], $priority + 1);
             }
+
+            if (!$callback instanceof SerializedCallback) {
+                $callback = new SerializedCallback($callback);
+            }
+
             $this->callbacks[$priority] = $callback;
         } else {
             $this->callbacks[] = $callback;
@@ -104,7 +95,7 @@ class Multiplexer implements CallbackInterface
     }
 
     /**
-     *
+     * @throws ReflectionException
      */
     public function __wakeup()
     {

@@ -10,9 +10,9 @@ namespace rollun\callback\Queues\Factory\Installer;
 
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
-use rollun\callback\Callback\Interruptor\Factory\InterruptAbstractFactoryAbstract;
-use rollun\callback\Callback\Interruptor\Factory\ProcessAbstractFactory;
-use rollun\callback\Callback\Interruptor\Process;
+use rollun\callback\Callback\Interrupter\Factory\InterruptAbstractFactoryAbstract;
+use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
+use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\CronInstaller;
 use rollun\callback\Queues\Factory\ExtractorAbstractFactory;
@@ -59,7 +59,8 @@ class MainQueueInstaller extends InstallerAbstract
         return $config;
     }
 
-    public function getName() {
+    public function getName()
+    {
 
         return static::class;
     }
@@ -71,7 +72,8 @@ class MainQueueInstaller extends InstallerAbstract
             isset($config[QueueAbstractFactory::KEY][static::MAIN_SEC_QUEUE]) &&
             isset($config[ExtractorAbstractFactory::KEY][static::MAIN_SEC_QUEUE_EXTRACTOR]) &&
             isset($config[InterruptAbstractFactoryAbstract::KEY][static::MAIN_SEC_QUEUE_EXTRACTOR_INTERRUPT]) &&
-            in_array(static::MAIN_SEC_QUEUE_EXTRACTOR_INTERRUPT,
+            in_array(
+                static::MAIN_SEC_QUEUE_EXTRACTOR_INTERRUPT,
                 $config[CallbackAbstractFactoryAbstract::KEY]['sec_multiplexer']
                 [MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES]
             )

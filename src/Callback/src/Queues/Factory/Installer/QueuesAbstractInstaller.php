@@ -9,7 +9,7 @@
 namespace rollun\callback\Queues\Factory\Installer;
 
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
-use rollun\callback\Callback\Factory\ServiceCallbackAbstractFactory;
+use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Queues\Factory\QueuesAbstractFactory;
