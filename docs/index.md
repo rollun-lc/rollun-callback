@@ -5,6 +5,15 @@
 работы `webhook` - сервис, который сразу же возвращает управление, несмотря на длительность возможных операций.
 
 
+## Установка
+
+1. Установите с помощьою [composer](https://getcomposer.org/)
+```bash
+composer require rollun-com/rollun-callback
+```
+2. Подключите `rollun\callback\ConfigProvider` в ваш конфигурационный файл.
+3. Подключите роутинг в ваш конфигурационный файл роутингов (это обычно `config/routes.php`).
+
 ## Callback и Interrupter
 
 `Callback` и `Interrupter` - это `callable`(invokable) объекты. Главное отличие между ними, это то что `Interrupter` 
