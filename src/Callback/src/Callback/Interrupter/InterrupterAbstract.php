@@ -17,6 +17,10 @@ abstract class InterrupterAbstract implements InterrupterInterface
      */
     protected $callback;
 
+    /**
+     * InterrupterAbstract constructor.
+     * @param callable $callback
+     */
     public function __construct(callable $callback)
     {
         $this->setCallback($callback);
@@ -36,6 +40,9 @@ abstract class InterrupterAbstract implements InterrupterInterface
         $this->callback = $callback;
     }
 
+    /**
+     * @return string
+     */
     public function getInterrupterType()
     {
         return static::class;

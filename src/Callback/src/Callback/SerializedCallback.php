@@ -40,6 +40,7 @@ final class SerializedCallback
                 'There was not correct instance callable in Callback'
             );
         }
+
         try {
             $callback = $this->getCallback();
             $result = call_user_func($callback, $value);
@@ -54,25 +55,36 @@ final class SerializedCallback
         }
     }
 
+    /**
+     * @return Callable
+     */
     protected function getCallback()
     {
         return $this->callback;
     }
 
+    /**
+     * @param callable $callback
+     */
     protected function setCallback(callable $callback)
     {
         $this->callback = $callback;
     }
 
+    /**
+     * @return array
+     */
     public function __sleep()
     {
         $callback = $this->getCallback();
+
         if (is_array($callback)) {
             list($context, $method) = $callback;
             $callback = function ($value) use ($context, $method) {
                 return call_user_func([$context, $method], $value);
             };
         }
+
         if ($callback instanceof \Closure) {
             $callback = new SerializableClosure($callback);
             $this->setCallback($callback);
@@ -84,6 +96,7 @@ final class SerializedCallback
     public function __wakeup()
     {
         $callback = $this->getCallback();
+
         if (!is_callable($callback, true)) {
             throw new CallbackException(
                 'There is not correct instance callable in Callback'

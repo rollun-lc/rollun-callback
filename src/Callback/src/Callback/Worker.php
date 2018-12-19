@@ -61,6 +61,7 @@ class Worker
         while ((time() - $startTime) < self::WORK_SECOND) {
             $message = $this->queue->getMessage();
             $value = $this->unserialize($message->getData());
+
             try {
                 call_user_func($this->callback, $value);
             } catch (\Throwable $throwable) {

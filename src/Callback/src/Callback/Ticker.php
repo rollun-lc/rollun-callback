@@ -61,13 +61,16 @@ class Ticker
     {
         usleep($this->delayMicroSecond);
         $result = [];
+
         for ($index = 0; $index < $this->ticksCount; $index++) {
             $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
+
             try {
                 $result[$startTime]['data'] = call_user_func($this->tickerCallback, $value);
             } catch (RuntimeException $exception) {
                 $result[$startTime]['data'] = $exception->getMessage();
             }
+
             $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
             $sleepTime = $sleepTime <= 0 ? 0 : $sleepTime;
             usleep($sleepTime * 1000000);

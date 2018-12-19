@@ -39,6 +39,7 @@ class Extractor
             $message = $this->queue->getMessage();
             if (isset($message)) {
                 $job = Job::unserializeBase64($message->getData());
+
                 try {
                     $resp = call_user_func($job->getCallback(), $job->getValue());
                 } catch (\Throwable $e) {
@@ -68,9 +69,11 @@ class Extractor
         try {
             /** @var Message $message */
             $message = $this->queue->getMessage();
+
             if (isset($message)) {
                 $job = Job::unserializeBase64($message->getData());
                 $result[static::KEY_MESSAGE_ID] = $message->getId();
+
                 try {
                     $result['data'][] = call_user_func($job->getCallback(), $job->getValue());
                 } catch (\Throwable $e) {

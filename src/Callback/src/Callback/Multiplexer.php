@@ -45,6 +45,7 @@ class Multiplexer
     {
         $result = [];
         ksort($this->callbacks);
+
         foreach ($this->callbacks as $key => $callback) {
             try {
                 $result['data'][$key] = $callback($value);

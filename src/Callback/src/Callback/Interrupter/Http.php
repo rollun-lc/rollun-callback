@@ -34,6 +34,7 @@ class Http implements InterrupterInterface
      * @var array
      */
     protected $options = [];
+
     /**
      * @var LifeCycleToken
      */
@@ -50,10 +51,12 @@ class Http implements InterrupterInterface
     {
         InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
         $this->url = rtrim(trim($url), '/');
+
         if (isset($options['login']) && isset($options['password'])) {
             $this->login = $options['login'];
             $this->password = $options['password'];
         }
+
         $supportedKeys = [
             'maxredirects',
             'useragent',
@@ -69,16 +72,21 @@ class Http implements InterrupterInterface
     protected function initHttpClient(array $value = [])
     {
         $httpClient = new Client($this->url, $this->options);
+
         $headers['Content-Type'] = 'application/json';
         $headers['Accept'] = 'application/json';
         $headers['APP_ENV'] = getenv('APP_ENV');
         $headers['LifeCycleToken'] = $this->lifeCycleToken->serialize();
+
         $httpClient->setHeaders($headers);
+
         if (isset($this->login) && isset($this->password)) {
             $httpClient->setAuth($this->login, $this->password);
         }
+
         $httpClient->setMethod('POST');
         $httpClient->setParameterPost($value);
+
         return $httpClient;
     }
 
@@ -91,13 +99,14 @@ class Http implements InterrupterInterface
     {
         $client = $this->initHttpClient($value);
         $response = $client->send();
+
         if ($response->isOk()) {
             $result = Serializer::jsonUnserialize($response->getBody());
         } else {
             $result = [
                 'error' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
-                'message' => $response->getBody()
+                'message' => $response->getBody(),
             ];
         }
 
