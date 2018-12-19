@@ -7,7 +7,8 @@
 namespace rollun\callback\Callback\Example;
 
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
-use rollun\installer\Command;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 
 class SecCallback implements InterrupterInterface
 {
@@ -17,10 +18,10 @@ class SecCallback implements InterrupterInterface
 
     /**
      * @param $value
-     * @return array
+     * @return PayloadInterface
      * array contains field
      */
-    public function __invoke($value)
+    public function __invoke($value): PayloadInterface
     {
         $time = microtime(true);
         $dataDir = realpath('./') . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
@@ -31,6 +32,6 @@ class SecCallback implements InterrupterInterface
             FILE_APPEND
         );
 
-        return [$time];
+        return new SimplePayload(null, ['time' => $time]);
     }
 }

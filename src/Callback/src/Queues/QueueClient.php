@@ -67,7 +67,9 @@ class QueueClient implements QueueInterface
             return $this->receiveMessage($priority);
         } catch (Throwable $t) {
             throw new QueueException(
-                "Can't get message from queue '{$this->getName()}'. Reason: " . $t->getMessage(), 0, $t
+                "Can't get message from queue '{$this->getName()}'. Reason: " . $t->getMessage(),
+                0,
+                $t
             );
         }
     }

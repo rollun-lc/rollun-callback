@@ -6,10 +6,9 @@
 
 namespace rollun\test\Queues;
 
-use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use rollun\dic\InsideConstruct;
 use Zend\Http\Client;
+use Zend\ServiceManager\ServiceManager;
 
 class CronTest extends TestCase
 {
@@ -17,15 +16,24 @@ class CronTest extends TestCase
 
     protected $config;
 
+    /**
+     * @var ServiceManager
+     */
+    protected $container;
+
+    protected function getContainer(): ServiceManager
+    {
+        if ($this->container === null) {
+            $this->container = require 'config/container.php';
+        }
+
+        return $this->container;
+    }
+
     public function setUp()
     {
-        /** @var ContainerInterface $container */
-        $container = include 'config/container.php';
-        $this->config = $container->get('config');
-
+        $this->config = $this->getContainer()->get('config');
         $this->url = getenv("HOST") . '/api/webhook/cron';
-
-        InsideConstruct::setContainer($container);
         $this->deleteJob();
     }
 
@@ -50,9 +58,9 @@ class CronTest extends TestCase
         $httpClient->setMethod('POST');
         $req = $httpClient->send();
 
-        $this->assertTrue($req->getStatusCode() > 200 && $req->getStatusCode() < 300);
+        $this->assertTrue($req->getStatusCode() >= 200 && $req->getStatusCode() < 300);
 
-        sleep(60);
+        sleep(5);
 
         $minFileData = file_get_contents('data' . DIRECTORY_SEPARATOR . 'interrupt_min');
         $data = explode("\n", $minFileData);

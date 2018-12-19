@@ -50,7 +50,9 @@ class Extractor
             }
         } catch (\Throwable $e) {
             throw new QueueException(
-                "Can't extract from queue '{$this->queue->getName()}'. Reason: " . $e->getMessage(), $e->getCode(), $e
+                "Can't extract from queue '{$this->queue->getName()}'. Reason: " . $e->getMessage(),
+                $e->getCode(),
+                $e
             );
         }
 

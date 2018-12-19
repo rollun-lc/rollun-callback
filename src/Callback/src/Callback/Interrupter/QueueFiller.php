@@ -8,6 +8,8 @@ namespace rollun\callback\Callback\Interrupter;
 
 use Psr\Log\LoggerInterface;
 use ReflectionException;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
@@ -57,22 +59,22 @@ class QueueFiller implements InterrupterInterface
 
     /**
      * @param mixed $value
-     * @return PromiseInterface
+     * @return PayloadInterface
      * @throws Exception
      */
-    public function __invoke($value): PromiseInterface
+    public function __invoke($value): PayloadInterface
     {
         $serializedData = static::serializeMessage($value);
         $message = new Message($serializedData);
-
-        $this->queue->addMessage($message);
-        $this->logger->info("add message to queue: {queue}", [
+        $payload = [
             "message" => $message,
             "queue" => $this->queue->getName()
-        ]);
+        ];
 
-        // TODO: must return implementation of PromiseInterface
-        return [];
+        $this->queue->addMessage($message);
+        $this->logger->info("Add message to queue: {$this->queue->getName()}", $payload);
+
+        return new SimplePayload(null, $payload);
     }
 
     /**

@@ -6,6 +6,9 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use InvalidArgumentException;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 use rollun\utils\Json\Serializer;
@@ -92,25 +95,30 @@ class Http implements InterrupterInterface
 
     /**
      * @param $value
-     * @return PromiseInterface
+     * @return PayloadInterface
      * array contains field
      */
-    public function __invoke($value): PromiseInterface
+    public function __invoke($value): PayloadInterface
     {
         $client = $this->initHttpClient($value);
         $response = $client->send();
 
         if ($response->isOk()) {
-            $result = Serializer::jsonUnserialize($response->getBody());
+            $payload = Serializer::jsonUnserialize($response->getBody());
+
+            if (!$payload instanceof PayloadInterface) {
+                throw new InvalidArgumentException(
+                    sprintf('instance of %s expected after unserializing',PayloadInterface::class)
+                );
+            }
         } else {
-            $result = [
+            $payload = new SimplePayload(null, [
                 'error' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
                 'message' => $response->getBody(),
-            ];
+            ]);
         }
 
-        // TODO: must return implementation of PromiseInterface
-        return $result;
+        return $payload;
     }
 }

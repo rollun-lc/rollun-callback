@@ -6,12 +6,14 @@
 
 namespace rollun\callback\Middleware;
 
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use rollun\callback\Callback\Interrupter\PromiseInterface;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
+use rollun\utils\Json\Exception;
+use rollun\utils\Json\Serializer;
 use Zend\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
@@ -40,40 +42,35 @@ class InterrupterMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Fetch service name from request attribute and create interrupter
-     *
-     * @param ServerRequestInterface $request
-     * @return callable
-     */
-    protected function getCallable(ServerRequestInterface $request): callable
-    {
-        $serviceName = $request->getAttribute($this->attributeName);
-
-        if (!$serviceName) {
-            throw new InvalidArgumentException('Undefined interrupter service');
-        }
-
-        return $this->interrupterPluginManager->get($serviceName);
-    }
-
-    /**
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
+     * @throws Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        try {
-            $callable = $this->getCallable($request);
-            $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
-            $result = call_user_func($callable, $value);
-            $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, $result);
-            $statusCode = $result instanceof PromiseInterface ? 202 : 200;
-        } catch (\Throwable $t) {
-            $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, ['error' => $t->getMessage()]);
-            $statusCode = 500;
+        $serviceName = $request->getAttribute($this->attributeName);
+
+        if (!$this->interrupterPluginManager->has($serviceName)) {
+            return new EmptyResponse(404);
         }
 
+        try {
+            $callable = $this->interrupterPluginManager->get($serviceName);
+            $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
+            $result = call_user_func($callable, $value);
+        } catch (\Throwable $t) {
+            $result = ['error' => $t->getMessage()];
+        }
+
+        if (!$result instanceof PayloadInterface) {
+            $result = new SimplePayload(null, $result);
+            $statusCode = 202;
+        } else {
+            $statusCode = 200;
+        }
+
+        $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, Serializer::jsonSerialize($result));
         $request = $request->withAttribute(ResponseInterface::class, new EmptyResponse($statusCode));
         $response = $handler->handle($request);
 

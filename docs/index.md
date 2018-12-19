@@ -137,9 +137,7 @@ Interrupter разновидность `callable` для "параллельно
 Если нужен результат выполнения `callable`, используйте `Promise` из
 [rollun-com/rollun-promise](https://github.com/rollun-com/rollun-promise).
 
-Все `Interruptor` должны вернуть 
-* Тип `Interruptor` (имя класса)
-* Поле `data` - не обязательное поле сожержащее вывод вложенных `Interrupter`
+Все `Interruptor` должны вернуть обьект реализующий `PayloadInterface`.
 
 **Виды `Interrupter`:**
 

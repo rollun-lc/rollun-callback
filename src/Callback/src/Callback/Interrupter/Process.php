@@ -8,6 +8,8 @@ namespace rollun\callback\Callback\Interrupter;
 
 use ReflectionException;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 
@@ -45,10 +47,10 @@ class Process extends InterrupterAbstract
 
     /**
      * @param $value
-     * @return PromiseInterface
+     * @return PayloadInterface
      * @throws ReflectionException
      */
-    public function __invoke($value): PromiseInterface
+    public function __invoke($value): PayloadInterface
     {
         $cmd = 'php ' . $this->getScriptName();
 
@@ -59,20 +61,20 @@ class Process extends InterrupterAbstract
         $cmd .= " {$this->lifecycleToken->serialize()}";
         $cmd .= ' APP_ENV=' . getenv('APP_ENV');
 
-        $result[self::STDOUT_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stdout_', 1);
-        $result[self::STDERR_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stderr_', 1);
-        $result[static::INTERRUPTER_TYPE_KEY] = $this->getInterrupterType();
+        $payload[self::STDOUT_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stdout_', 1);
+        $payload[self::STDERR_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stderr_', 1);
+        $payload[static::INTERRUPTER_TYPE_KEY] = $this->getInterrupterType();
 
-        $cmd .= "  1>{$result[self::STDOUT_KEY]} 2>{$result[self::STDERR_KEY]}";
+        $cmd .= "  1>{$payload[self::STDOUT_KEY]} 2>{$payload[self::STDERR_KEY]}";
 
         if (substr(php_uname(), 0, 7) !== "Windows") {
             $cmd .= " & echo $!";
         }
 
-        $result[self::PID_KEY] = trim(shell_exec($cmd));
+        $pid = trim(shell_exec($cmd));
+        $payload = new SimplePayload($pid, $payload);
 
-        // TODO: must return implementation of PromiseInterface
-        return $result;
+        return $payload;
     }
 
     /**

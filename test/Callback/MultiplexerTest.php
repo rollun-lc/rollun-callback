@@ -6,20 +6,34 @@
 
 namespace rollun\test\Callback;
 
+use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Multiplexer;
+use Zend\ServiceManager\ServiceManager;
 
 class MultiplexerTest extends CallbackTestDataProvider
 {
     /**
-     * @dataProvider providerMultiplexerType
-     * @param array $interrupters
-     * @param $val
-     * @throws \ReflectionException
+     * @var ServiceManager
      */
-    public function test(array $interrupters, $val)
-    {
+    protected $container;
 
-        $multiplexer = new Multiplexer($interrupters);
+    protected function getContainer(): ServiceManager
+    {
+        if ($this->container === null) {
+            $this->container = require 'config/container.php';
+        }
+
+        return $this->container;
+    }
+
+    /**
+     * @dataProvider providerMultiplexerType
+     * @param array $callbacks
+     * @param $val
+     */
+    public function test(array $callbacks, $val)
+    {
+        $multiplexer = new Multiplexer($this->getContainer()->get(LoggerInterface::class), $callbacks);
         $result = $multiplexer($val);
         $this->assertTrue(isset($result['data']));
     }

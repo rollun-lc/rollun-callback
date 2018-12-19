@@ -26,14 +26,14 @@ class Multiplexer
      * Multiplexer constructor.
      * @param array $callbacks
      * @param LoggerInterface|null $logger
-     * @throws ReflectionException
      */
-    public function __construct(array $callbacks = [], LoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger, array $callbacks = [])
     {
-        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
+        $this->logger = $logger;
 
-        foreach ($callbacks as $priority => $callback) {
-            $this->addCallback($callback, $priority);
+        ksort($callbacks);
+        foreach ($callbacks as $callback) {
+            $this->addCallback($callback);
         }
     }
 

@@ -70,12 +70,7 @@ class Job
         $job = unserialize(base64_decode($value, true));
 
         if (!$job instanceof Job) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'instance of %s expected after unserializing',
-                    is_object($job) ? get_class($job) : gettype($job)
-                )
-            );
+            throw new InvalidArgumentException(sprintf('instance of %s expected after unserializing', Job::class));
         }
 
         return $job;

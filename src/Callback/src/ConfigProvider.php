@@ -85,6 +85,8 @@ class ConfigProvider
                     MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
                         MinCallback::class,
                         MinCallback::class,
+                        MinCallback::class,
+                        MinCallback::class,
                     ],
                 ],
             ],

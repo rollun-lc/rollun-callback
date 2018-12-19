@@ -80,7 +80,7 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
         return new QueueClient($adapter, $queueName, $delay);
     }
 
-    static public function createSimpleQueueClient(): QueueClient
+    public static function createSimpleQueueClient(): QueueClient
     {
         return new QueueClient(new MemoryAdapter(), sha1(openssl_random_pseudo_bytes(1024)));
     }

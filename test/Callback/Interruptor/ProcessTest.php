@@ -18,7 +18,7 @@ class ProcessTest extends CallbackTestDataProvider
     public function testParallelProcess()
     {
         $callback = new SerializedCallback(function ($file) {
-            sleep(2);
+            sleep(1);
             $time = microtime(1);
             file_put_contents($file, "$time\n", FILE_APPEND);
         });

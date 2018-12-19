@@ -6,11 +6,13 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+
 interface InterrupterInterface
 {
     /**
      * @param $value
      * @return mixed
      */
-    public function __invoke($value): PromiseInterface;
+    public function __invoke($value): PayloadInterface;
 }

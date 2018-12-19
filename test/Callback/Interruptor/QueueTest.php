@@ -8,8 +8,9 @@ namespace rollun\test\Queues;
 
 use PHPUnit\Framework\TestCase;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
+use rollun\callback\Queues\Message;
+use rollun\callback\Queues\QueueClient;
 use rollun\callback\Queues\QueueInterface;
-use rollun\test\Callback\Queues\QueueClientTest;
 
 class QueueTest extends TestCase
 {
@@ -20,8 +21,8 @@ class QueueTest extends TestCase
 
     protected function setUp()
     {
-        $this->object = new QueueClientTest(new MemoryAdapter(), 'test_queue');
-        $this->object->purgeQueue('test_queue');
+        $this->object = new QueueClient(new MemoryAdapter(), 'test_queue');
+        $this->object->purgeQueue();
     }
 
     public function testGetNullMessage()
@@ -32,7 +33,7 @@ class QueueTest extends TestCase
 
     public function testAddMessage()
     {
-        $this->object->addMessage('test1');
+        $this->object->addMessage(Message::createInstance('test1'));
         $message = $this->object->getMessage();
         $this->assertEquals('test1', $message->getData());
     }

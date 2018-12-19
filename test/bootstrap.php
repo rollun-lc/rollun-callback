@@ -2,6 +2,7 @@
 global $argv;
 
 use PHPUnit\Framework\Error\Deprecated;
+use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 
 error_reporting(E_ALL);
@@ -11,7 +12,7 @@ Deprecated::$enabled = false;
 chdir(dirname(__DIR__));
 
 $container = require 'config/container.php';
-\rollun\dic\InsideConstruct::setContainer($container);
+InsideConstruct::setContainer($container);
 
 if (getenv("APP_ENV") != 'dev') {
     echo "You cannot start test if environment var APP_ENV not set in dev!";
