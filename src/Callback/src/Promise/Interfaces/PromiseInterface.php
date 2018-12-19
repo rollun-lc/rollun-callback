@@ -61,11 +61,4 @@ interface PromiseInterface extends WaitableInterface
      * @throws PromiseException if the promise is already resolved.
      */
     public function reject($reason);
-
-    /**
-     * Return id (primary key value in db)
-     *
-     * @return string promise__1469864422_189511__579c84162e43e4_34952052
-     */
-    public function getId();
 }

@@ -108,7 +108,7 @@ class Http implements InterrupterInterface
 
             if (!$payload instanceof PayloadInterface) {
                 throw new InvalidArgumentException(
-                    sprintf('instance of %s expected after unserializing',PayloadInterface::class)
+                    sprintf('instance of %s expected after unserializing', PayloadInterface::class)
                 );
             }
         } else {
