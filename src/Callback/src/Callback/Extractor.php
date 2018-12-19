@@ -42,13 +42,15 @@ class Extractor
                 try {
                     $resp = call_user_func($job->getCallback(), $job->getValue());
                 } catch (\Throwable $e) {
-                    throw new QueueException("Function error!", $e->getCode(), $e);
+                    throw new QueueException("Function error. " . $e->getMessage(), $e->getCode(), $e);
                 }
 
                 return $resp;
             }
         } catch (\Throwable $e) {
-            throw new QueueException("Extract queue error!", $e->getCode(), $e);
+            throw new QueueException(
+                "Can't extract from queue '{$this->queue->getName()}'. Reason: " . $e->getMessage(), $e->getCode(), $e
+            );
         }
 
         return null;

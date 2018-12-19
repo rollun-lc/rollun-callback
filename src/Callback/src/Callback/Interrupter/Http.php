@@ -84,10 +84,10 @@ class Http implements InterrupterInterface
 
     /**
      * @param $value
-     * @return array
+     * @return PromiseInterface
      * array contains field
      */
-    public function __invoke($value)
+    public function __invoke($value): PromiseInterface
     {
         $client = $this->initHttpClient($value);
         $response = $client->send();
@@ -100,6 +100,8 @@ class Http implements InterrupterInterface
                 'message' => $response->getBody()
             ];
         }
+
+        // TODO: must return implementation of PromiseInterface
         return $result;
     }
 }

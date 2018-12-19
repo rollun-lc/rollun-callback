@@ -4,22 +4,15 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Queues;
+namespace rollun\test\Queues;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use rollun\callback\Queues\FileQueue;
 use rollun\dic\InsideConstruct;
 use Zend\Http\Client;
 
 class CronTest extends TestCase
 {
-    /** @var FileQueue */
-    protected $minQueue;
-
-    /** @var FileQueue */
-    protected $secQueue;
-
     protected $url;
 
     protected $config;

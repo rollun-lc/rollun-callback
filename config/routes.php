@@ -41,7 +41,7 @@ use Zend\Expressive\Router\Route;
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->route(
-        '/api/webhook[/{resourceName}]',
+        '/api/webhook/{resourceName}',
         WebhookMiddleware::class,
         Route::HTTP_METHOD_ANY,
         'webhook'

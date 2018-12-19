@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use rollun\callback\Callback\Interrupter\InterrupterInterface;
+use rollun\callback\Callback\Interrupter\PromiseInterface;
 use Zend\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
@@ -63,13 +63,12 @@ class InterrupterMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $callable = $this->getCallable($request);
-        $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
-
         try {
+            $callable = $this->getCallable($request);
+            $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
             $result = call_user_func($callable, $value);
             $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, $result);
-            $statusCode = $callable instanceof InterrupterInterface ? 202 : 200;
+            $statusCode = $result instanceof PromiseInterface ? 202 : 200;
         } catch (\Throwable $t) {
             $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, ['error' => $t->getMessage()]);
             $statusCode = 500;

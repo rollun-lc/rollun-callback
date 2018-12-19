@@ -6,15 +6,23 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use InvalidArgumentException;
 use Opis\Closure\SerializableClosure;
-use rollun\callback\Callback\CallbackException;
+use ReflectionException;
+use rollun\callback\Callback\SerializedCallback;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 
 class Job
 {
+    /**
+     * @var SerializedCallback
+     */
     protected $callback;
 
+    /**
+     * @var mixed
+     */
     protected $value;
 
     /**
@@ -27,17 +35,16 @@ class Job
      * @param callable $callback
      * @param $value
      * @param null $lifeCycleToken
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct(callable $callback, $value, $lifeCycleToken = null)
     {
         InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
-        if (!is_callable($callback)) {
-            throw new CallbackException('Callback is not callable');
+
+        if (!$callback instanceof SerializedCallback) {
+            $callback = new SerializedCallback($callback);
         }
-        if ($callback instanceof \Closure) {
-            $callback = new SerializableClosure($callback);
-        }
+
         $this->callback = $callback;
         $this->value = $value;
     }
@@ -45,20 +52,33 @@ class Job
     /**
      * @return string
      */
-    public function serializeBase64()
+    public function serializeBase64(): string
     {
         $serializedParams = serialize($this);
         $base64string = base64_encode($serializedParams);
+
         return $base64string;
     }
 
     /**
-     * @param string $value
+     * @param $value
      * @return Job
+     * @throws InvalidArgumentException
      */
-    public static function unserializeBase64($value)
+    public static function unserializeBase64($value): Job
     {
-        return unserialize(base64_decode($value, true));
+        $job = unserialize(base64_decode($value, true));
+
+        if (!$job instanceof Job) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'instance of %s expected after unserializing',
+                    is_object($job) ? get_class($job) : gettype($job)
+                )
+            );
+        }
+
+        return $job;
     }
 
     /**
@@ -70,7 +90,7 @@ class Job
     }
 
     /**
-     * @return callable|SerializableClosure
+     * @return SerializableClosure
      */
     public function getCallback()
     {

@@ -6,11 +6,13 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
-interface InterrupterInterface
+/**
+ * TODO: describe and extend
+ *
+ * Interface PromiseInterface
+ * @package rollun\callback\Callback
+ */
+interface PromiseInterface
 {
-    /**
-     * @param $value
-     * @return mixed
-     */
-    public function __invoke($value): PromiseInterface;
+
 }

@@ -7,8 +7,11 @@
 namespace rollun\callback\Callback\Interrupter;
 
 use Psr\Log\LoggerInterface;
+use ReflectionException;
+use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
+use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
 
 class QueueFiller implements InterrupterInterface
@@ -25,7 +28,7 @@ class QueueFiller implements InterrupterInterface
      * ServiceQueue constructor.
      * @param QueueInterface $queue
      * @param LoggerInterface|null $logger
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct(QueueInterface $queue, LoggerInterface $logger = null)
     {
@@ -36,9 +39,9 @@ class QueueFiller implements InterrupterInterface
     /**
      * @param $message
      * @return string
-     * @throws \rollun\utils\Json\Exception
+     * @throws Exception
      */
-    public static function serializeMessage($message)
+    public static function serializeMessage($message): string
     {
         return base64_encode(Serializer::jsonSerialize($message));
     }
@@ -54,22 +57,25 @@ class QueueFiller implements InterrupterInterface
 
     /**
      * @param mixed $value
-     * @return mixed
-     * @throws \rollun\utils\Json\Exception
+     * @return PromiseInterface
+     * @throws Exception
      */
-    public function __invoke($value)
+    public function __invoke($value): PromiseInterface
     {
-        $message = static::serializeMessage($value);
+        $serializedData = static::serializeMessage($value);
+        $message = new Message($serializedData);
+
         $this->queue->addMessage($message);
         $this->logger->info("add message to queue: {queue}", [
             "message" => $message,
             "queue" => $this->queue->getName()
         ]);
+
+        // TODO: must return implementation of PromiseInterface
         return [];
     }
 
     /**
-     * ["callback", "queue"]
      * @return array
      */
     public function __sleep()
@@ -79,7 +85,7 @@ class QueueFiller implements InterrupterInterface
 
     /**
      * Resume callback and queue
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __wakeup()
     {

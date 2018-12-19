@@ -4,14 +4,16 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Queues;
+namespace rollun\test\Queues;
 
 use PHPUnit\Framework\TestCase;
+use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
 use rollun\callback\Callback\Example\CallMe;
 use rollun\callback\Callback\Extractor;
 use rollun\callback\Callback\Interrupter\Job;
 use rollun\callback\Callback\Interrupter\Process;
-use rollun\callback\Queues\FileQueue;
+use rollun\callback\Queues\Message;
+use rollun\callback\Queues\QueueClient;
 use rollun\callback\Queues\QueueInterface;
 
 class ExtractorTest extends TestCase
@@ -29,8 +31,7 @@ class ExtractorTest extends TestCase
     public function setUp()
     {
         $queueName = 'test_extractor';
-        $this->queue = new FileQueue($queueName);
-       // $this->config = $container->get('config');
+        $this->queue = new QueueClient(new MemoryAdapter(), $queueName);
     }
 
     public function providerType()
@@ -79,7 +80,7 @@ class ExtractorTest extends TestCase
     {
         foreach ($callbacks as $callback) {
             $job = new Job($callback, $value);
-            $this->queue->addMessage($job->serializeBase64());
+            $this->queue->addMessage(Message::createInstance($job->serializeBase64()));
         }
     }
 

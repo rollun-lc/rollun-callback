@@ -4,11 +4,12 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Queues;
+namespace rollun\test\Queues;
 
 use PHPUnit\Framework\TestCase;
-use rollun\callback\Queues\FileQueue;
+use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
 use rollun\callback\Queues\QueueInterface;
+use rollun\test\Callback\Queues\QueueClientTest;
 
 class QueueTest extends TestCase
 {
@@ -19,7 +20,7 @@ class QueueTest extends TestCase
 
     protected function setUp()
     {
-        $this->object = new FileQueue('test_queue');
+        $this->object = new QueueClientTest(new MemoryAdapter(), 'test_queue');
         $this->object->purgeQueue('test_queue');
     }
 

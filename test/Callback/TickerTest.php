@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Callback;
+namespace rollun\test\Callback;
 
 use rollun\callback\Callback\Ticker;
 

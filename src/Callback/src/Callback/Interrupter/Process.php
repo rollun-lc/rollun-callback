@@ -6,6 +6,7 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use ReflectionException;
 use rollun\callback\Callback\CallbackException;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
@@ -34,7 +35,7 @@ class Process extends InterrupterAbstract
      * Process constructor.
      * @param callable $callback
      * @param LifeCycleToken|null $lifecycleToken
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct(callable $callback, LifeCycleToken $lifecycleToken = null)
     {
@@ -44,10 +45,10 @@ class Process extends InterrupterAbstract
 
     /**
      * @param $value
-     * @return mixed
-     * @throws \ReflectionException
+     * @return PromiseInterface
+     * @throws ReflectionException
      */
-    public function __invoke($value)
+    public function __invoke($value): PromiseInterface
     {
         $cmd = 'php ' . $this->getScriptName();
 
@@ -69,13 +70,15 @@ class Process extends InterrupterAbstract
         }
 
         $result[self::PID_KEY] = trim(shell_exec($cmd));
+
+        // TODO: must return implementation of PromiseInterface
         return $result;
     }
 
     /**
-     *
+     * @return string
      */
-    protected function getScriptName()
+    protected function getScriptName(): string
     {
         $scriptPath = __DIR__ . self::SCRIPT_PATH;
 
@@ -84,25 +87,5 @@ class Process extends InterrupterAbstract
         }
 
         return $scriptPath;
-    }
-
-    /**
-     * Checks an environment where this script was run
-     *
-     * It's not allowed to run in Windows
-     *
-     * @throws CallbackException
-     */
-    protected function checkEnvironment()
-    {
-        if ('Windows' == substr(php_uname(), 0, 7)) {
-            throw new CallbackException("This callback type will not work in Windows");
-        }
-        if (!function_exists('shell_exec')) {
-            throw new CallbackException("The function 'shell_exec' does not exist or it is not allowed.");
-        }
-        if (!function_exists('posix_kill')) {
-            throw new CallbackException("The function 'posix_kill' does not exist or it is not allowed.");
-        }
     }
 }

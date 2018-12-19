@@ -226,7 +226,43 @@ $app->route(
 
 ## Queue
 
-`Queue` - очереди, в общем понимании этого термина. Все очереди должны реализовать интерфейс `QueueInterface`.
-Существует две реализации очередей. `FileQueue` - для файлов и `SqsQueue` - для очередей Amazon.
+`QueueClient` - очередь, в общем понимании этого термина, реализующая `QueueInterface`.
+Для очереди нужен адаптер. Адаптер определяет где и каким образом будут храниться сообщения.
+Фабрики `FileAdapterAbstractFactory` и `SqsAdapterAbstractFactory` могут создать файловый адаптер и адаптер для 
+очередей Amazon соответственно.
 
-`Message` - единица сообщения в очереди.
+`Message` - единица сообщения в очереди. `Message` можно создать с помощью статического метода-фабрики. У этого 
+объекта есть 3 основных метода:
+
+* `getData()` - использовать если адаптер очереди возвращает сообщение в виде массива с обязательными ключами: `id`, 
+`Body`. Тогда можно использовать этот метод, для получения оригинального сообщение (пример ниже).
+* `getId()` - по аналогии с предыдущим метод, вызвав этот метод будет возвращен `id` из массива, который передаст 
+адаптер.
+* `getMessage()` - возвращает все сообщение от адаптера целиком.
+
+
+Пример:
+
+```php
+$object = QueueClient(new MemoryAdapter(), 'testAdapter');
+
+$object->addMessage(Message::createInstance('a'));
+$object->addMessage(Message::createInstance('b'));
+$object->addMessage(Message::createInstance('c'));
+$object->addMessage(Message::createInstance('d'));
+
+echo $object->isEmpty() == false; // 1
+
+echo $object->getMessage()->getData() == 'a'; // 1
+echo $object->getMessage()->getData() == 'b'; // 1
+echo $object->getMessage()->getData() == 'c'; // 1
+echo $object->getMessage()->getData() == 'd'; // 1
+
+echo $object->isEmpty() == true; // 1
+
+$object->addMessage(Message::createInstance('a'));
+$object->addMessage(Message::createInstance('b'));
+
+$object->purgeQueue();
+echo $object->isEmpty() == true; // 1
+```

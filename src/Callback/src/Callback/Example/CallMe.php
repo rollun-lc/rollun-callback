@@ -10,16 +10,16 @@ class CallMe
 {
     public function __invoke($val)
     {
-        return 'Hello ' . $val;
+        return 'Hello ' . (is_string($val) ? $val : '');
     }
 
     public function method($val)
     {
-        return 'Hello ' . $val;
+        return 'Hello ' . (is_string($val) ? $val : '');
     }
 
     public static function staticMethod($val)
     {
-        return 'Hello ' . $val;
+        return 'Hello ' . (is_string($val) ? $val : '');
     }
 }

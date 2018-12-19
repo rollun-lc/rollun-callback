@@ -4,13 +4,13 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Callback;
+namespace rollun\test\Callback;
 
 use rollun\callback\Callback\SerializedCallback;
 
 /**
  * Class CallbackTest
- * @package rollun\test\callback\Callback
+ * @package rollun\test\Callback
  */
 class CallbackTest extends CallbackTestDataProvider
 {

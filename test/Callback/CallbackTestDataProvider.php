@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\callback\Callback;
+namespace rollun\test\Callback;
 
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Example\CallMe;
@@ -12,7 +12,7 @@ use rollun\callback\Callback\Interrupter\Process;
 
 /**
  * Class CallbackTestDataProvider
- * @package rollun\test\callback\Callback
+ * @package rollun\test\Callback
  */
 class CallbackTestDataProvider extends TestCase
 {

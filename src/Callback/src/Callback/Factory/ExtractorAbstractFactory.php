@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\callback\Queues\Factory;
+namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use rollun\callback\Callback\Extractor;
