@@ -6,20 +6,71 @@
 
 namespace rollun\test\Callback;
 
+use PHPUnit\Framework\TestCase;
+use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\Ticker;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
 
-class TickerTest extends CallbackTestDataProvider
+class TickerTest extends TestCase
 {
     const FILE_WITH_RESULT = 'ticker_results';
 
+    public function provider()
+    {
+        return [
+            [
+                function ($val) {
+                    file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                },
+                10,
+                1,
+                0
+            ],
+            [
+                function ($val) {
+                    file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                },
+                5,
+                2,
+                0
+            ],
+            [
+                function ($val) {
+                    file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                },
+                2,
+                1,
+                3
+            ],
+            [
+                function ($val) {
+                    file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                },
+                2,
+                3,
+                2
+            ],
+            [
+                new Process(
+                    function ($val) {
+                        file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                    }
+                ),
+                2,
+                3,
+                2
+            ]
+        ];
+    }
+
     /**
-     * @dataProvider providerTickerType()
+     * @dataProvider provider
      * @param $tickerCallback
      * @param $ticksCount
      * @param $tickDuration
      * @param $delayMicroSecond
      */
-    public function test($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond)
+    public function testInvokable($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond)
     {
         $file = 'data/' . static::FILE_WITH_RESULT;
 
@@ -28,10 +79,10 @@ class TickerTest extends CallbackTestDataProvider
         }
 
         $sleepTime = ($ticksCount * $tickDuration) + ($delayMicroSecond / 1000000);
-        $ticker = new Ticker($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond);
+        $object = new Ticker($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond);
 
         $startTime = microtime(true);
-        $ticker($file);
+        $object($file);
         $finishTime = microtime(true);
 
         $workTimeDiff = abs(($finishTime - $startTime) - $sleepTime);
@@ -52,5 +103,25 @@ class TickerTest extends CallbackTestDataProvider
         if (file_exists($file)) {
             unlink($file);
         }
+    }
+
+    public function testInvokableWithCallback()
+    {
+        $ticker = new Ticker(function ($value) {
+            return $value;
+        }, 4, 1);
+
+        $res = $ticker(5);
+
+        $this->assertEquals(array_values($res), [5, 5, 5, 5]);
+    }
+
+    public function testInvokableWithInterrupter()
+    {
+        $ticker = new Ticker(new Process(function ($value) {
+            return $value;
+        }), 4, 1);
+
+        $this->assertTrue($ticker(5) instanceof PayloadInterface);
     }
 }

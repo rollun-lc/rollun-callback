@@ -71,12 +71,13 @@ class Ticker
                 $payload = call_user_func($this->tickerCallback, $value);
 
                 if ($payload instanceof PayloadInterface) {
+                    $interrupterWasCalled = true;
                     $payload = $payload->getPayload();
                 }
 
-                $result[$startTime]['data'] = $payload;
+                $result[$startTime] = $payload;
             } catch (RuntimeException $exception) {
-                $result[$startTime]['data'] = $exception->getMessage();
+                $result[$startTime] = $exception->getMessage();
             }
 
             $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);

@@ -12,7 +12,7 @@ use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueClient;
 use rollun\callback\Queues\QueueInterface;
 
-class QueueTest extends TestCase
+class QueueFillerTest extends TestCase
 {
     /**
      * @var QueueInterface

@@ -158,10 +158,14 @@ Interrupter разновидность `callable` для "параллельно
 ```php
 return [
     SerializedCallbackAbstractFactory::class => [
-        'serializedCallback' => [
-            SerializedCallbackAbstractFactory::KEY_CALLBACK_METHOD => '__invoke',
-            SerializedCallbackAbstractFactory::KEY_SERVICE_NAME => CallMe::class,
-        ],
+        'testCallback1' => 'CallMe::class',
+        'testCallback2' => ['service', 'invokableMethod'],
+        'testCallback3' => 'CallMe::invokableMethod',
+        'testCallback4' => [new TextObject(), 'invokableMethod'],
+        'testCallback5' => 'declaredFunction',
+        'testCallback6' => function ($value) {
+            return $value;
+        },
     ],
     ExtractorAbstractFactory::class => [
         'extractor' => [
