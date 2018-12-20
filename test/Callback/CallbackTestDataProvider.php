@@ -149,8 +149,15 @@ class CallbackTestDataProvider extends TestCase
                 2,
                 3,
                 2
+            ],
+            [
+                new Process(function ($val) {
+                    file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
+                }),
+                2,
+                3,
+                2
             ]
-
         ];
     }
 }

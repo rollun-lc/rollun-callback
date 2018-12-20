@@ -4,17 +4,17 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\callback\Callback\Interrupter;
+namespace rollun\callback\Callback;
 
-use InvalidArgumentException;
-use rollun\callback\Promise\Interfaces\PayloadInterface;
-use rollun\callback\Promise\SimplePayload;
+use ReflectionException;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
+use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
 use Zend\Http\Client;
+use Zend\Http\Response;
 
-class Http implements InterrupterInterface
+class Http
 {
     /**
      * @var string 'http://example.org'
@@ -48,7 +48,7 @@ class Http implements InterrupterInterface
      * @param $url
      * @param array $options
      * @param LifeCycleToken|null $lifeCycleToken
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct($url, array $options = [], LifeCycleToken $lifeCycleToken = null)
     {
@@ -69,10 +69,11 @@ class Http implements InterrupterInterface
     }
 
     /**
-     * @param array $value
+     * @param null|mixed $value
      * @return Client
+     * @throws Exception
      */
-    protected function initHttpClient(array $value = [])
+    protected function createHttpClient($value = null): Client
     {
         $httpClient = new Client($this->url, $this->options);
 
@@ -88,37 +89,40 @@ class Http implements InterrupterInterface
         }
 
         $httpClient->setMethod('POST');
-        $httpClient->setParameterPost($value);
+        $httpClient->setRawBody(Serializer::jsonSerialize($value));
 
         return $httpClient;
     }
 
     /**
-     * @param $value
-     * @return PayloadInterface
-     * array contains field
+     * @param null $value
+     * @return array|mixed
+     * @throws Exception
      */
-    public function __invoke($value): PayloadInterface
+    public function __invoke($value = null)
     {
-        $client = $this->initHttpClient($value);
+        $client = $this->createHttpClient($value);
         $response = $client->send();
 
-        if ($response->isOk()) {
+        if ($this->isResponseAcceptable($response)) {
             $payload = Serializer::jsonUnserialize($response->getBody());
-
-            if (!$payload instanceof PayloadInterface) {
-                throw new InvalidArgumentException(
-                    sprintf('instance of %s expected after unserializing', PayloadInterface::class)
-                );
-            }
         } else {
-            $payload = new SimplePayload(null, [
+            $payload = [
                 'error' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
                 'message' => $response->getBody(),
-            ]);
+            ];
         }
 
         return $payload;
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     */
+    public function isResponseAcceptable($response)
+    {
+        return $response->getStatusCode() == 202 || $response->getStatusCode() == 200;
     }
 }

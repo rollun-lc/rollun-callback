@@ -63,14 +63,8 @@ class InterrupterMiddleware implements MiddlewareInterface
             $result = ['error' => $t->getMessage()];
         }
 
-        if (!$result instanceof PayloadInterface) {
-            $result = new SimplePayload(null, $result);
-            $statusCode = 202;
-        } else {
-            $statusCode = 200;
-        }
-
-        $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, Serializer::jsonSerialize($result));
+        $statusCode = $result instanceof PayloadInterface ? 202 : 200;
+        $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, $result);
         $request = $request->withAttribute(ResponseInterface::class, new EmptyResponse($statusCode));
         $response = $handler->handle($request);
 

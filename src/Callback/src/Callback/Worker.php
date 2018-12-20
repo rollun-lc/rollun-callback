@@ -8,6 +8,8 @@ namespace rollun\callback\Callback;
 
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\QueueFiller;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
 
@@ -53,17 +55,36 @@ class Worker
         InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
     }
 
+    /**
+     * Fetch value from queue and apply callable for it
+     *
+     * @return array|SimplePayload
+     */
     public function __invoke()
     {
-        $callTimes = 0;
+        $result = [];
         $startTime = time();
+        $interrupterWasCalled = false;
 
-        while ((time() - $startTime) < self::WORK_SECOND) {
+        if ($this->queue->isEmpty()) {
+            $this->logger->info("Queue {queue} is empty. Worker not started.", [
+                "queue" => $this->queue->getName()
+            ]);
+        }
+
+        while ((time() - $startTime) < self::WORK_SECOND && !$this->queue->isEmpty()) {
             $message = $this->queue->getMessage();
             $value = $this->unserialize($message->getData());
 
             try {
-                call_user_func($this->callback, $value);
+                $payload = call_user_func($this->callback, $value);
+
+                if ($payload instanceof PayloadInterface) {
+                    $result[] = $payload->getPayload();
+                    $interrupterWasCalled = true;
+                } else {
+                    $result[] = $payload;
+                }
             } catch (\Throwable $throwable) {
                 $this->logger->error("By handled message {message_id} from {queue} get {exception} ", [
                     "message_id" => $message->getId(),
@@ -72,16 +93,14 @@ class Worker
                     "exception" => $throwable->__toString(),
                     "exception_trace" => $throwable->getTraceAsString()
                 ]);
-            } finally {
-                $callTimes++;
             }
         }
 
-        if (!$callTimes) {
-            $this->logger->info("Queue {queue} is empty. Worker not started.", [
-                "queue" => $this->queue->getName()
-            ]);
+        if ($interrupterWasCalled) {
+            $result = new SimplePayload(null, $result);
         }
+
+        return $result;
     }
 
     /**

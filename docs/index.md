@@ -14,6 +14,13 @@ composer require rollun-com/rollun-callback
 2. Подключите `rollun\callback\ConfigProvider` в ваш конфигурационный файл.
 3. Подключите роутинг в ваш конфигурационный файл роутингов (это обычно `config/routes.php`).
 
+Для запуска тестов нужно запустить `php-fpm` сервер:
+```bash
+php -S localhost:8000 -t public
+```
+> Переменная окружения HOST должна совпадать с хостом на котором запускаеться php-fpm, в данном случае это 
+http://localhost:8000
+
 ## Callback и Interrupter
 
 `Callback` и `Interrupter` - это `callable`(invokable) объекты. Главное отличие между ними, это то что `Interrupter` 
@@ -41,6 +48,7 @@ var_dump($callback('World')); // 'Hello World'
 `Multiplexer` - это `Callback`, который принимает массив из `callable`.
 Так же может быть сериализован, так как заворачивает все callable в `SerializedCallback`.
 При вызове `Multiplexer` вызывает все `callable` по приоритетам, указанные в качестве ключей массива.
+Возвращает значение в зависимости от типа `callable` (`Interrupter` или `Callback`).
 
 Пример:
 
@@ -58,6 +66,7 @@ $multiplexer('The same'); // 1. The same; 2. The same; 3. The same;
 
 `Ticker` - это `Callback`, который вызывает переданий ему `callable` заданное количество раз, с заданим 
 интервалом и с заданим отложеним вызовом.
+Возвращает значение в зависимости от типа `callable` (`Interrupter` или `Callback`).
 
 Пример:
 
@@ -88,24 +97,17 @@ $worker(); // It is test1; It is test2;
 ```
 
 
-#### Extractor
+#### Http
 
-
-`Extractor` - это `Callback`, который берет с очереди сериализованный объект `Job`, десиарелизует его и 
-вытягивает с него `callable` и аргумент для вызова и вызывает данный `callable`.
+`Http` - это `Callback`, который вызывает [webhook](#webhook). Возвращает значение в зависимости от типа `callable` 
+(`Interrupter` или `Callback`).
 
 Пример:
 
 ```php
-$job = new Job(function ($value) {
-    echo "Hello $value";
-}, 'Word!');
-
-$queue = new Queue('testQueue');
-$queue->addMessage($job->serializeBase64());
-
-$extractor = new Extractor($queue);
-$extractor(); // Hello Word!
+$url = 'http://exampe.com/api/webhook/external-callable-service';
+$object = new Http($url);
+$payload = $object();
 ```
 
 
@@ -140,20 +142,16 @@ Interrupter разновидность `callable` для "параллельно
 `SerializedCallback` для того чтобы `Interrupter` можно было так же сериализовать и передать на выполнение другому 
 интераптору и так до бесконечности.
  
-Обычно вызов `$interruptor()` не возвращает результат выполнения `callable`, зато сразу возвращает управление.   
+Вызов `$interruptor()` возвращает результат выполнения в виде об'екта `PayloadInterface`.   
 Например в `Interruptor\Process` стартует новый процесс.  
 После вызова  `$info = $interruptor()`, в `$info` будет массив с информацией о процессе (PID, ...).  
 Если нужен результат выполнения `callable`, используйте `Promise` из
 [rollun-com/rollun-promise](https://github.com/rollun-com/rollun-promise).
 
-Все `Interruptor` должны вернуть обьект реализующий `PayloadInterface`.
-
 **Виды `Interrupter`:**
 
 * `Process` - позволяет выполнить `callback` в отдельном процессе
-* `Http` - позволяет вызывать удаление webhook`и с сериализованым значением в качестве POST параметра
 * `QueueFiller` - при вызове добавляет сериализованное значение в очередь
-
 
 #### Примеры конфигураций для абстрактных фабрик `Callback` и `Interrupter`.
 
@@ -217,8 +215,10 @@ return [
 
 ## Webhook
 
-`Webhook` - это сервис, который сразу же возвращает управление, несмотря на длительность возможных операций.
-По сути это `Interrupter`, который который поднимается по названию сервиса, вызывается и сразу же отдает ответ.
+`Webhook` - это сервис, который в зависимости от ресурса будет обрабатывать или `Callback` или `Interupter`.
+По сути это `callable`, который который поднимается по названию сервиса, вызывается и отдает ответ.
+В зависимости от того будет ли это `Interrupter` или `Callback` буде возвращен результат `PayloadInterface` или 
+`mixed` (тип зависит от возвращаемого типа `Callback`) соответственно.
 
 Для того чтобы использовать `webhook`, нужно подключить следующий роутинг, где `resourceName` - это газвание сервиса.
 

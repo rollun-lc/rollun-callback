@@ -14,8 +14,6 @@ class CronTest extends TestCase
 {
     protected $url;
 
-    protected $config;
-
     /**
      * @var ServiceManager
      */
@@ -32,7 +30,6 @@ class CronTest extends TestCase
 
     public function setUp()
     {
-        $this->config = $this->getContainer()->get('config');
         $this->url = getenv("HOST") . '/api/webhook/cron';
         $this->deleteJob();
     }

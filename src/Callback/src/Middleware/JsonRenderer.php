@@ -10,7 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use rollun\utils\Json\Serializer;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\Stream;
 
 /**
  * Create json http response
@@ -41,7 +43,10 @@ class JsonRenderer implements MiddlewareInterface
             $headers = $response->getHeaders();
         }
 
-        $response = new JsonResponse($data, $status);
+        $stream =  new Stream('php://temp', 'wb+');
+        $stream->write(Serializer::jsonSerialize($data));
+        $stream->rewind();
+        $response = new Response($stream, $status);
 
         foreach ($headers as $header => $value) {
             $response = $response->withHeader($header, $value);

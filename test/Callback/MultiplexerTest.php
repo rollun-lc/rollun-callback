@@ -8,6 +8,7 @@ namespace rollun\test\Callback;
 
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Multiplexer;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
 use Zend\ServiceManager\ServiceManager;
 
 class MultiplexerTest extends CallbackTestDataProvider
@@ -35,6 +36,7 @@ class MultiplexerTest extends CallbackTestDataProvider
     {
         $multiplexer = new Multiplexer($this->getContainer()->get(LoggerInterface::class), $callbacks);
         $result = $multiplexer($val);
-        $this->assertTrue(isset($result['data']));
+        $payload = $result instanceof PayloadInterface ? $result->getPayload() : $result;
+        $this->assertTrue(isset($payload));
     }
 }

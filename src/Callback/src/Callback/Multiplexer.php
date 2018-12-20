@@ -8,6 +8,8 @@ namespace rollun\callback\Callback;
 
 use Psr\Log\LoggerInterface;
 use ReflectionException;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\dic\InsideConstruct;
 
 class Multiplexer
@@ -39,28 +41,34 @@ class Multiplexer
 
     /**
      * @param $value
-     * @return array
+     * @return array|PayloadInterface
      */
     public function __invoke($value = null)
     {
         $result = [];
         ksort($this->callbacks);
+        $interrupterWasCalled = false;
 
         foreach ($this->callbacks as $key => $callback) {
             try {
-                $result['data'][$key] = $callback($value);
+                $payload = $callback($value);
+
+                if ($payload instanceof PayloadInterface) {
+                    $result[$key] = $payload->getPayload();
+                    $interrupterWasCalled = true;
+                } else {
+                    $result[$key] = $payload;
+                }
             } catch (\Exception $e) {
                 $this->logger->error(
-                    "Get error {message} by handle '$key' callback service.",
-                    [
-                        "code" => $e->getCode(),
-                        "line" => $e->getLine(),
-                        "file" => $e->getFile(),
-                        "message" => $e->getMessage(),
-                    ]
+                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", ['exception' => $e]
                 );
-                $result['data'][] = $e;
+                $result[$key] = $e;
             }
+        }
+
+        if ($interrupterWasCalled) {
+            $result = new SimplePayload(null, $result);
         }
 
         return $result;
