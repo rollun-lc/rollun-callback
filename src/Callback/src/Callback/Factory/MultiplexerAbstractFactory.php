@@ -25,7 +25,6 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-
         $config = $container->get('config');
         $logger = $container->get(LoggerInterface::class);
         $factoryConfig = $config[static::KEY][$requestedName];

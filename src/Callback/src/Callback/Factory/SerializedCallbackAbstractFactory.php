@@ -13,12 +13,6 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class SerializedCallbackAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_SERVICE_NAME = 'serviceName';
-
-    const KEY_CALLBACK_METHOD = 'callbackMethod';
-
-    const DEFAULT_CLASS = SerializedCallback::class;
-
     /**
      * @param ContainerInterface $container
      * @param string $requestedName
@@ -39,22 +33,15 @@ class SerializedCallbackAbstractFactory implements AbstractFactoryInterface
     {
         if (empty($options)) {
             $config = $container->get('config');
-            $serviceConfig = $config[static::class][$requestedName];
+            $callable = $config[static::class][$requestedName];
         } else {
-            $serviceConfig = $options;
+            $callable = $options['callable'];
         }
 
-        if (!isset($serviceConfig[static::KEY_SERVICE_NAME])) {
-            throw new InvalidArgumentException("Invalid option '" . static::KEY_SERVICE_NAME . "'");
+        if (is_array($callable) && !is_object(current($callable))) {
+            array_unshift($callable, $container->get(array_shift($callable)));
         }
 
-        $service = $container->get($serviceConfig[static::KEY_SERVICE_NAME]);
-        $method = $serviceConfig[static::KEY_CALLBACK_METHOD];
-
-        if (!method_exists($service, $method)) {
-            throw new InvalidArgumentException("Undefined method '$method' in class " . get_class($service));
-        }
-
-        return new SerializedCallback([$service, $serviceConfig[static::KEY_CALLBACK_METHOD]]);
+        return new SerializedCallback($callable);
     }
 }
