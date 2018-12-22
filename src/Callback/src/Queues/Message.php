@@ -1,23 +1,28 @@
 <?php
-
 /**
- * Zaboy lib (http://zaboy.org/lib/)
- *
- * @copyright  Zaboychenko Andrey
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
+
+declare(strict_types = 1);
 
 namespace rollun\callback\Queues;
 
-
-use rollun\callback\Callback\CallbackException;
+use InvalidArgumentException;
 
 class Message
 {
-//TODO: counter of return in queue
     /**
+     * @var array
      *
-     * @var array [id] => test_queue100586ba95da73a60.15840006 [time-in-flight] => 1483450832 [delayed-until] => 1483450717 [Body] => test1 [priority] => 100
+     * Example SqsQueue message response
+     *  [
+     *      'id' => test_queue100586ba95da73a60.15840006,
+     *      'time-in-flight' => 1483450832,
+     *      'delayed-until' => 1483450717,
+     *      'Body' => test1,
+     *      'priority' => 100,
+     *  ]
      */
     protected $message;
 
@@ -27,27 +32,38 @@ class Message
     }
 
     /**
+     * @param $message
+     * @return Message
+     */
+    static function createInstance($message)
+    {
+        return new self($message);
+    }
+
+    /**
      * @return string
-     * @throws CallbackException
+     * @throws InvalidArgumentException
      */
     public function getData()
     {
         if (isset($this->message['Body'])) {
             return $this->message['Body'];
         }
-        throw new CallbackException('No "Body" in the message');
+
+        throw new InvalidArgumentException('No "Body" in the message');
     }
 
     /**
      * @return string
-     * @throws CallbackException
+     * @throws InvalidArgumentException
      */
     public function getId()
     {
         if (isset($this->message['id'])) {
             return $this->message['id'];
         }
-        throw new CallbackException('No "id" in the message');
+
+        throw new InvalidArgumentException('No "id" in the message');
     }
 
     /**
@@ -57,5 +73,4 @@ class Message
     {
         return $this->message;
     }
-
 }

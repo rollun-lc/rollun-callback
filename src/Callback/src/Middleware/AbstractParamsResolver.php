@@ -1,12 +1,15 @@
 <?php
-
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
 
 namespace rollun\callback\Middleware;
 
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
-use Interop\Http\ServerMiddleware\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractParamsResolver implements MiddlewareInterface
 {
@@ -14,21 +17,14 @@ abstract class AbstractParamsResolver implements MiddlewareInterface
 
     const HANDLE_METHOD = "";
 
-    /**
-     * Process an incoming server request and return a response, optionally delegating
-     * to the next middleware component to create the response.
-     *
-     * @param ServerRequestInterface $request
-     * @param DelegateInterface $delegate
-     *
-     * @return ResponseInterface
-     */
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getMethod() === static::HANDLE_METHOD) {
             $request = $this->resolveParams($request);
         }
-        $response = $delegate->process($request);
+
+        $response = $handler->handle($request);
+
         return $response;
     }
 
@@ -36,5 +32,5 @@ abstract class AbstractParamsResolver implements MiddlewareInterface
      * @param ServerRequestInterface $request
      * @return ServerRequestInterface
      */
-    abstract protected function resolveParams(ServerRequestInterface $request);
+    abstract protected function resolveParams(ServerRequestInterface $request): ServerRequestInterface;
 }

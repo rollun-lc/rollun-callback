@@ -1,18 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: victorsecuring
- * Date: 04.03.17
- * Time: 11:03 AM
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Callback\Factory;
 
-
-use rollun\callback\Callback\Callback;
-use rollun\callback\Callback\CallbackInterface;
-use rollun\callback\Callback\Interruptor\InterruptorInterface;
-use rollun\callback\Callback\Interruptor\Process;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 
@@ -22,20 +15,17 @@ abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterfa
 
     const KEY_CLASS = 'class';
 
-    const DEFAULT_CLASS = CallbackInterface::class;
+    const DEFAULT_CLASS = null;
 
     /**
-     * Can the factory create an instance for the service?
-     *
-     * @param  ContainerInterface $container
-     * @param  string $requestedName
+     * @param ContainerInterface $container
+     * @param string $requestedName
      * @return bool
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        $config = $container->get('config');
-        return (isset($config[static::KEY][$requestedName]) &&
-            is_a($config[static::KEY][$requestedName][static::KEY_CLASS], static::DEFAULT_CLASS, true));
-    }
+        $class = $container->get('config')[static::KEY][$requestedName][static::KEY_CLASS] ?? null;
 
+        return is_a($class, static::DEFAULT_CLASS, true);
+    }
 }

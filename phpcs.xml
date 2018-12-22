@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+    <description>The coding standard for PHP_CodeSniffer itself.</description>
+
+    <!-- Use colors in output -->
+    <arg name="colors" />
+
+    <!-- Exclude external libraries -->
+    <exclude-pattern>vendor</exclude-pattern>
+
+    <!-- How many files should be checked simultaneously -->
+    <arg name="parallel" value="75" />
+
+    <!-- Don't hide tokenizer exceptions -->
+    <rule ref="Internal.Tokenizer.Exception">
+        <type>error</type>
+    </rule>
+
+    <!-- Include the whole PSR1 and PSR2 standards -->
+    <rule ref="PSR12" />
+
+    <!-- The soft limit on line length SHOULD be 120 characters -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+        </properties>
+    </rule>
+</ruleset>

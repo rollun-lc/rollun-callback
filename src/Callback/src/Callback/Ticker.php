@@ -1,26 +1,21 @@
 <?php
-
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 20.01.17
- * Time: 12:09
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
-
 
 namespace rollun\callback\Callback;
 
-use rollun\dic\InsideConstruct;
-use rollun\promise\Promise\Exception;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\utils\Time\UtcTime;
+use RuntimeException;
 
 /**
- * Ticker
- *
- * @category   callback
- * @package    rollun
+ * Class Ticker
+ * @package rollun\callback\Callback
  */
-class Ticker implements CallbackInterface
+class Ticker
 {
     /**
      * @var callable $tickerCallback
@@ -49,7 +44,11 @@ class Ticker implements CallbackInterface
      */
     public function __construct(callable $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMicroSecond = 0)
     {
-        $this->tickerCallback = new Callback($tickerCallback);
+        if (!$tickerCallback instanceof SerializedCallback) {
+            $tickerCallback = new SerializedCallback($tickerCallback);
+        }
+
+        $this->tickerCallback = $tickerCallback;
         $this->ticksCount = $ticksCount;
         $this->tickDuration = $tickDuration;
         $this->delayMicroSecond = $delayMicroSecond;
@@ -57,33 +56,38 @@ class Ticker implements CallbackInterface
 
     /**
      * @param $value
-     * @return array
+     * @return array|PayloadInterface
      */
-    protected function tick($value)
+    public function __invoke($value = null)
     {
         usleep($this->delayMicroSecond);
         $result = [];
+        $interrupterWasCalled = false;
+
         for ($index = 0; $index < $this->ticksCount; $index++) {
             $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
+
             try {
-                $result[$startTime]['data'] = call_user_func($this->tickerCallback, $value);
-            } catch (Exception $exception) {
+                $payload = call_user_func($this->tickerCallback, $value);
+
+                if ($payload instanceof PayloadInterface) {
+                    $payload = $payload->getPayload();
+                }
+
+                $result[$startTime]['data'] = $payload;
+            } catch (RuntimeException $exception) {
                 $result[$startTime]['data'] = $exception->getMessage();
             }
+
             $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
             $sleepTime = $sleepTime <= 0 ? 0 : $sleepTime;
             usleep($sleepTime * 1000000);
         }
-        return $result;
-    }
 
-    /**
-     * @param $value
-     * @return array
-     * array contains field
-     */
-    public function __invoke($value)
-    {
-        return $this->tick($value);
+        if ($interrupterWasCalled) {
+            $result = new SimplePayload(null, $result);
+        }
+
+        return $result;
     }
 }

@@ -1,19 +1,18 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 03.01.17
- * Time: 16:40
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Callback;
 
 use Psr\Log\LoggerInterface;
-use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interruptor\Job;
+use ReflectionException;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
+use rollun\callback\Promise\SimplePayload;
 use rollun\dic\InsideConstruct;
 
-class Multiplexer implements CallbackInterface
+class Multiplexer
 {
     /**
      * @var callable[]
@@ -27,55 +26,51 @@ class Multiplexer implements CallbackInterface
 
     /**
      * Multiplexer constructor.
-     * @param callable[] $callbacks
+     * @param array $callbacks
      * @param LoggerInterface|null $logger
-     * @throws \ReflectionException
      */
-    public function __construct(array $callbacks = [], LoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger, array $callbacks = [])
     {
-        if (!$this->checkCallable($callbacks)) {
-            throw new CallbackException('Interruptors array contains non InterruptorInterface object!');
-        }
-        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
-        $this->callbacks = $callbacks;
-    }
+        $this->logger = $logger;
 
-    /**
-     * Multiplexer constructor.
-     * @param callable[] $callbacks
-     * @return bool
-     */
-    protected function checkCallable(array $callbacks)
-    {
-        foreach ($callbacks as $key => $callback) {
-            if (!is_callable($callback)) {
-                return false;
-            }
+        ksort($callbacks);
+        foreach ($callbacks as $callback) {
+            $this->addCallback($callback);
         }
-        return true;
     }
 
     /**
      * @param $value
-     * @return array
+     * @return array|PayloadInterface
      */
-    public function __invoke($value)
+    public function __invoke($value = null)
     {
         $result = [];
         ksort($this->callbacks);
+        $interrupterWasCalled = false;
+
         foreach ($this->callbacks as $key => $callback) {
             try {
-                $result['data'][$key] = $callback($value);
+                $payload = $callback($value);
+
+                if ($payload instanceof PayloadInterface) {
+                    $result[$key] = $payload->getPayload();
+                    $interrupterWasCalled = true;
+                } else {
+                    $result[$key] = $payload;
+                }
             } catch (\Exception $e) {
-                $this->logger->error("Get error {message} by handle '$key' callback service.", [
-                    "code" => $e->getCode(),
-                    "line" => $e->getLine(),
-                    "file" => $e->getFile(),
-                    "message" => $e->getMessage()
-                ]);
-                $result['data'][] = $e;
+                $this->logger->error(
+                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", ['exception' => $e]
+                );
+                $result[$key] = $e;
             }
         }
+
+        if ($interrupterWasCalled) {
+            $result = new SimplePayload(null, $result);
+        }
+
         return $result;
     }
 
@@ -89,6 +84,11 @@ class Multiplexer implements CallbackInterface
             if (array_key_exists($priority, $this->callbacks)) {
                 $this->addCallback($this->callbacks[$priority], $priority + 1);
             }
+
+            if (!$callback instanceof SerializedCallback) {
+                $callback = new SerializedCallback($callback);
+            }
+
             $this->callbacks[$priority] = $callback;
         } else {
             $this->callbacks[] = $callback;
@@ -104,7 +104,7 @@ class Multiplexer implements CallbackInterface
     }
 
     /**
-     *
+     * @throws ReflectionException
      */
     public function __wakeup()
     {

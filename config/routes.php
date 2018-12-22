@@ -26,7 +26,24 @@
  * );
  */
 
-/*$app->get('/', App\Action\HomePageAction::class, 'home');*/
-if($container->has('webhookActionRender')){
-    $app->route('/api/webhook[/{resourceName}]','webhookActionRender',['GET', 'POST'],'webhook');
-}
+use Psr\Container\ContainerInterface;
+use rollun\callback\Middleware\WebhookMiddleware;
+use Zend\Expressive\Application;
+use Zend\Expressive\MiddlewareFactory;
+use Zend\Expressive\Router\Route;
+
+/**
+ * Setup middleware pipeline:
+ * @param Application $app
+ * @param MiddlewareFactory $factory
+ * @param ContainerInterface $container
+ * @return void
+ */
+return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
+    $app->route(
+        '/api/webhook/{resourceName}',
+        WebhookMiddleware::class,
+        Route::HTTP_METHOD_ANY,
+        'webhook'
+    );
+};

@@ -1,24 +1,18 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 03.03.17
- * Time: 17:01
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
 namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use rollun\callback\Callback\Interruptor\InterruptorInterface;
 use rollun\callback\Callback\Ticker;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
-
     const KEY_CALLBACK = 'callback';
 
     const DEFAULT_CLASS = Ticker::class;
@@ -35,16 +29,10 @@ class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
     const KEY_DELAY_MC = 'delay_MC';
 
     /**
-     * Create an object
-     *
-     * @param  ContainerInterface $container
-     * @param  string $requestedName
-     * @param  null|array $options
-     * @return object
-     * @throws ServiceNotFoundException if unable to resolve the service.
-     * @throws ServiceNotCreatedException if an exception is raised when
-     *     creating a service.
-     * @throws ContainerException if any other error occurs
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param array|null $options
+     * @return mixed|object
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
@@ -63,6 +51,7 @@ class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
         $class = $factoryConfig[static::KEY_CLASS];
 
         $ticker = new $class($tickerCallback, $ticksCount, $tickDuration, $delayMC);
+
         return $ticker;
     }
 }

@@ -1,13 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: root
- * Date: 04.01.17
- * Time: 14:21
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
  */
 
-namespace rollun\callback\Queues;
+declare(strict_types = 1);
 
+namespace rollun\callback\Queues;
 
 class QueueException extends \RuntimeException
 {

@@ -1,0 +1,128 @@
+<?php
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
+
+namespace rollun\callback\Callback;
+
+use ReflectionException;
+use rollun\dic\InsideConstruct;
+use rollun\logger\LifeCycleToken;
+use rollun\utils\Json\Exception;
+use rollun\utils\Json\Serializer;
+use Zend\Http\Client;
+use Zend\Http\Response;
+
+class Http
+{
+    /**
+     * @var string 'http://example.org'
+     */
+    protected $url;
+
+    /**
+     * @var string 'mylogin'
+     * @see https://en.wikipedia.org/wiki/Basic_access_authentication
+     */
+    protected $login;
+
+    /**
+     * @var string 'kjfgn&56Ykjfnd'
+     * @see https://en.wikipedia.org/wiki/Basic_access_authentication
+     */
+    protected $password;
+
+    /**
+     * @var array
+     */
+    protected $options = [];
+
+    /**
+     * @var LifeCycleToken
+     */
+    private $lifeCycleToken;
+
+    /**
+     * HttpClient constructor.
+     * @param $url
+     * @param array $options
+     * @param LifeCycleToken|null $lifeCycleToken
+     * @throws ReflectionException
+     */
+    public function __construct($url, array $options = [], LifeCycleToken $lifeCycleToken = null)
+    {
+        InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
+        $this->url = rtrim(trim($url), '/');
+
+        if (isset($options['login']) && isset($options['password'])) {
+            $this->login = $options['login'];
+            $this->password = $options['password'];
+        }
+
+        $supportedKeys = [
+            'maxredirects',
+            'useragent',
+            'timeout',
+        ];
+        $this->options = array_intersect_key($options, array_flip($supportedKeys));
+    }
+
+    /**
+     * @param null|mixed $value
+     * @return Client
+     * @throws Exception
+     */
+    protected function createHttpClient($value = null): Client
+    {
+        $httpClient = new Client($this->url, $this->options);
+
+        $headers['Content-Type'] = 'application/json';
+        $headers['Accept'] = 'application/json';
+        $headers['APP_ENV'] = getenv('APP_ENV');
+        $headers['LifeCycleToken'] = $this->lifeCycleToken->serialize();
+
+        $httpClient->setHeaders($headers);
+
+        if (isset($this->login) && isset($this->password)) {
+            $httpClient->setAuth($this->login, $this->password);
+        }
+
+        $httpClient->setMethod('POST');
+        $httpClient->setRawBody(Serializer::jsonSerialize($value));
+
+        return $httpClient;
+    }
+
+    /**
+     * @param null $value
+     * @return array|mixed
+     * @throws Exception
+     */
+    public function __invoke($value = null)
+    {
+        $client = $this->createHttpClient($value);
+        $response = $client->send();
+
+        if ($this->isResponseAcceptable($response)) {
+            $payload = Serializer::jsonUnserialize($response->getBody());
+        } else {
+            $payload = [
+                'error' => $response->getReasonPhrase(),
+                'status' => $response->getStatusCode(),
+                'message' => $response->getBody(),
+            ];
+        }
+
+        return $payload;
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     */
+    public function isResponseAcceptable($response)
+    {
+        return $response->getStatusCode() == 202 || $response->getStatusCode() == 200;
+    }
+}
