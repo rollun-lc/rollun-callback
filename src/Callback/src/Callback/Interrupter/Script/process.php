@@ -33,9 +33,10 @@ try {
     $job = Job::unserializeBase64($paramsString);
     $callback = $job->getCallback();
     $value = $job->getValue();
-    $logger->info("process with job [$paramsString] start.");
+    $logger->info("Interrupter 'Process' start.");
+    $logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
-    $logger->info("process with job [$paramsString] finish.");
+    $logger->info("Interrupter 'Process' finish.");
     exit(0);
 } catch (\Throwable $e) {
     $logger->error($e->getMessage(), [
