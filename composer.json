@@ -46,7 +46,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "rollun\\test\\": "test"
+      "rollun\\test\\unit\\": "test/unit",
+      "rollun\\test\\functional\\": "test/functional"
     }
   },
   "scripts": {

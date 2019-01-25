@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\Callback\Queues;
+namespace rollun\test\unit\Callback\Queues;
 
 use PHPUnit\Framework\TestCase;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
