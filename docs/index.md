@@ -277,3 +277,41 @@ $object->addMessage(Message::createInstance('b'));
 $object->purgeQueue();
 echo $object->isEmpty() == true; // 1
 ```
+
+## Pid killer
+
+Представте что у вас есть воркер, который берет c очереди сообщения и запускает новый php процесс (асинхронный),
+передавая в качестве параметра только что полученое сообщение. Для того чтобы безопасно реализовать такую идею
+и не перезагрузить систему зомби процессами нужен механизм, который позволяет через некоторое время
+в любом случае убивать этот процесс. Для этого все и придумана система, которая называется `Pid killer`.
+
+`Pid killer` состоит из трех объектов.
+- `PidKiller\Worker` - это именно тот воркер который запускает процесс и добавляет в очередь `pid` процесса для дальнейшего удаления
+- `PidKiller\QueueClient` - клиент очереди который изымает из сообщения данный о через какое время сообщение можно будет изъять из очереди
+(это и есть то время которое процесс может жить).
+- `PidKiller\LinuxPidKiller` - объект который достает из очереди сообщения о процессе который нужно убить и убивает его.
+
+
+```php
+$fileQueueAdapter = new FileAdapter('/tmp/test');
+$pidQueue = new PidKiller\ClientQueue($fileQueueAdapter, 'pidqueue');
+$workQueue = new PidKiller\ClientQueue($fileQueueAdapter, 'workqueue');
+
+$pidKiller = new PidKiller\PidKiller($pidQueue);
+$process = new Process(function () {
+   sleep(1000);
+});
+
+$worker = new PidKiller\Worker($workQueue, $pidKiller, $process, 10);
+
+// run new process
+$worker();
+
+// nothing heppen because it is to early
+$pidKiller();
+
+sleep(10);
+
+// kill process
+$pidKiller();
+```
