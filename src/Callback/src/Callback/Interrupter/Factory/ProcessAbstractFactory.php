@@ -10,10 +10,13 @@ use Interop\Container\ContainerInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\ConfigProvider;
 
 class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
 {
     const DEFAULT_CLASS = Process::class;
+
+    const KEY_MAX_EXECUTE_TIME = 'maxExecuteTime';
 
     /**
      * @param ContainerInterface $container
@@ -31,7 +34,15 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
             throw new CallbackException("Service with name '$callback' - not found.");
         }
         $callback = $container->get($callback);
+        $maxExecuteTime = $factoryConfig[self::KEY_MAX_EXECUTE_TIME] ?? null;
+        $pidKiller = null;
 
-        return new $class(new SerializedCallback($callback));
+        if ($maxExecuteTime && $container->has(ConfigProvider::PID_KILLER_SERVICE)) {
+            $pidKiller = $container->get(ConfigProvider::PID_KILLER_SERVICE);
+        } else {
+            $maxExecuteTime = null;
+        }
+
+        return new $class(new SerializedCallback($callback), $pidKiller, $maxExecuteTime);
     }
 }

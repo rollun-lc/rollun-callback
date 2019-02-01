@@ -7,13 +7,12 @@
 namespace rollun\callback\PidKiller;
 
 use Psr\Log\LoggerInterface;
-use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\Interrupter\QueueFiller;
 use rollun\callback\Callback\SerializedCallback;
-use rollun\callback\Promise\SimplePayload;
-use rollun\callback\Queues\Message;
+use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
+use Zend\Log\Writer\WriterInterface;
 
 /**
  * Class Worker
@@ -27,17 +26,14 @@ class Worker
     protected $queue;
 
     /**
-     * @var LinuxPidKiller
+     * @var WriterInterface
      */
-    protected $linuxPidKiller;
-
-    /** @var integer */
-    protected $processLifetime;
+    protected $writer;
 
     /**
      * @var SerializedCallback
      */
-    protected $process;
+    protected $callback;
 
     /**
      * @var LoggerInterface
@@ -47,54 +43,48 @@ class Worker
     /**
      * Worker constructor.
      * @param QueueInterface $queue
-     * @param LinuxPidKiller $linuxPidKiller
-     * @param Process $process
-     * @param int $processLifetime
+     * @param callable $callback
+     * @param WriterInterface|null $writer
      * @param LoggerInterface|null $logger
      * @throws \ReflectionException
      */
     public function __construct(
         QueueInterface $queue,
-        LinuxPidKiller $linuxPidKiller,
-        Process $process,
-        int $processLifetime,
+        callable $callback,
+        WriterInterface $writer = null,
         LoggerInterface $logger = null
     ) {
         $this->queue = $queue;
-        $this->linuxPidKiller = $linuxPidKiller;
-        $this->processLifetime = $processLifetime;
 
-        if (!$process instanceof SerializedCallback) {
-            $process = new SerializedCallback($process);
+        if (!$callback instanceof SerializedCallback) {
+            $callback = new SerializedCallback($callback);
         }
 
-        $this->process = $process;
+        $this->writer = $writer;
+        $this->callback = $callback;
         InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
     }
 
     /**
      * Fetch value from queue and apply callable for it
      *
-     * @return array|SimplePayload
+     * @return array|PayloadInterface|null
      */
     public function __invoke()
     {
         if ($this->queue->isEmpty()) {
-            $this->logger->info("Queue {queue} is empty. Worker not started.", [
+            $this->logger->debug("Queue {queue} is empty. Worker not started.", [
                 "queue" => $this->queue->getName(),
             ]);
+            return null;
         }
 
         $message = $this->queue->getMessage();
-        $value = $this->unserialize($message->getData());
 
         try {
-            $payload = $this->process->__invoke($value);
-            $this->linuxPidKiller->create([
-                'pid' => $payload->getId(),
-                'lstart' => time(),
-                'delaySeconds' => $this->processLifetime
-            ]);
+            $value = $this->unserialize($message->getData());
+            $payload = $this->callback->__invoke($value);
+            $this->queue->deleteMessage($message);
         } catch (\Throwable $throwable) {
             $payload = [
                 "message_id" => $message->getId(),
@@ -103,6 +93,11 @@ class Worker
                 "exception" => $throwable,
             ];
             $this->logger->error("By handled message {message_id} from {queue} get {exception} ", $payload);
+        }
+
+        if ($this->writer) {
+            $event = is_array($payload) ? $payload : (array)$payload;
+            $this->writer->write($event);
         }
 
         return $payload;
@@ -123,7 +118,7 @@ class Worker
      */
     public function __sleep()
     {
-        return ["pidQueue", "workQueue", "process"];
+        return ["queue", "callback"];
     }
 
     /**

@@ -12,7 +12,6 @@ use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
 use ReputationVIP\QueueClient\Adapter\FileAdapter;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
-use rollun\callback\Queues\QueueClient;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**

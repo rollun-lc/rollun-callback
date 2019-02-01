@@ -759,7 +759,12 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
                 $explode = explode('.', $file->getRelativePathname());
                 array_pop($explode);
                 $implode = implode('.', $explode);
-                $queueName = ltrim($implode, $this->timeInFlight);
+
+                if ($this->timeInFlight && strstr($implode, strval($this->timeInFlight)) === false) {
+                    continue;
+                }
+
+                $queueName = ltrim($implode, strval($this->timeInFlight));
                 $priorities = $this->priorityHandler->getAll();
                 foreach ($priorities as $priority) {
                     if (!empty($priority)) {

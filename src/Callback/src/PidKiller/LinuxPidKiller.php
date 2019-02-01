@@ -9,12 +9,13 @@ namespace rollun\callback\PidKiller;
 use DateTime;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use rollun\callback\ConfigProvider;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
 use RuntimeException;
 
-class LinuxPidKiller
+class LinuxPidKiller implements PidKillerInterface
 {
     const DEF_MAX_MESSAGE_COUNT = 1000;
 
@@ -22,14 +23,14 @@ class LinuxPidKiller
     protected $maxMessageCount;
 
     /** @var QueueInterface */
-    protected $queue;
+    protected $pidKillerQueue;
 
     /** @var LoggerInterface */
     protected $logger;
 
     public function __construct(
-        QueueInterface $queue,
         $maxMessageCount = null,
+        QueueInterface $pidKillerQueue = null,
         LoggerInterface $logger = null
     ) {
         if (substr(php_uname(), 0, 7) == "Windows") {
@@ -40,9 +41,15 @@ class LinuxPidKiller
             $maxMessageCount = self::DEF_MAX_MESSAGE_COUNT;
         }
 
-        $this->queue = $queue;
         $this->maxMessageCount = $maxMessageCount;
-        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
+        InsideConstruct::setConstructParams([
+            "logger" => LoggerInterface::class,
+        ]);
+    }
+
+    public function getPidQueue()
+    {
+        return $this->pidKillerQueue;
     }
 
     /**
@@ -65,21 +72,35 @@ class LinuxPidKiller
             throw new InvalidArgumentException("Field 'delaySeconds' is missing");
         }
 
-        if (!isset($record['lstart'])) {
-            throw new InvalidArgumentException("Field 'lstart' is missing");
+        $lstart = self::getPidStartTime($record['pid']);
+
+        if (!$lstart) {
+            throw new RuntimeException("Process with pid {$record['pid']} does not exist");
         }
 
-        $this->queue->addMessage(Message::createInstance([
-            'pid' => intval($record['pid']),
-            'lstart' => $record['lstart'],
+        $this->pidKillerQueue->addMessage(Message::createInstance([
+            'id' => self::generateId($record['pid'], $lstart),
             QueueClient::KEY_DELAY_SECOND => $record['delaySeconds'],
         ]));
 
         $this->logger->debug("PID-KILLER add pid {pid} to queue at {date}", [
             'date' => date('D d.m H:i:s'),
             'pid' => $record['pid'],
-            'lstart' => $record['lstart'],
+            'lstart' => $lstart,
         ]);
+    }
+
+    public static function getPidStartTime($pid)
+    {
+        $pids = LinuxPidKiller::ps();
+
+        foreach ($pids as $pidInfo) {
+            if ($pid == $pidInfo['pid']) {
+                return $pidInfo['lstart'];
+            }
+        }
+
+        return null;
     }
 
     public function __invoke()
@@ -90,7 +111,7 @@ class LinuxPidKiller
 
         $messageCount = 0;
 
-        while ($messageCount < $this->maxMessageCount && $queueMessage = $this->queue->getMessage()) {
+        while ($messageCount < $this->maxMessageCount && $queueMessage = $this->pidKillerQueue->getMessage()) {
             $messageCount++;
             $message = $queueMessage->getData();
             $pids = self::ps();
@@ -100,8 +121,11 @@ class LinuxPidKiller
             ]);
 
             foreach ($pids as $processInfo) {
-                if ($processInfo['pid'] == $message['pid']) {
-                    $result = exec("kill -9 {$message['pid']}");
+                $id = self::generateId($processInfo['pid'], $processInfo['lstart']);
+
+                if ($id == $message['id']) {
+                    [$pid] = explode('.', $message['id']);
+                    $result = exec("kill -9 {$pid}");
 
                     if ($result) {
                         $this->logger->warning("PID-KILLER failed kill process message from queue", [
@@ -109,7 +133,7 @@ class LinuxPidKiller
                             'result' => $result,
                         ]);
                     } else {
-                        $this->queue->deleteMessage($queueMessage);
+                        $this->pidKillerQueue->deleteMessage($queueMessage);
                         $this->logger->debug("PID-KILLER successfully kill process and delete message from queue", [
                             'message' => $message,
                         ]);
@@ -121,6 +145,11 @@ class LinuxPidKiller
         $this->logger->debug("PID-KILLER finish working at {date}", [
             'date' => date('D d.m H:i:s'),
         ]);
+    }
+
+    public static function generateId($pid, $lstart)
+    {
+        return "{$pid}.{$lstart}";
     }
 
     /**

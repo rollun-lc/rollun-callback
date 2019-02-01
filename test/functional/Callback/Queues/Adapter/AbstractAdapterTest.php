@@ -214,4 +214,10 @@ abstract class AbstractAdapterTest extends TestCase
 
         $this->deleteQueue();
     }
+
+    public function testSerialize()
+    {
+        $object = $this->createObject();
+        $this->assertTrue((bool)unserialize(serialize($object)));
+    }
 }

@@ -15,9 +15,9 @@ class SqsAdapterTest extends AbstractAdapterTest
     protected function createObject($timeInFlight = 0): AdapterInterface
     {
         $sqsClient = SqsClient::factory([
-            'key' => 'AKIAIDZAP6SF5TK6AN2Q',
-            'secret'  => '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',
-            'region' => 'eu-north-1',
+            'key' => getenv('AWS_KEY'),
+            'secret'  => getenv('AWS_SECRET'),
+            'region' => getenv('AWS_REGION'),
         ]);
 
         return new SqsAdapter($sqsClient, null, [

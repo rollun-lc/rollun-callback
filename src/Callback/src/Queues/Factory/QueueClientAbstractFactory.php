@@ -39,6 +39,10 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class QueueClientAbstractFactory implements AbstractFactoryInterface
 {
+    const KEY_CLASS = 'class';
+
+    const KEY_DEFAULT_CLASS = QueueClient::class;
+
     const KEY_DELAY = 'delay';
 
     const KEY_NAME = 'name';
@@ -52,7 +56,18 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        return !empty($container->get('config')[self::class][$requestedName]);
+        $serviceConfig = $container->get('config')[self::class][$requestedName] ?? [];
+
+        if (empty($serviceConfig)) {
+            return false;
+        }
+
+        if (isset($serviceConfig[self::KEY_CLASS])
+            && !is_a($serviceConfig[self::KEY_CLASS], self::KEY_DEFAULT_CLASS, true)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -76,8 +91,9 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
         $adapter = $container->get($serviceConfig[self::KEY_ADAPTER]);
         $delay = $serviceConfig[self::KEY_DELAY] ?? 0;
         $queueName = $serviceConfig[self::KEY_NAME];
+        $class = $serviceConfig[self::KEY_CLASS] ?? self::KEY_DEFAULT_CLASS;
 
-        return new QueueClient($adapter, $queueName, $delay);
+        return new $class($adapter, $queueName, $delay);
     }
 
     public static function createSimpleQueueClient(): QueueClient
