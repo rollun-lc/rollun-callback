@@ -18,6 +18,7 @@ composer.lock
 .idea/workspace.xml
 .idea/*
 .idea/vcs.xml
+.env
 
 # Sensitive or high-churn files:
 .idea/dataSources/

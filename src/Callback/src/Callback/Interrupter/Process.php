@@ -8,6 +8,7 @@ namespace rollun\callback\Callback\Interrupter;
 
 use ReflectionException;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
 use rollun\dic\InsideConstruct;
@@ -33,16 +34,31 @@ class Process extends InterrupterAbstract
      */
     protected $lifecycleToken;
 
+    /** @var integer */
+    protected $maxExecuteTime;
+
+    /** @var PidKillerInterface */
+    protected $pidKiller;
+
     /**
      * Process constructor.
      * @param callable $callback
+     * @param PidKillerInterface|null $pidKiller
+     * @param int|null $maxExecuteTime
      * @param LifeCycleToken|null $lifecycleToken
      * @throws ReflectionException
      */
-    public function __construct(callable $callback, LifeCycleToken $lifecycleToken = null)
-    {
+    public function __construct(
+        callable $callback,
+        PidKillerInterface $pidKiller = null,
+        int $maxExecuteTime = null,
+        LifeCycleToken $lifecycleToken = null
+    ) {
         InsideConstruct::setConstructParams(["lifecycleToken" => LifeCycleToken::class]);
         parent::__construct($callback);
+
+        $this->pidKiller = $pidKiller;
+        $this->maxExecuteTime = $maxExecuteTime;
     }
 
     /**
@@ -50,7 +66,7 @@ class Process extends InterrupterAbstract
      * @return PayloadInterface
      * @throws ReflectionException
      */
-    public function __invoke($value): PayloadInterface
+    public function __invoke($value = null): PayloadInterface
     {
         $cmd = 'php ' . $this->getScriptName();
 
@@ -72,6 +88,14 @@ class Process extends InterrupterAbstract
         }
 
         $pid = trim(shell_exec($cmd));
+
+        if ($this->maxExecuteTime && $this->pidKiller) {
+            $this->pidKiller->create([
+                'secondDelays' => $this->maxExecuteTime,
+                'pid' => $pid,
+            ]);
+        }
+
         $payload = new SimplePayload($pid, $payload);
 
         return $payload;

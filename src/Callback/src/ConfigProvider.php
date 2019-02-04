@@ -28,12 +28,18 @@ use rollun\callback\Middleware\JsonRenderer;
 use rollun\callback\Middleware\PostParamsResolver;
 use rollun\callback\Middleware\WebhookMiddleware;
 use rollun\callback\Middleware\WebhookMiddlewareFactory;
+use rollun\callback\PidKiller\LinuxPidKiller;
+use rollun\callback\PidKiller\PidKillerInterface;
+use rollun\callback\PidKiller\QueueClient;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 class ConfigProvider
 {
+    const PID_KILLER_SERVICE = 'pidKillerService';
+
     public function __invoke()
     {
         return [
@@ -67,6 +73,11 @@ class ConfigProvider
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
                     WebhookMiddleware::class => WebhookMiddlewareFactory::class,
                     CallablePluginManager::class => CallablePluginManagerFactory::class,
+                    LinuxPidKiller::class => InvokableFactory::class,
+                ],
+                'aliases' => [
+                    self::PID_KILLER_SERVICE => LinuxPidKiller::class,
+                    PidKillerInterface::class => self::PID_KILLER_SERVICE,
                 ],
             ],
             CallablePluginManagerFactory::KEY_INTERRUPTERS => [
@@ -82,6 +93,22 @@ class ConfigProvider
                     MultiplexerAbstractFactory::class,
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
+                ],
+            ],
+            SqsAdapterAbstractFactory::class => [
+                'pidQueueAdapter' => [
+                    SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG => [
+                        'key' => getenv('AWS_KEY'),
+                        'secret'  => getenv('AWS_SECRET'),
+                        'region' => getenv('AWS_REGION'),
+                    ],
+                ],
+            ],
+            QueueClientAbstractFactory::class => [
+                'pidKillerQueue' => [
+                    QueueClientAbstractFactory::KEY_CLASS => QueueClient::class,
+                    QueueClientAbstractFactory::KEY_ADAPTER => 'pidQueueAdapter',
+                    QueueClientAbstractFactory::KEY_NAME => 'pidqueue',
                 ],
             ],
         ];

@@ -75,6 +75,14 @@ class QueueClient implements QueueInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function deleteMessage(Message $message)
+    {
+        $this->queueClient->deleteMessage($this->getName(), $message->getMessage());
+    }
+
+    /**
      * Pop message from queue
      *
      * @param $priority
@@ -86,7 +94,6 @@ class QueueClient implements QueueInterface
 
         if (isset($messages[0])) {
             $message = new Message($messages[0]);
-            $this->queueClient->deleteMessage($this->getName(), $messages[0]);
         } else {
             $message = null;
         }

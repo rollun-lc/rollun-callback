@@ -4,14 +4,14 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\Callback;
+namespace rollun\test\unit\Callback;
 
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\SerializedCallback;
 
 /**
  * Class CallbackTest
- * @package rollun\test\Callback
+ * @package rollun\test\unit\Callback
  */
 class SerializedCallbackTest extends TestCase
 {
@@ -19,8 +19,8 @@ class SerializedCallbackTest extends TestCase
     {
         return [
             [[new A(), 'invoke']],
-            ['rollun\test\Callback\A::staticInvoke'],
-            ['rollun\test\Callback\invoke'],
+            ['rollun\test\unit\Callback\A::staticInvoke'],
+            ['rollun\test\unit\Callback\invoke'],
             [
                 function ($value) {
                     return $value;

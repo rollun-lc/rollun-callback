@@ -41,7 +41,7 @@ class Message
     }
 
     /**
-     * @return string
+     * @return mixed
      * @throws InvalidArgumentException
      */
     public function getData()

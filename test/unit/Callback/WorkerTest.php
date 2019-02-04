@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\Callback;
+namespace rollun\test\unit\Callback;
 
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Interrupter\Process;

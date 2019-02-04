@@ -38,6 +38,12 @@ interface QueueInterface
     public function addMessage(Message $message, $priority = null): void;
 
     /**
+     * @param Message $message
+     * @return void
+     */
+    public function deleteMessage(Message $message);
+
+    /**
      * Get queue name
      *
      * @return string
