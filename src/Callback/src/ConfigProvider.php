@@ -28,6 +28,8 @@ use rollun\callback\Middleware\JsonRenderer;
 use rollun\callback\Middleware\PostParamsResolver;
 use rollun\callback\Middleware\WebhookMiddleware;
 use rollun\callback\Middleware\WebhookMiddlewareFactory;
+use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
+use rollun\callback\PidKiller\Factory\WorkerManagerAbstractFactory;
 use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\PidKiller\QueueClient;
@@ -61,6 +63,10 @@ class ConfigProvider
                     MultiplexerAbstractFactory::class,
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
+
+                    // Pidkiller
+                    WorkerAbstractFactory::class,
+                    WorkerManagerAbstractFactory::class,
                 ],
                 'invokables' => [
                     GetParamsResolver::class => GetParamsResolver::class,
