@@ -11,8 +11,8 @@ namespace rollun\callback\Queues\Factory;
 use Aws\Sqs\SqsClient;
 use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
-use ReputationVIP\QueueClient\Adapter\SQSAdapter;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
+use rollun\callback\Queues\Adapter\SqsAdapter;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
