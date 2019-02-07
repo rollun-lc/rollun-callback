@@ -26,8 +26,12 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *          'requestedServiceName1' => [
  *              'priorityHandler' => 'priorityHandlerServiceName',
  *              'sqsClientConfig' => [
- *
+ *                  // ...
  *              ],
+ *              'sqsAttributes' => [
+ *                  'VisibilityTimeout' => 10,
+ *                  // ...
+ *              ]
  *          ],
  *          'requestedServiceName2' => [
  *
@@ -44,6 +48,8 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
     const KEY_PRIORITY_HANDLER = 'priorityHandler';
 
     const KEY_SQS_CLIENT_CONFIG = 'sqsClientConfig';
+
+    const KEY_SQS_ATTRIBUTES = 'sqsAttributes';
 
     /**
      * @param ContainerInterface $container
@@ -80,7 +86,8 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
         }
 
         $sqsClient = SqsClient::factory($serviceConfig[self::KEY_SQS_CLIENT_CONFIG]);
+        $attributes = $serviceConfig[self::KEY_SQS_ATTRIBUTES] ?? [];
 
-        return new SQSAdapter($sqsClient, $priorityHandler);
+        return new SQSAdapter($sqsClient, $priorityHandler, $attributes);
     }
 }

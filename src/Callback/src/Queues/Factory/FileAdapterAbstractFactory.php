@@ -25,6 +25,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *          'requestedServiceName1' => [
  *              'priorityHandler' => 'priorityHandlerServiceName',
  *              'storageDirPath' => 'path/to/directory', // default 'data/queues'
+ *              'timeInflight' => 0,
  *          ],
  *          'requestedServiceName2' => [
  *
@@ -41,6 +42,8 @@ class FileAdapterAbstractFactory implements AbstractFactoryInterface
     const KEY_STORAGE_DIR_PATH = 'storageDirPath';
 
     const KEY_PRIORITY_HANDLER = 'priorityHandler';
+
+    const KEY_TIME_IN_FLIGHT = 'timeInflight';
 
     /**
      * @param ContainerInterface $container
@@ -72,12 +75,14 @@ class FileAdapterAbstractFactory implements AbstractFactoryInterface
             $priorityHandler = $container->get(ThreeLevelPriorityHandler::class);
         }
 
+        $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;
+
         if (isset($serviceConfig[self::KEY_STORAGE_DIR_PATH])) {
             $storageDirPath = $serviceConfig[self::KEY_STORAGE_DIR_PATH];
         } else {
             $storageDirPath = 'data' . DIRECTORY_SEPARATOR . 'queues';
         }
 
-        return new FileAdapter($storageDirPath, $priorityHandler);
+        return new FileAdapter($storageDirPath, $timeInFlight, $priorityHandler);
     }
 }
