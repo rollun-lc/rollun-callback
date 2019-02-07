@@ -91,7 +91,7 @@ class Process extends InterrupterAbstract
 
         if ($this->maxExecuteTime && $this->pidKiller) {
             $this->pidKiller->create([
-                'secondDelays' => $this->maxExecuteTime,
+                'delaySeconds' => $this->maxExecuteTime,
                 'pid' => $pid,
             ]);
         }

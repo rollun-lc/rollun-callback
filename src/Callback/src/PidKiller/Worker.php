@@ -92,7 +92,7 @@ class Worker
                 "queue" => $this->queue->getName(),
                 "exception" => $throwable,
             ];
-            $this->logger->error("By handled message {message_id} from {queue} get {exception} ", $payload);
+            $this->logger->error("Worker failed execute callback", $payload);
         }
 
         if ($this->writer) {
@@ -118,7 +118,7 @@ class Worker
      */
     public function __sleep()
     {
-        return ["queue", "callback"];
+        return ["queue", "callback", "writer"];
     }
 
     /**

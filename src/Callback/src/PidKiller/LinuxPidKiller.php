@@ -197,7 +197,7 @@ class LinuxPidKiller implements PidKillerInterface
      */
     public function __sleep()
     {
-        return ["queue"];
+        return ["pidKillerQueue", "maxMessageCount"];
     }
 
     /**
