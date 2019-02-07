@@ -34,6 +34,11 @@ class WorkerManager
     protected $logger;
 
     /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * @var int
      */
     protected $processCount;
@@ -47,6 +52,7 @@ class WorkerManager
     ) {
         $this->processCount = $processCount;
         $this->tableGateway = $tableGateway;
+        $this->tableName = $tableGateway->getTable();
         $this->process = $process;
         $this->setWorkerManagerName($workerManagerName);
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
@@ -149,5 +155,18 @@ class WorkerManager
         }
 
         return $freeSlots;
+    }
+
+    public function __sleep()
+    {
+        return ['process', 'workerManagerName', 'processCount', 'tableName'];
+    }
+
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup([
+            'logger' => LoggerInterface::class,
+            'tableGateway' => $this->tableName,
+        ]);
     }
 }
