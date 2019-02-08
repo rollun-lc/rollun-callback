@@ -72,7 +72,7 @@ class FileAdapterAbstractFactory implements AbstractFactoryInterface
                 $priorityHandler = $container->get($serviceConfig[self::KEY_PRIORITY_HANDLER]);
             }
         } else {
-            $priorityHandler = $container->get(ThreeLevelPriorityHandler::class);
+            $priorityHandler = null;
         }
 
         $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;

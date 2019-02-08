@@ -33,6 +33,10 @@ class LinuxPidKiller implements PidKillerInterface
         QueueInterface $pidKillerQueue = null,
         LoggerInterface $logger = null
     ) {
+        InsideConstruct::setConstructParams([
+            "logger" => LoggerInterface::class,
+        ]);
+
         if (substr(php_uname(), 0, 7) == "Windows") {
             throw new RuntimeException('Pid killer does not work on Windows');
         }
@@ -42,9 +46,6 @@ class LinuxPidKiller implements PidKillerInterface
         }
 
         $this->maxMessageCount = $maxMessageCount;
-        InsideConstruct::setConstructParams([
-            "logger" => LoggerInterface::class,
-        ]);
     }
 
     public function getPidQueue()
@@ -196,7 +197,7 @@ class LinuxPidKiller implements PidKillerInterface
      */
     public function __sleep()
     {
-        return ["queue"];
+        return ["pidKillerQueue", "maxMessageCount"];
     }
 
     /**
