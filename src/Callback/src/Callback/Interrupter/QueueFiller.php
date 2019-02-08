@@ -68,11 +68,13 @@ class QueueFiller implements InterrupterInterface
         $message = new Message($serializedData);
         $payload = [
             "message" => $value,
-            "queue" => $this->queue->getName()
+            "queue" => $this->queue->getName(),
         ];
 
         $this->queue->addMessage($message);
-        $this->logger->info("Add message to queue", $payload);
+        $this->logger->info("Add message to queue", [
+            'message' => $message,
+        ]);
 
         return new SimplePayload(null, $payload);
     }
