@@ -64,6 +64,20 @@ return [
             'storageDirPath' => 'data',
         ],
     ],
+    SqsAdapterAbstractFactory::class => [
+        'testDeadLetterSqsAdapter' => [
+            'deadLetterQueueName' => 'deadLetter',
+            'maxReceiveCount' => 5,
+            'sqsAttributes' => [
+                'VisibilityTimeout' => 1
+            ],
+            'sqsClientConfig' => [
+                'key' => getenv('AWS_KEY'),
+                'secret'  => getenv('AWS_SECRET'),
+                'region' => getenv('AWS_REGION'),
+            ],
+        ]
+    ],
     QueueClientAbstractFactory::class => [
         'testSqsQueueClient' => [
             'name' => 'sqsQueue',
