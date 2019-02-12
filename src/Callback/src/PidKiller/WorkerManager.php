@@ -50,11 +50,11 @@ class WorkerManager
         int $processCount,
         LoggerInterface $logger = null
     ) {
-        $this->processCount = $processCount;
         $this->tableGateway = $tableGateway;
-        $this->tableName = $tableGateway->getTable();
         $this->process = $process;
         $this->setWorkerManagerName($workerManagerName);
+        $this->processCount = $processCount;
+        $this->tableName = $tableGateway->getTable();
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
     }
 

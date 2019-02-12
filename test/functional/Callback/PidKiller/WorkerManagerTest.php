@@ -12,6 +12,8 @@ use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\QueueClient;
 use rollun\callback\PidKiller\WorkerManager;
 use rollun\callback\Queues\Adapter\FileAdapter;
+use rollun\dic\InsideConstruct;
+use rollun\logger\LifeCycleToken;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -93,6 +95,31 @@ class WorkerManagerTest extends TestCase
         $this->assertFalse($this->isProcessRunning($pid1));
         $this->assertFalse($this->isProcessRunning($pid2));
         $this->assertTrue($this->isProcessRunning($pid3));
+    }
+
+    public function testSerialize()
+    {
+        $container = require 'config/container.php';
+        $container->setService('slots', $this->tableGateway);
+
+        // Init lifecycle token
+        $lifeCycleToken = LifeCycleToken::generateToken();
+
+        if (LifeCycleToken::getAllHeaders() && array_key_exists("LifeCycleToken", LifeCycleToken::getAllHeaders())) {
+            $lifeCycleToken->unserialize(LifeCycleToken::getAllHeaders()["LifeCycleToken"]);
+        }
+
+        $container->setService(LifeCycleToken::class, $lifeCycleToken);
+
+        InsideConstruct::setContainer($container);
+
+        $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
+        $process = new Process(function () {
+            sleep(2);
+        }, $pidKiller);
+
+        $workerManager = new WorkerManager($this->tableGateway, $process, 'test', 1);
+        $this->assertTrue(boolval(unserialize(serialize($workerManager))));
     }
 
     protected function isProcessRunning(int $pid): bool
