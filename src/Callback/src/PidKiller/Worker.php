@@ -91,7 +91,7 @@ class Worker
                 "queue" => $this->queue->getName(),
                 "exception" => $throwable,
             ];
-            $this->logger->error("Worker failed execute callback", $payload);
+            $this->logger->warning("Worker failed execute callback", $payload);
         }
 
         if ($this->writer) {
