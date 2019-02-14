@@ -87,7 +87,7 @@ class Worker
             $this->queue->deleteMessage($message);
         } catch (\Throwable $throwable) {
             $payload = [
-                "message" => $message ? $message->getId() : null,
+                "message" => $message ? $message->getMessage() : null,
                 "queue" => $this->queue->getName(),
                 "exception" => $throwable,
             ];
