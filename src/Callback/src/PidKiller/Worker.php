@@ -72,14 +72,12 @@ class Worker
      */
     public function __invoke()
     {
-        if ($this->queue->isEmpty()) {
+        if (!$message = $this->queue->getMessage()) {
             $this->logger->debug("Queue {queue} is empty. Worker not started.", [
                 "queue" => $this->queue->getName(),
             ]);
             return null;
         }
-
-        $message = $this->queue->getMessage();
 
         try {
             $value = $this->unserialize($message->getData());
@@ -87,7 +85,7 @@ class Worker
             $this->queue->deleteMessage($message);
         } catch (\Throwable $throwable) {
             $payload = [
-                "message" => $message ? $message->getId() : null,
+                "message" => $message ? $message->getMessage() : null,
                 "queue" => $this->queue->getName(),
                 "exception" => $throwable,
             ];

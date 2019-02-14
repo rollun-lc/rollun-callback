@@ -142,4 +142,9 @@ class QueueClient implements QueueInterface
     {
         return $this->queueName;
     }
+
+    public function getNumberMessages($priority = null): int
+    {
+        return (int)$this->queueClient->getNumberMessages($this->queueName, $priority);
+    }
 }

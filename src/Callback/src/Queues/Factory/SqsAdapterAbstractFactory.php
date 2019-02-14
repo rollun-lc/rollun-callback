@@ -8,11 +8,11 @@ declare(strict_types = 1);
 
 namespace rollun\callback\Queues\Factory;
 
-use Aws\Sqs\SqsClient;
 use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use rollun\callback\Queues\Adapter\SqsAdapter;
+use rollun\callback\Queues\DeadLetterQueue;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
@@ -51,11 +51,7 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
 
     const KEY_SQS_ATTRIBUTES = 'sqsAttributes';
 
-    const KEY_DEAD_LATTER_QUEUE_NAME = 'deadLetterQueueName';
-
     const KEY_MAX_RECEIVE_COUNT = 'maxReceiveCount';
-
-    const DEF_MAX_RECEIVE_COUNT = 10;
 
     /**
      * @param ContainerInterface $container
@@ -91,62 +87,16 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
             throw new InvalidArgumentException("Invalid option '" . self::KEY_SQS_CLIENT_CONFIG . "'");
         }
 
-        $sqsClient = SqsClient::factory($serviceConfig[self::KEY_SQS_CLIENT_CONFIG]);
         $attributes = $serviceConfig[self::KEY_SQS_ATTRIBUTES] ?? [];
+        $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? null;
 
-        if (isset($serviceConfig[self::KEY_MAX_RECEIVE_COUNT])
-            && !isset($serviceConfig[self::KEY_DEAD_LATTER_QUEUE_NAME])) {
-            throw new InvalidArgumentException("You forget specify dead letter queue name");
-        }
-
-        if (isset($serviceConfig[self::KEY_DEAD_LATTER_QUEUE_NAME])) {
-            $queues = $sqsClient->listQueues();
-            $results = $queues->get('QueueUrls') ?? [];
-            $exist = false;
-
-            foreach ($results as $result) {
-                $result = explode('/', $result);
-                $queueName = array_pop($result);
-
-                if ($queueName == $serviceConfig[self::KEY_DEAD_LATTER_QUEUE_NAME]) {
-                    $exist = true;
-                }
-            }
-
-            if (!$exist) {
-                $sqsClient->createQueue([
-                    'QueueName' => $serviceConfig[self::KEY_DEAD_LATTER_QUEUE_NAME],
-                    'Attributes' => [],
-                ]);
-            }
-
-            $maxExecuteTime = 120;
-            $endTime = $maxExecuteTime + time();
-            $success = false;
-
-            while (!$success) {
-                if ($endTime <= time()) {
-                    throw new \RuntimeException("Too much time executing");
-                }
-
-                try {
-                    $queueUrl = $sqsClient->getQueueUrl([
-                        'QueueName' => $serviceConfig[self::KEY_DEAD_LATTER_QUEUE_NAME],
-                    ])->get('QueueUrl');
-                    $deadLetterTargetArn = $sqsClient->getQueueArn($queueUrl);
-                    $success = true;
-                } catch (\Throwable $e) {
-                    $success = false;
-                    sleep(1);
-                }
-            }
-
-            $redrivePolicy = json_encode([
-                'maxReceiveCount' => $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ??
-                    self::DEF_MAX_RECEIVE_COUNT,
-                'deadLetterTargetArn' => $deadLetterTargetArn
+        if ($maxMessageCount) {
+            /** @var DeadLetterQueue $deadLetterQueue */
+            $deadLetterQueue = $container->get(DeadLetterQueue::class);
+            $attributes['RedrivePolicy'] = json_encode([
+                'deadLetterTargetArn' => $deadLetterQueue->getQueueArn(),
+                'maxReceiveCount' => $maxMessageCount,
             ]);
-            $attributes['RedrivePolicy'] = $redrivePolicy;
         }
 
         return new SQSAdapter($serviceConfig[self::KEY_SQS_CLIENT_CONFIG], $priorityHandler, $attributes);

@@ -66,35 +66,74 @@ class WorkerManagerTest extends TestCase
     {
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
         $process = new Process(function () {
-            sleep(1000);
+            sleep(5);
         }, $pidKiller);
 
         $workerManager = new WorkerManager($this->tableGateway, $process, 'test', 4);
-        $pid = $workerManager->__invoke();
-        $this->assertTrue($this->isProcessRunning($pid));
+        $pids = $workerManager->__invoke();
+
+        foreach ($pids as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
+    }
+
+    public function testInvokeWithLongProcess()
+    {
+        $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
+        $process = new Process(function () {sleep(1000);}, $pidKiller);
+        $workerManager = new WorkerManager($this->tableGateway, $process, 'test', 1);
+        $pids = $workerManager->__invoke();
+
+        foreach ($pids as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
+
+        $newPids = $workerManager->__invoke();
+
+        foreach ($pids as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
+
+        $this->assertEquals(0, count($newPids));
     }
 
     public function testInvokeWithRealRefresh()
     {
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
-        $process = new Process(function () {
-            sleep(2);
-        }, $pidKiller);
+        $process = new Process(function () {sleep(2);}, $pidKiller);
 
-        $workerManager = new WorkerManager($this->tableGateway, $process, 'test', 1);
-        $pid1 = $workerManager->__invoke();
-        $this->assertTrue($this->isProcessRunning($pid1));
-        sleep(2);
+        $workerManager = new WorkerManager($this->tableGateway, $process, 'test', 4);
+        $pids1 = $workerManager->__invoke();
+        $this->assertEquals(count($pids1), 4);
 
-        $pid2 = $workerManager->__invoke();
-        $this->assertFalse($this->isProcessRunning($pid1));
-        $this->assertTrue($this->isProcessRunning($pid2));
+        foreach ($pids1 as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
 
         sleep(2);
-        $pid3 = $workerManager->__invoke();
-        $this->assertFalse($this->isProcessRunning($pid1));
-        $this->assertFalse($this->isProcessRunning($pid2));
-        $this->assertTrue($this->isProcessRunning($pid3));
+        $pids2 = $workerManager->__invoke();
+        $this->assertEquals(count($pids2), 4);
+
+        foreach ($pids1 as $pid) {
+            $this->assertFalse($this->isProcessRunning($pid));
+        }
+        foreach ($pids2 as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
+
+        sleep(2);
+        $pids3 = $workerManager->__invoke();
+        $this->assertEquals(count($pids3), 4);
+
+        foreach ($pids1 as $pid) {
+            $this->assertFalse($this->isProcessRunning($pid));
+        }
+        foreach ($pids2 as $pid) {
+            $this->assertFalse($this->isProcessRunning($pid));
+        }
+        foreach ($pids3 as $pid) {
+            $this->assertTrue($this->isProcessRunning($pid));
+        }
     }
 
     public function testSerialize()

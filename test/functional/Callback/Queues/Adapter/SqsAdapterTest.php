@@ -10,6 +10,7 @@ use Aws\Sqs\SqsClient;
 use Psr\Container\ContainerInterface;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use rollun\callback\Queues\Adapter\SqsAdapter;
+use rollun\callback\Queues\DeadLetterQueue;
 
 class SqsAdapterTest extends AbstractAdapterTest
 {
@@ -38,61 +39,20 @@ class SqsAdapterTest extends AbstractAdapterTest
         return $this->container;
     }
 
-//    public function testDeadLetterQueue()
-//    {
-//        $testQueue = 'testQueue';
-//        $deadLetterQueueName = 'deadLetter';
-//        $maxReceiveCount = 5;
-//        $sqsClient = SqsClient::factory([
-//            'key' => getenv('AWS_KEY'),
-//            'secret'  => getenv('AWS_SECRET'),
-//            'region' => getenv('AWS_REGION'),
-//        ]);
-//
-//        /** @var SqsAdapter $sqsAdapter */
-//        $sqsAdapter = $this->getContainer()->get('testDeadLetterSqsAdapter');
-//
-//
-//        // Create queue if not exist.
-//        $queues = $sqsAdapter->listQueues();
-//        if (!in_array($testQueue, $queues)) {
-//            $sqsAdapter->createQueue($testQueue);
-//        }
-//
-//        $sqsAdapter->createQueue($testQueue);
-//        $sqsAdapter->addMessage($testQueue, 'a');
-//
-//        while ($maxReceiveCount) {
-//            $maxReceiveCount--;
-//            $sqsAdapter->getMessages($testQueue);
-//            sleep(1);
-//        }
-//
-//        $message = false;
-//
-//        while (!$message) {
-//            sleep(20);
-//            $queueUrl = $sqsClient->getQueueUrl([
-//                'QueueName' => $deadLetterQueueName,
-//            ])->get('QueueUrl');
-//            $results = $sqsClient->receiveMessage([
-//                'QueueUrl' => $queueUrl,
-//                'MaxNumberOfMessages' => 1,
-//            ]);
-//            $messages = $results->get('Messages') ?? [];
-//
-//            $message = array_shift($messages);
-//            $message = unserialize($message['Body']);
-//        }
-//
-//        $this->assertEquals($message, 'a');
-//
-//        $sqsAdapter->deleteQueue($testQueue);
-//        $queueUrl = $sqsClient->getQueueUrl([
-//            'QueueName' => $deadLetterQueueName,
-//        ])->get('QueueUrl');
-//        $sqsClient->deleteQueue([
-//            'QueueUrl' => $queueUrl,
-//        ]);
-//    }
+    public function testCreateAdapterWithDeadLetterQueue()
+    {
+        /** @var DeadLetterQueue $deadLetterQueue */
+        $adapter = $this->getContainer()->get('testDeadLetterSqsAdapter');
+        /** @var DeadLetterQueue $deadLetterQueue */
+        $deadLetterQueue = $this->getContainer()->get(DeadLetterQueue::class);
+
+        $adapter->createQueue('testQueue');
+        $adapter->addMessage('testQueue', 'a');
+        $adapter->getMessages('testQueue');
+
+        sleep(2);
+        $messages = $deadLetterQueue->getMessage();
+        $adapter->deleteQueue('testQueue');
+        $this->assertEquals($messages->getMessage()['Body'], 'a');
+    }
 }

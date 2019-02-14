@@ -63,7 +63,7 @@ class Message
             return $this->message['id'];
         }
 
-        throw new InvalidArgumentException('No "id" in the message');
+        return null;
     }
 
     /**

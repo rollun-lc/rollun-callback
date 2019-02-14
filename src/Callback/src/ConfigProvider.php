@@ -33,6 +33,8 @@ use rollun\callback\PidKiller\Factory\WorkerManagerAbstractFactory;
 use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\PidKiller\QueueClient;
+use rollun\callback\Queues\DeadLetterQueue;
+use rollun\callback\Queues\Factory\DeadLetterQueueFactory;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
@@ -80,6 +82,7 @@ class ConfigProvider
                     WebhookMiddleware::class => WebhookMiddlewareFactory::class,
                     CallablePluginManager::class => CallablePluginManagerFactory::class,
                     LinuxPidKiller::class => InvokableFactory::class,
+                    DeadLetterQueue::class => DeadLetterQueueFactory::class,
                 ],
                 'aliases' => [
                     self::PID_KILLER_SERVICE => LinuxPidKiller::class,

@@ -28,6 +28,12 @@ interface QueueInterface
     public function getMessage($priority = null): ?Message;
 
     /**
+     * @param null $priority
+     * @return int
+     */
+    public function getNumberMessages($priority = null): int;
+
+    /**
      * Add message to queue
      * If message can't be added in any reason throw QueueException
      *
