@@ -67,7 +67,6 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         PriorityHandlerInterface $priorityHandler = null,
         array $attributes = []
     ) {
-        $this->sqsClientConfig = $sqsClientConfig;
         $this->attributes = $attributes;
         $this->sqsClient = SqsClient::factory($sqsClientConfig);
 
@@ -426,6 +425,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
 
         foreach ($priorities as $priority) {
             try {
+                $a = $this->getQueueName($queueName, $priority);
                 $this->sqsClient->createQueue([
                     'QueueName' => $this->getQueueName($queueName, $priority),
                     'Attributes' => $this->attributes,
