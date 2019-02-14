@@ -149,6 +149,6 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
             $attributes['RedrivePolicy'] = $redrivePolicy;
         }
 
-        return new SQSAdapter($sqsClient, $priorityHandler, $attributes);
+        return new SQSAdapter($serviceConfig[self::KEY_SQS_CLIENT_CONFIG], $priorityHandler, $attributes);
     }
 }
