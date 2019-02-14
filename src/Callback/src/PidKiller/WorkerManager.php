@@ -56,6 +56,8 @@ class WorkerManager
         $this->processCount = $processCount;
         $this->tableName = $tableGateway->getTable();
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
+
+        $this->setUpSlots();
     }
 
     protected function setWorkerManagerName($workerManagerName)
@@ -70,18 +72,19 @@ class WorkerManager
 
     public function __invoke()
     {
-        $this->setUpSlots();
         $freeSlots = $this->getFreeSlots();
 
         if (!$freeSlots) {
             $this->logger->debug("All slots are in working");
         }
 
-        // process for one killed process
-        $freeSlot = current($freeSlots);
-        $pid = $this->refreshSlot($freeSlot);
+        $pids = [];
 
-        return $pid;
+        foreach ($freeSlots as $freeSlot) {
+            $pids[] = $this->refreshSlot($freeSlot);
+        }
+
+        return $pids;
     }
 
     protected function refreshSlot($slot): ?int
@@ -114,18 +117,16 @@ class WorkerManager
 
     protected function setUpSlots()
     {
-        $slots = $this->tableGateway->select(['worker_manager' => $this->workerManagerName]);
+        $this->tableGateway->delete(['worker_manager' => $this->workerManagerName]);
+        $processCount = $this->processCount;
 
-        if (!$slots->count()) {
-            $processCount = $this->processCount;
-            while ($processCount) {
-                $this->tableGateway->insert([
-                    'id' => uniqid($this->workerManagerName),
-                    'pid' => '',
-                    'worker_manager' => $this->workerManagerName,
-                ]);
-                $processCount--;
-            }
+        while ($processCount) {
+            $this->tableGateway->insert([
+                'id' => uniqid($this->workerManagerName),
+                'pid' => '',
+                'worker_manager' => $this->workerManagerName,
+            ]);
+            $processCount--;
         }
     }
 
