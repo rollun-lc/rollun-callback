@@ -20,13 +20,11 @@ class SqsAdapterTest extends AbstractAdapterTest
 
     protected function createObject($timeInFlight = 0): AdapterInterface
     {
-        $sqsClient = SqsClient::factory([
+        return new SqsAdapter([
             'key' => getenv('AWS_KEY'),
             'secret'  => getenv('AWS_SECRET'),
             'region' => getenv('AWS_REGION'),
-        ]);
-
-        return new SqsAdapter($sqsClient, null, [
+        ], null, [
             'VisibilityTimeout' => $timeInFlight,
         ]);
     }
@@ -40,8 +38,8 @@ class SqsAdapterTest extends AbstractAdapterTest
         return $this->container;
     }
 
-    public function testDeadLetterQueue()
-    {
+//    public function testDeadLetterQueue()
+//    {
 //        $testQueue = 'testQueue';
 //        $deadLetterQueueName = 'deadLetter';
 //        $maxReceiveCount = 5;
@@ -96,5 +94,5 @@ class SqsAdapterTest extends AbstractAdapterTest
 //        $sqsClient->deleteQueue([
 //            'QueueUrl' => $queueUrl,
 //        ]);
-    }
+//    }
 }

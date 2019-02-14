@@ -20,6 +20,11 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
      */
     private $sqsClient;
 
+    /**
+     * @var array
+     */
+    private $sqsClientConfig;
+
     /** @var array */
     private $attributes;
 
@@ -53,17 +58,18 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
 
     /**
      * SqsAdapter constructor.
-     * @param SqsClient $sqsClient
+     * @param array $sqsClientConfig
      * @param PriorityHandlerInterface|null $priorityHandler
      * @param array $attributes
      */
     public function __construct(
-        SqsClient $sqsClient,
+        array $sqsClientConfig,
         PriorityHandlerInterface $priorityHandler = null,
         array $attributes = []
     ) {
-        $this->sqsClient = $sqsClient;
+        $this->sqsClientConfig = $sqsClientConfig;
         $this->attributes = $attributes;
+        $this->sqsClient = SqsClient::factory($sqsClientConfig);
 
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
@@ -551,5 +557,10 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
     public function getPriorityHandler()
     {
         return $this->priorityHandler;
+    }
+
+    public function __wakeup()
+    {
+        $this->sqsClient = SqsClient::factory($this->sqsClientConfig);
     }
 }
