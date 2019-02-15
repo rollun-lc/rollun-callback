@@ -69,6 +69,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
     ) {
         $this->attributes = $attributes;
         $this->sqsClient = SqsClient::factory($sqsClientConfig);
+        $this->sqsClientConfig = $sqsClientConfig;
 
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
