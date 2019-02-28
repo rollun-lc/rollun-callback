@@ -15,12 +15,14 @@ class FileAdapterTest extends TestCase
 
     protected function createObject($timeInFlight): FileAdapter
     {
-        return new FileAdapter(getenv('FILE_ADAPTER_REPOSITORY'), $timeInFlight);
+        return new FileAdapter($this->repository, $timeInFlight);
     }
 
     public function setUp()
     {
-        $this->repository = rtrim(getenv('FILE_ADAPTER_REPOSITORY'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $dir = getenv('FILE_ADAPTER_REPOSITORY') ?? sys_get_temp_dir();
+        $this->repository = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
 
         if (!file_exists($this->repository)) {
             mkdir($this->repository);

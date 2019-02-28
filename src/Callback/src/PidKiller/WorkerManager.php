@@ -49,7 +49,8 @@ class WorkerManager
         string $workerManagerName,
         int $processCount,
         LoggerInterface $logger = null
-    ) {
+    )
+    {
         $this->tableGateway = $tableGateway;
         $this->process = $process;
         $this->setWorkerManagerName($workerManagerName);
@@ -101,7 +102,10 @@ class WorkerManager
             $statement = $adapter->getDriver()->createStatement($sql);
             $statement->execute();
             $payload = $this->process->__invoke();
-            $this->tableGateway->update(['pid' => $payload->getId()], ['id' => $slot['id']]);
+            $this->tableGateway->update([
+                'pid' => $payload->getId(),
+                'pid_id' => LinuxPidKiller::pidInfo($payload->getId())
+            ], ['id' => $slot['id']]);
             $adapter->getDriver()->getConnection()->commit();
 
             $this->logger->debug("Update slot with pid = {$payload->getId()} where id = {$slot['id']}");
@@ -124,6 +128,7 @@ class WorkerManager
             $this->tableGateway->insert([
                 'id' => uniqid($this->workerManagerName),
                 'pid' => '',
+                'pid_id' => '',
                 'worker_manager' => $this->workerManagerName,
             ]);
             $processCount--;
@@ -145,7 +150,7 @@ class WorkerManager
             $isSlotFree = true;
 
             foreach ($existingPids as $pidInfo) {
-                if ($pidInfo['pid'] == $slot['pid']) {
+                if ($pidInfo['pid_id'] == $slot['pid_id']) {
                     $isSlotFree = false;
                 }
             }

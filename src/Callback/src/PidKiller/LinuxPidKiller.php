@@ -32,7 +32,8 @@ class LinuxPidKiller implements PidKillerInterface
         $maxMessageCount = null,
         QueueInterface $pidKillerQueue = null,
         LoggerInterface $logger = null
-    ) {
+    )
+    {
         InsideConstruct::setConstructParams([
             "logger" => LoggerInterface::class,
         ]);
@@ -122,7 +123,7 @@ class LinuxPidKiller implements PidKillerInterface
             ]);
 
             foreach ($pids as $processInfo) {
-                $id = self::generateId($processInfo['pid'], $processInfo['lstart']);
+                $id = $processInfo['id'];
 
                 if ($id == $message['id']) {
                     [$pid] = explode('.', $message['id']);
@@ -159,6 +160,7 @@ class LinuxPidKiller implements PidKillerInterface
      * Result example
      *  [
      *      0 => [
+     *          'id' => '1.123434123',
      *          'pid' => 1,
      *          'lstart' => 123434123,
      *      ],
@@ -168,21 +170,45 @@ class LinuxPidKiller implements PidKillerInterface
      */
     public static function ps()
     {
-        exec('ps -eo pid,lstart', $pidsInfo);
+        exec('ps -eo pid,lstart,cmd | grep php', $pidsInfo);
         array_shift($pidsInfo);
         $pids = [];
 
         foreach ($pidsInfo as $pidInfo) {
             $pidInfo = trim($pidInfo);
-            preg_match('/(?<pid>\d+)\s+(?<lstart>.+)/', $pidInfo, $matches);
+            preg_match('/(?<pid>\d+)\s+(?<lstart>\w{3} \w{3} \d{1,2} \d{2}:\d{2}:\d{2} \d{4})\s+/', $pidInfo, $matches);
             $timestamp = DateTime::createFromFormat('D M d H:i:s Y', $matches['lstart'])->getTimestamp();
+            $pid = intval($matches['pid']);
             $pids[] = [
-                'pid' => intval($matches['pid']),
+                'id' => self::generateId($pid, $timestamp),
+                'pid' => $pid,
                 'lstart' => $timestamp,
             ];
         }
 
         return $pids;
+    }
+
+    /**
+     * Return info for pid
+     *      [
+     *          'id' => '1.123434123',
+     *          'pid' => 1,
+     *          'lstart' => 123434123,
+     *      ]
+     *
+     * @param int $pid
+     * @return array|null
+     */
+    public static function pidInfo(int $pid)
+    {
+        $pidInfo = array_filter(self::ps(), function (array $pidInfo) use ($pid) {
+            return $pidInfo[''] === $pid;
+        });
+        if (empty($pidInfo)) {
+            return null;
+        }
+        return current($pidInfo);
     }
 
     public static function createIdFromPidAndTimestamp($pid, $timestamp = null)
