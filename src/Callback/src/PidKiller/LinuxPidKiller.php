@@ -203,7 +203,7 @@ class LinuxPidKiller implements PidKillerInterface
     public static function pidInfo(int $pid)
     {
         $pidInfo = array_filter(self::ps(), function (array $pidInfo) use ($pid) {
-            return $pidInfo[''] === $pid;
+            return $pidInfo['pid'] === $pid;
         });
         if (empty($pidInfo)) {
             return null;

@@ -102,9 +102,10 @@ class WorkerManager
             $statement = $adapter->getDriver()->createStatement($sql);
             $statement->execute();
             $payload = $this->process->__invoke();
+            $info = LinuxPidKiller::pidInfo($payload->getId());
             $this->tableGateway->update([
                 'pid' => $payload->getId(),
-                'pid_id' => LinuxPidKiller::pidInfo($payload->getId())
+                'pid_id' => $info['id']
             ], ['id' => $slot['id']]);
             $adapter->getDriver()->getConnection()->commit();
 
