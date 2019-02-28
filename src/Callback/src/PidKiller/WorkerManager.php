@@ -150,7 +150,7 @@ class WorkerManager
             $isSlotFree = true;
 
             foreach ($existingPids as $pidInfo) {
-                if ($pidInfo['pid_id'] == $slot['pid_id']) {
+                if ($pidInfo['id'] === $slot['pid_id']) {
                     $isSlotFree = false;
                 }
             }

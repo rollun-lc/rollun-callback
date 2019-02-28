@@ -233,5 +233,5 @@ class PidKillerTest extends TestCase
 
         return false;
     }
-    
+
 }
