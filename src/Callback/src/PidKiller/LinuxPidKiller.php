@@ -175,15 +175,19 @@ class LinuxPidKiller implements PidKillerInterface
         $pids = [];
 
         foreach ($pidsInfo as $pidInfo) {
-            $pidInfo = trim($pidInfo);
-            preg_match('^(?<pid>\d+)\s+(?<lstart>\w{3}\s+\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4})', $pidInfo, $matches);
-            $timestamp = DateTime::createFromFormat('D M d H:i:s Y', $matches['lstart'])->getTimestamp();
-            $pid = intval($matches['pid']);
-            $pids[] = [
-                'id' => self::generateId($pid, $timestamp),
-                'pid' => $pid,
-                'lstart' => $timestamp,
-            ];
+            try {
+                $pidInfo = trim($pidInfo);
+                preg_match('^(?<pid>\d+)\s+(?<lstart>\w{3}\s+\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4})', $pidInfo, $matches);
+                $timestamp = DateTime::createFromFormat('D M d H:i:s Y', $matches['lstart'])->getTimestamp();
+                $pid = intval($matches['pid']);
+                $pids[] = [
+                    'id' => self::generateId($pid, $timestamp),
+                    'pid' => $pid,
+                    'lstart' => $timestamp,
+                ];
+            } catch (\Throwable $exception) {
+                throw new RuntimeException("Has problem to parse process info: $pidInfo.", $exception->getCode(), $exception);
+            }
         }
 
         return $pids;
