@@ -177,7 +177,7 @@ class LinuxPidKiller implements PidKillerInterface
         foreach ($pidsInfo as $pidInfo) {
             try {
                 $pidInfo = trim($pidInfo);
-                preg_match('^(?<pid>\d+)\s+(?<lstart>\w{3}\s+\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4})', $pidInfo, $matches);
+                preg_match('/^(?<pid>\d+)\s+(?<lstart>\w{3}\s+\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4})/', $pidInfo, $matches);
                 $timestamp = DateTime::createFromFormat('D M d H:i:s Y', $matches['lstart'])->getTimestamp();
                 $pid = intval($matches['pid']);
                 $pids[] = [
