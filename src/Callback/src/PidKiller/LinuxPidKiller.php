@@ -186,7 +186,7 @@ class LinuxPidKiller implements PidKillerInterface
                     'lstart' => $timestamp,
                 ];
             } catch (\Throwable $exception) {
-                throw new RuntimeException("Has problem to parse process info: $pidInfo.", $exception->getCode(), $exception);
+                throw new RuntimeException("Has problem to parse process info: [$pidInfo][{$matches['pid']}][{$matches['lstart']}].", $exception->getCode(), $exception);
             }
         }
 
