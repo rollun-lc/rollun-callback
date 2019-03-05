@@ -113,10 +113,10 @@ class LinuxPidKiller implements PidKillerInterface
 
         $messageCount = 0;
 
+        $pids = self::ps();
         while ($messageCount < $this->maxMessageCount && $queueMessage = $this->pidKillerQueue->getMessage()) {
             $messageCount++;
             $message = $queueMessage->getData();
-            $pids = self::ps();
 
             $this->logger->debug("PID-KILLER get message from queue", [
                 'message' => $message,

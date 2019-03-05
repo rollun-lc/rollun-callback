@@ -77,8 +77,15 @@ class Process extends InterrupterAbstract
         $cmd .= " {$this->lifecycleToken->serialize()}";
         $cmd .= ' APP_ENV=' . getenv('APP_ENV');
 
-        $payload[self::STDOUT_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stdout_', 1);
-        $payload[self::STDERR_KEY] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('stderr_', 1);
+        $outStream = getenv('OUTPUT_STREAM');
+        if($outStream) {
+            $payload[self::STDOUT_KEY] = $outStream;
+            $payload[self::STDERR_KEY] = $outStream;
+        } else {
+            $payload[self::STDOUT_KEY] = '/dev/null';
+            $payload[self::STDERR_KEY] = '/dev/null';
+
+        }
         $payload[static::INTERRUPTER_TYPE_KEY] = $this->getInterrupterType();
 
         $cmd .= "  1>{$payload[self::STDOUT_KEY]} 2>{$payload[self::STDERR_KEY]}";
