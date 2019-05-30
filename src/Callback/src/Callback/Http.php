@@ -8,13 +8,14 @@ namespace rollun\callback\Callback;
 
 use ReflectionException;
 use rollun\dic\InsideConstruct;
+use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\logger\LifeCycleToken;
 use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
 use Zend\Http\Client;
 use Zend\Http\Response;
 
-class Http
+class Http implements InterrupterInterface
 {
     /**
      * @var string 'http://example.org'
