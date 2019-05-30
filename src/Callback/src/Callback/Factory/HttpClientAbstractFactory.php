@@ -4,13 +4,13 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\callback\Callback\Interrupter\Factory;
+namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interrupter\Http;
+use rollun\callback\Callback\Http;
 
-class HttpClientAbstractFactory extends InterruptAbstractFactoryAbstract
+class HttpClientAbstractFactory extends CallbackAbstractFactoryAbstract
 {
     const KEY_URL = 'url';
 
@@ -32,10 +32,10 @@ class HttpClientAbstractFactory extends InterruptAbstractFactoryAbstract
         if (!isset($factoryConfig[static::KEY_URL])) {
             throw new CallbackException(static::KEY_URL . " not been set.");
         }
-        $options = isset($factoryConfig[static::KEY_OPTIONS]) ? $factoryConfig[static::KEY_OPTIONS] : [];
+        $clientOptions = $factoryConfig[static::KEY_OPTIONS] ?? [];
 
         $url = $factoryConfig[static::KEY_URL];
 
-        return new $class($url, $options);
+        return new $class($url, $clientOptions);
     }
 }

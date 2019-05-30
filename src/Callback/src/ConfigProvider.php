@@ -15,7 +15,7 @@ use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\HttpAbstractFactory;
-use rollun\callback\Callback\Interrupter\Factory\HttpClientAbstractFactory;
+use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueJobFillerAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueMessageFillerAbstractFactory;

@@ -15,7 +15,7 @@ use rollun\utils\Json\Serializer;
 use Zend\Http\Client;
 use Zend\Http\Response;
 
-class Http implements InterrupterInterface
+class Http
 {
     /**
      * @var string 'http://example.org'
