@@ -12,7 +12,6 @@ use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
-use Zend\Log\Writer\WriterInterface;
 
 /**
  * Class Worker
@@ -57,12 +56,13 @@ class Worker
         $this->queue = $queue;
 
         if (!$callback instanceof SerializedCallback) {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $callback = new SerializedCallback($callback);
         }
 
         $this->writer = $writer;
         $this->callback = $callback;
-        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
+        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
     }
 
     /**
@@ -73,8 +73,8 @@ class Worker
     public function __invoke()
     {
         if (!$message = $this->queue->getMessage()) {
-            $this->logger->debug("Queue {queue} is empty. Worker not started.", [
-                "queue" => $this->queue->getName(),
+            $this->logger->debug('Queue {queue} is empty. Worker not started.', [
+                'queue' => $this->queue->getName(),
             ]);
             return null;
         }
@@ -85,11 +85,11 @@ class Worker
             $this->queue->deleteMessage($message);
         } catch (\Throwable $throwable) {
             $payload = [
-                "message" => $message ? $message->getMessage() : null,
-                "queue" => $this->queue->getName(),
-                "exception" => $throwable,
+                'message' => $message ? $message->getMessage() : null,
+                'queue' => $this->queue->getName(),
+                'exception' => $throwable,
             ];
-            $this->logger->warning("Worker failed execute callback", $payload);
+            $this->logger->warning('Worker failed execute callback', $payload);
         }
 
         if ($this->writer) {
@@ -115,7 +115,7 @@ class Worker
      */
     public function __sleep()
     {
-        return ["queue", "callback", "writer"];
+        return ['queue', 'callback', 'writer'];
     }
 
     /**
@@ -123,6 +123,6 @@ class Worker
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(["logger" => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
     }
 }

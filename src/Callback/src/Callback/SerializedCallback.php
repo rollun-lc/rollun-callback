@@ -43,9 +43,7 @@ final class SerializedCallback
 
         try {
             $callback = $this->getCallback();
-            $result = call_user_func($callback, $value);
-
-            return $result;
+            return $callback($value);
         } catch (\Exception $exc) {
             throw new CallbackException(
                 'Cannot execute Callback. Reason: ' . $exc->getMessage(),
@@ -79,9 +77,9 @@ final class SerializedCallback
         $callback = $this->getCallback();
 
         if (is_array($callback)) {
-            list($context, $method) = $callback;
-            $callback = function ($value) use ($context, $method) {
-                return call_user_func([$context, $method], $value);
+            [$context, $method] = $callback;
+            $callback = static function ($value) use ($context, $method) {
+                return $context->$method($value);
             };
         }
 

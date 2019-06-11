@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace rollun\callback\Queues\Factory;
 
@@ -76,9 +76,8 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
         if (isset($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
             if (!$container->has($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
                 throw new InvalidArgumentException("Invalid option '" . self::KEY_PRIORITY_HANDLER . "'");
-            } else {
-                $priorityHandler = $container->get($serviceConfig[self::KEY_PRIORITY_HANDLER]);
             }
+            $priorityHandler = $container->get($serviceConfig[self::KEY_PRIORITY_HANDLER]);
         } else {
             $priorityHandler = $container->get(StandardPriorityHandler::class);
         }
@@ -91,8 +90,7 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
         $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? null;
 
         if ($maxMessageCount) {
-            /** @var DeadLetterQueue $deadLetterQueue */
-            $deadLetterQueue = $container->get(DeadLetterQueue::class);
+            $deadLetterQueue = new DeadLetterQueue($requestedName, $serviceConfig[self::KEY_SQS_CLIENT_CONFIG]);
             $attributes['RedrivePolicy'] = json_encode([
                 'deadLetterTargetArn' => $deadLetterQueue->getQueueArn(),
                 'maxReceiveCount' => $maxMessageCount,

@@ -11,26 +11,29 @@ use rollun\callback\Queues\Adapter\SqsAdapter;
 
 class DeadLetterQueue extends QueueClient
 {
-    public const QUEUE_NAME = 'deadLetterQueue';
+    public const QUEUE_NAME = 'DeadLetterQueue';
 
-    protected const INSIDE_QUEUE_NAME = 'd751713988987e9331980363e24189cedeadLetterQueue';
+    /**
+     * @var string
+     */
+    private $queueArn;
 
-    /** @var SqsClient */
-    private $sqsClient;
-
-    public function __construct($sqsClientConfig)
+    /**
+     * DeadLetterQueue constructor.
+     * @param $adapterName
+     * @param $sqsClientConfig
+     */
+    public function __construct($adapterName, $sqsClientConfig)
     {
-        $this->sqsClient = SqsClient::factory($sqsClientConfig);
+        $queueName = sprintf('%s_for_%s', self::QUEUE_NAME, $adapterName);
+
         $sqsAdapter = new SqsAdapter($sqsClientConfig);
-        parent::__construct($sqsAdapter, self::QUEUE_NAME);
+        $this->queueArn = $sqsAdapter->getQueueArn($queueName);
+        parent::__construct($sqsAdapter, $queueName);
     }
 
-    public function getQueueArn()
+    public function getQueueArn(): string
     {
-        $queueUrl = $this->sqsClient->getQueueUrl([
-            'QueueName' => self::INSIDE_QUEUE_NAME,
-        ])->get('QueueUrl');
-
-        return $this->sqsClient->getQueueArn($queueUrl);
+        return $this->queueArn;
     }
 }

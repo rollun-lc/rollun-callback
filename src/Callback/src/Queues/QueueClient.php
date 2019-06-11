@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace rollun\callback\Queues;
 
@@ -42,8 +42,9 @@ class QueueClient implements QueueInterface
         $this->queueClient = new ExternalQueueClient($adapter);
 
         // Create queue if not exist.
+        //FIXME: Maybe problem if create queue implicit in runtime.
         $queues = $this->queueClient->listQueues();
-        if (!in_array($this->queueName, $queues)) {
+        if (!in_array($this->queueName, $queues, true)) {
             $this->queueClient->createQueue($this->queueName);
         }
     }
@@ -54,13 +55,13 @@ class QueueClient implements QueueInterface
     public function getMessage($priority = null): ?Message
     {
         try {
-            if (is_null($priority)) {
+            if ($priority === null && $this->queueClient->getPriorityHandler() !== null) {
+                /** @noinspection SuspiciousLoopInspection */
                 foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
                     if (!$this->queueClient->isEmpty($this->getName(), $priority)) {
                         return $this->receiveMessage($priority);
                     }
                 }
-
                 return null;
             }
 
@@ -118,9 +119,11 @@ class QueueClient implements QueueInterface
      */
     public function isEmpty(): bool
     {
-        foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
-            if (!$this->queueClient->isEmpty($this->getName(), $priority)) {
-                return false;
+        if ($this->queueClient->getPriorityHandler() !== null) {
+            foreach ($this->queueClient->getPriorityHandler()->getAll() as $priority) {
+                if (!$this->queueClient->isEmpty($this->getName(), $priority)) {
+                    return false;
+                }
             }
         }
 

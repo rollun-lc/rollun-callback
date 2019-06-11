@@ -76,8 +76,25 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         $this->priorityHandler = $priorityHandler;
+    }
 
-        return $this;
+
+    /**
+     * @param $queueName
+     * @param Priority $priority
+     * @return string
+     */
+    public function getQueueArn($queueName, Priority $priority = null)
+    {
+        if (null === $priority) {
+            $priority = $this->priorityHandler->getDefault();
+        }
+
+        $queueUrl = $this->sqsClient->getQueueUrl([
+            'QueueName' => $this->getQueueName($queueName, $priority),
+        ])->get('QueueUrl');
+
+        return $this->sqsClient->getQueueArn($queueUrl);
     }
 
     /**
@@ -221,7 +238,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
             throw new QueueAccessException('Cannot get messages from queue.', 0, $e);
         }
 
-        if (is_null($messages)) {
+        if ($messages === null) {
             return [];
         }
         foreach ($messages as $messageId => $message) {
@@ -305,7 +322,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         if (null === $priority) {
             $priorities = $this->priorityHandler->getAll();
             foreach ($priorities as $priority) {
-                if (!($this->isEmpty($queueName, $priority))) {
+                if (!$this->isEmpty($queueName, $priority)) {
                     return false;
                 }
             }
@@ -426,7 +443,6 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
 
         foreach ($priorities as $priority) {
             try {
-                $a = $this->getQueueName($queueName, $priority);
                 $this->sqsClient->createQueue([
                     'QueueName' => $this->getQueueName($queueName, $priority),
                     'Attributes' => $this->attributes,
@@ -541,7 +557,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
             $queueName = ltrim($result, $attributeHash);
             $priorities = $this->priorityHandler->getAll();
             foreach ($priorities as $priority) {
-                if (!empty($priority)) {
+                if ($priority !== null) {
                     $queueName = str_replace(static::PRIORITY_SEPARATOR . $priority->getName(), '', $queueName);
                 }
             }
@@ -560,6 +576,9 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         return $this->priorityHandler;
     }
 
+    /**
+     *
+     */
     public function __wakeup()
     {
         $this->sqsClient = SqsClient::factory($this->sqsClientConfig);
