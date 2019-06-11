@@ -583,4 +583,13 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
     {
         $this->sqsClient = SqsClient::factory($this->sqsClientConfig);
     }
+
+    public function __sleep()
+    {
+        return [
+            'sqsClientConfig',
+            'attributes',
+            'priorityHandler',
+        ];
+    }
 }

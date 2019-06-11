@@ -11,7 +11,7 @@ use rollun\callback\Queues\Adapter\SqsAdapter;
 
 class DeadLetterQueue extends QueueClient
 {
-    public const QUEUE_NAME = 'DeadLetterQueue';
+    public const QUEUE_NAME = 'DLQueue';
 
     /**
      * @var string
@@ -25,11 +25,10 @@ class DeadLetterQueue extends QueueClient
      */
     public function __construct($adapterName, $sqsClientConfig)
     {
-        $queueName = sprintf('%s_for_%s', self::QUEUE_NAME, $adapterName);
-
+        $queueName = sprintf('%s_%s', $adapterName, self::QUEUE_NAME);
         $sqsAdapter = new SqsAdapter($sqsClientConfig);
-        $this->queueArn = $sqsAdapter->getQueueArn($queueName);
         parent::__construct($sqsAdapter, $queueName);
+        $this->queueArn = $sqsAdapter->getQueueArn($queueName);
     }
 
     public function getQueueArn(): string

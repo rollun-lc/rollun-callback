@@ -101,8 +101,6 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         $this->finder = $finder;
         $this->finder->files()->in($repository);
         $this->lockHandlerFactory = $lockHandlerFactory;
-
-        return $this;
     }
 
     /**
