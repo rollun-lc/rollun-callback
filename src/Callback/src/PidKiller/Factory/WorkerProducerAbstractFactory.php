@@ -31,9 +31,8 @@ class WorkerProducerAbstractFactory implements AbstractFactoryInterface
 
     private function getSystemName($requestedName)
     {
-        if (false !== preg_match('/(<?system>[\w\_\-]+)_Producer/', $requestedName, $match)) {
-            [$system] = $match;
-            return $system;
+        if (false !== preg_match('/(?<system>[\w\_\-]+)_Producer/', $requestedName, $match)) {
+            return $match['system'];
         }
         return false;
     }

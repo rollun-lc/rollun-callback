@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
@@ -30,11 +30,12 @@ use rollun\callback\Middleware\WebhookMiddleware;
 use rollun\callback\Middleware\WebhookMiddlewareFactory;
 use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
 use rollun\callback\PidKiller\Factory\WorkerManagerAbstractFactory;
+use rollun\callback\PidKiller\Factory\WorkerProducerAbstractFactory;
+use rollun\callback\PidKiller\Factory\WorkerSystemAbstractFactory;
 use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\PidKiller\QueueClient;
 use rollun\callback\Queues\DeadLetterQueue;
-use rollun\callback\Queues\Factory\DeadLetterQueueFactory;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
@@ -69,6 +70,8 @@ class ConfigProvider
                     // Pidkiller
                     WorkerAbstractFactory::class,
                     WorkerManagerAbstractFactory::class,
+                    WorkerProducerAbstractFactory::class,
+                    WorkerSystemAbstractFactory::class,
                 ],
                 'invokables' => [
                     GetParamsResolver::class => GetParamsResolver::class,
@@ -82,7 +85,6 @@ class ConfigProvider
                     WebhookMiddleware::class => WebhookMiddlewareFactory::class,
                     CallablePluginManager::class => CallablePluginManagerFactory::class,
                     LinuxPidKiller::class => InvokableFactory::class,
-                    DeadLetterQueue::class => DeadLetterQueueFactory::class,
                 ],
                 'aliases' => [
                     self::PID_KILLER_SERVICE => LinuxPidKiller::class,
@@ -108,7 +110,7 @@ class ConfigProvider
                 'pidQueueAdapter' => [
                     SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG => [
                         'key' => getenv('AWS_KEY'),
-                        'secret'  => getenv('AWS_SECRET'),
+                        'secret' => getenv('AWS_SECRET'),
                         'region' => getenv('AWS_REGION'),
                     ],
                 ],
