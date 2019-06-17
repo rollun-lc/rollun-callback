@@ -101,15 +101,15 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
             WorkerManagerAbstractFactory::KEY_CLASS => WorkerManager::class,
             WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => $workerManagerName,
             WorkerManagerAbstractFactory::KEY_PROCESS =>
-                $config[WorkerManagerAbstractFactory::KEY_PROCESS] ?? self::buildInterrupter(
+                $options[WorkerManagerAbstractFactory::KEY_PROCESS] ?? self::buildInterrupter(
                     $container,
                     $requestedName,
                     $options
                 ),
             WorkerManagerAbstractFactory::KEY_PROCESS_COUNT =>
-                $config[WorkerManagerAbstractFactory::KEY_PROCESS_COUNT] ?? self::DEFAULT_PROCESS_COUNT,
+                $options[WorkerManagerAbstractFactory::KEY_PROCESS_COUNT] ?? self::DEFAULT_PROCESS_COUNT,
             WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY =>
-                $config[WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY] ?? self::DEFAULT_TABLE_GATEWAY,
+                $options[WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY] ?? self::DEFAULT_TABLE_GATEWAY,
         ]);
     }
 
