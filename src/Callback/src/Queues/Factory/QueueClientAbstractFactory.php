@@ -85,7 +85,7 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $serviceConfig = $container->get('config')[self::class][$requestedName];
+        $serviceConfig = $options ?? $container->get('config')[self::class][$requestedName];
 
         if (!isset($serviceConfig[self::KEY_ADAPTER])) {
             throw new InvalidArgumentException("Invalid option '" . self::KEY_ADAPTER . "'");
