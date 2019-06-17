@@ -10,8 +10,10 @@ namespace rollun\callback\Queues\Factory;
 
 use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
+use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
+use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\QueueClient;
@@ -42,15 +44,17 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class QueueClientAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_CLASS = 'class';
+    public const KEY_CLASS = 'class';
 
-    const KEY_DEFAULT_CLASS = QueueClient::class;
+    public const KEY_DEFAULT_CLASS = QueueClient::class;
 
-    const KEY_DELAY = 'delay';
+    public const DEFAULT_ADAPTER = SqsAdapter::class;
 
-    const KEY_NAME = 'name';
+    public const KEY_DELAY = 'delay';
 
-    const KEY_ADAPTER = 'adapter';
+    public const KEY_NAME = 'name';
+
+    public const KEY_ADAPTER = 'adapter';
 
     /**
      * @param ContainerInterface $container
@@ -93,9 +97,11 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
 
 
         if (is_array($serviceConfig[self::KEY_ADAPTER])) {
-            $adapter = $this->createSqsAdapter($container, $requestedName, $serviceConfig[self::KEY_ADAPTER]);
+            $adapter = self::buildAdapter($container, $requestedName, $serviceConfig[self::KEY_ADAPTER]);
         } elseif (is_string($serviceConfig[self::KEY_ADAPTER]) && $container->has($serviceConfig[self::KEY_ADAPTER])) {
             $adapter = $container->get($serviceConfig[self::KEY_ADAPTER]);
+        } elseif ($serviceConfig[self::KEY_ADAPTER] instanceof AdapterInterface) {
+            $adapter = $serviceConfig[self::KEY_ADAPTER];
         } else {
             throw new InvalidArgumentException("Invalid option '" . self::KEY_ADAPTER . "'");
         }
@@ -107,43 +113,32 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
         return new $class($adapter, $queueName, $delay);
     }
 
+    /**
+     * @return QueueClient
+     * @throws \Exception
+     */
     public static function createSimpleQueueClient(): QueueClient
     {
-        return new QueueClient(new MemoryAdapter(), sha1(openssl_random_pseudo_bytes(1024)));
+        return new QueueClient(new MemoryAdapter(), sha1(random_bytes(1024)));
     }
 
     /**
      * @param ContainerInterface $container
      * @param $requestedName
-     * @param $serviceAdapterConfig
+     * @param array|null $options
      * @return SqsAdapter
      */
-    private function createSqsAdapter(ContainerInterface $container, $requestedName, $serviceAdapterConfig): SqsAdapter
+    private static function buildAdapter(ContainerInterface $container, $requestedName, array $options = null): AdapterInterface
     {
-        if (isset($serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_PRIORITY_HANDLER])) {
-            if (!$container->has($serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_PRIORITY_HANDLER])) {
-                throw new InvalidArgumentException("Invalid option '" . SqsAdapterAbstractFactory::KEY_PRIORITY_HANDLER . "'");
-            }
-            $priorityHandler = $container->get($serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_PRIORITY_HANDLER]);
-        } else {
-            $priorityHandler = $container->get(StandardPriorityHandler::class);
+        $adapterName = sprintf('%s_Adapter', $requestedName);
+        $adapterType = $options[self::KEY_CLASS] ?? self::DEFAULT_ADAPTER;
+        switch ($adapterType) {
+            case SqsAdapter::class:
+                return (new SqsAdapterAbstractFactory())($container, $adapterName, $options);
+            case FileAdapter::class:
+                return (new FileAdapterAbstractFactory())($container, $adapterName, $options);
+            default:
+                throw new \Zend\ServiceManager\Exception\InvalidArgumentException(sprintf('Unknown adapter type %s for queue %s', $adapterType, $requestedName));
         }
-
-        if (!isset($serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG])) {
-            throw new InvalidArgumentException("Invalid option '" . SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG . "'");
-        }
-
-        $attributes = $serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_SQS_ATTRIBUTES] ?? [];
-        $maxMessageCount = $serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_MAX_RECEIVE_COUNT] ?? null;
-
-        if ($maxMessageCount) {
-            $deadLetterQueue = new DeadLetterQueue($requestedName, $serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG]);
-            $attributes['RedrivePolicy'] = json_encode([
-                'deadLetterTargetArn' => $deadLetterQueue->getQueueArn(),
-                'maxReceiveCount' => $maxMessageCount,
-            ]);
-        }
-        $adapter = new SQSAdapter($serviceAdapterConfig[SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG], $priorityHandler, $attributes);
-        return $adapter;
     }
 }

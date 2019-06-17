@@ -16,6 +16,7 @@ use rollun\dic\InsideConstruct;
 /**
  * Class Worker
  * @package rollun\callback\Callback
+ * @deprecated 7.0
  */
 class Worker
 {

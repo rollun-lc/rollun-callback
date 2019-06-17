@@ -47,7 +47,7 @@ class WorkerManagerAbstractFactory implements AbstractFactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $serviceConfig = $container->get('config')[self::class][$requestedName];
+        $serviceConfig = $options ?? $container->get('config')[self::class][$requestedName];
 
         if (!isset($serviceConfig[self::KEY_TABLE_GATEWAY])) {
             throw new \InvalidArgumentException("Invalid option '" . self::KEY_TABLE_GATEWAY . "'");
@@ -65,8 +65,8 @@ class WorkerManagerAbstractFactory implements AbstractFactoryInterface
             throw new \InvalidArgumentException("Invalid option '" . self::KEY_PROCESS_COUNT . "'");
         }
 
-        $tableGateway = $container->get($serviceConfig[self::KEY_TABLE_GATEWAY]);
-        $process = $container->get($serviceConfig[self::KEY_PROCESS]);
+        $tableGateway = is_string($serviceConfig[self::KEY_TABLE_GATEWAY]) ? $container->get($serviceConfig[self::KEY_TABLE_GATEWAY]) : $serviceConfig[self::KEY_TABLE_GATEWAY];
+        $process = is_string($serviceConfig[self::KEY_PROCESS]) ? $container->get($serviceConfig[self::KEY_PROCESS]) : $serviceConfig[self::KEY_PROCESS];
         $workerManagerName = $serviceConfig[self::KEY_WORKER_MANAGER_NAME];
         $processCount = $serviceConfig[self::KEY_PROCESS_COUNT];
         $class = $serviceConfig[self::KEY_CLASS];

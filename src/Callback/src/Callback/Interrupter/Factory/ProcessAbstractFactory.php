@@ -26,14 +26,19 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $container->get('config');
-        $factoryConfig = $config[static::KEY][$requestedName];
+        $factoryConfig = $options ?? $container->get('config')[static::KEY][$requestedName];
+
+
         $class = $factoryConfig[static::KEY_CLASS];
         $callback = $factoryConfig[static::KEY_CALLBACK_SERVICE];
-        if (!$container->has($callback)) {
-            throw new CallbackException("Service with name '$callback' - not found.");
+
+        if (is_string($callback)) {
+            if (!$container->has($callback)) {
+                throw new CallbackException("Service with name '$callback' - not found.");
+            }
+            $callback = $container->get($callback);
         }
-        $callback = $container->get($callback);
+
         $maxExecuteTime = $factoryConfig[self::KEY_MAX_EXECUTE_TIME] ?? null;
         $pidKiller = null;
 

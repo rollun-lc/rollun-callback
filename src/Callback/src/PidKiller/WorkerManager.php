@@ -127,7 +127,7 @@ class WorkerManager
 
         while ($processCount) {
             $this->tableGateway->insert([
-                'id' => uniqid($this->workerManagerName),
+                'id' => uniqid($this->workerManagerName, true),
                 'pid' => '',
                 'pid_id' => '',
                 'worker_manager' => $this->workerManagerName,

@@ -45,13 +45,13 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class SqsAdapterAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_PRIORITY_HANDLER = 'priorityHandler';
+    public const KEY_PRIORITY_HANDLER = 'priorityHandler';
 
-    const KEY_SQS_CLIENT_CONFIG = 'sqsClientConfig';
+    public const KEY_SQS_CLIENT_CONFIG = 'sqsClientConfig';
 
-    const KEY_SQS_ATTRIBUTES = 'sqsAttributes';
+    public const KEY_SQS_ATTRIBUTES = 'sqsAttributes';
 
-    const KEY_MAX_RECEIVE_COUNT = 'maxReceiveCount';
+    public const KEY_MAX_RECEIVE_COUNT = 'maxReceiveCount';
 
     /**
      * @param ContainerInterface $container
@@ -71,7 +71,7 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $serviceConfig = $container->get('config')[self::class][$requestedName];
+        $serviceConfig = $options ?? $container->get('config')[self::class][$requestedName];
 
         if (isset($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
             if (!$container->has($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
@@ -90,7 +90,7 @@ class SqsAdapterAbstractFactory implements AbstractFactoryInterface
         $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? null;
 
         if ($maxMessageCount) {
-            $deadLetterQueue = new DeadLetterQueue($requestedName, $serviceConfig[self::KEY_SQS_CLIENT_CONFIG]);
+            $deadLetterQueue = DeadLetterQueue::buildForQueueAdapter($requestedName, $serviceConfig[self::KEY_SQS_CLIENT_CONFIG]);
             $attributes['RedrivePolicy'] = json_encode([
                 'deadLetterTargetArn' => $deadLetterQueue->getQueueArn(),
                 'maxReceiveCount' => $maxMessageCount,

@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
 use rollun\callback\PidKiller\Worker;
+use rollun\callback\PidKiller\WriterInterface;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use Zend\Log\Writer\Noop;
 
@@ -39,13 +40,19 @@ class WorkerAbstractFactoryTest extends TestCase
         $container->expects($this->at(1))->method('get')->with($queue)->willReturn(
             QueueClientAbstractFactory::createSimpleQueueClient()
         );
-        $container->expects($this->at(2))->method('get')->with($callable)->willReturn(function () {});
+        $container->expects($this->at(2))->method('get')->with($callable)->willReturn(function () {
+        });
         $container->expects($this->at(3))->method('get')->with($writer)->willReturn(
-            new Noop()
+            new class implements WriterInterface
+            {
+                public function write($data)
+                {
+                }
+            }
         );
 
         $worker = $factory($container, $requestedName);
-        $this->assertTrue($worker instanceof Worker);
+        $this->assertInstanceOf(Worker::class, $worker);
     }
 
     public function testCanCreate()

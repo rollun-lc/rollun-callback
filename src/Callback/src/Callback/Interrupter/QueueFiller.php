@@ -35,7 +35,7 @@ class QueueFiller implements InterrupterInterface
     public function __construct(QueueInterface $queue, LoggerInterface $logger = null)
     {
         $this->queue = $queue;
-        InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
+        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
     }
 
     /**
@@ -67,12 +67,12 @@ class QueueFiller implements InterrupterInterface
         $serializedData = static::serializeMessage($value);
         $message = new Message($serializedData);
         $payload = [
-            "message" => $value,
-            "queue" => $this->queue->getName(),
+            'message' => $value,
+            'queue' => $this->queue->getName(),
         ];
 
         $this->queue->addMessage($message);
-        $this->logger->info("Add message to queue", [
+        $this->logger->info('Add message to queue', [
             'message' => $message,
         ]);
 
@@ -84,7 +84,7 @@ class QueueFiller implements InterrupterInterface
      */
     public function __sleep()
     {
-        return ["queue"];
+        return ['queue'];
     }
 
     /**
@@ -93,6 +93,6 @@ class QueueFiller implements InterrupterInterface
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(["logger" => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
     }
 }

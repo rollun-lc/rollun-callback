@@ -20,15 +20,33 @@ class DeadLetterQueue extends QueueClient
 
     /**
      * DeadLetterQueue constructor.
-     * @param $adapterName
+     * @param $queueName
      * @param $sqsClientConfig
      */
-    public function __construct($adapterName, $sqsClientConfig)
+    public function __construct($queueName, $sqsClientConfig)
     {
-        $queueName = sprintf('%s_%s', $adapterName, self::QUEUE_NAME);
         $sqsAdapter = new SqsAdapter($sqsClientConfig);
         parent::__construct($sqsAdapter, $queueName);
         $this->queueArn = $sqsAdapter->getQueueArn($queueName);
+    }
+
+    /**
+     * @param $adapterName
+     * @param $sqsClientConfig
+     * @return DeadLetterQueue
+     */
+    public static function buildForQueueAdapter($adapterName, $sqsClientConfig): DeadLetterQueue
+    {
+        return new self(self::getNameForQueueAdapter($adapterName), $sqsClientConfig);
+    }
+
+    /**
+     * @param $adapterName
+     * @return string
+     */
+    public static function getNameForQueueAdapter($adapterName): string
+    {
+        return sprintf('%s_%s', $adapterName, self::QUEUE_NAME);
     }
 
     public function getQueueArn(): string

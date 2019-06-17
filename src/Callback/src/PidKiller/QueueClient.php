@@ -26,17 +26,17 @@ class QueueClient extends BaseClient
      */
     public function addMessage(Message $message, $priority = null): void
     {
-        $message = $message->getMessage();
+        $messageData = $message->getMessage();
 
-        if (isset($message[self::KEY_DELAY_SECOND])) {
-            $delaySeconds = intval($message[self::KEY_DELAY_SECOND]);
-            unset($message[self::KEY_DELAY_SECOND]);
+        if (isset($messageData[self::KEY_DELAY_SECOND])) {
+            $delaySeconds = (int)$messageData[self::KEY_DELAY_SECOND];
+            unset($messageData[self::KEY_DELAY_SECOND]);
         } else {
             $delaySeconds = 0;
         }
 
         try {
-            $this->queueClient->addMessage($this->getName(), $message, $priority, $delaySeconds);
+            $this->queueClient->addMessage($this->getName(), $messageData, $priority, $delaySeconds);
         } catch (Throwable $t) {
             throw new QueueException("Can't add message to queue. Reason: " . $t->getMessage(), 0, $t);
         }
