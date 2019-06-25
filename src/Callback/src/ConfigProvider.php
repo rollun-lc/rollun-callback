@@ -34,6 +34,7 @@ use rollun\callback\PidKiller\Factory\WorkerProducerAbstractFactory;
 use rollun\callback\PidKiller\Factory\WorkerSystemAbstractFactory;
 use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\PidKillerInterface;
+use rollun\callback\PidKiller\ProcessManager;
 use rollun\callback\PidKiller\QueueClient;
 use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
@@ -79,6 +80,7 @@ class ConfigProvider
                     JsonRenderer::class => JsonRenderer::class,
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
+                    ProcessManager::class => ProcessManager::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,

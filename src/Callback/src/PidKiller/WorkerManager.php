@@ -7,6 +7,7 @@
 namespace rollun\callback\PidKiller;
 
 use Psr\Log\LoggerInterface;
+use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\dic\InsideConstruct;
 use Zend\Db\TableGateway\TableGateway;
@@ -14,14 +15,19 @@ use Zend\Db\TableGateway\TableGateway;
 class WorkerManager
 {
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @var TableGateway
      */
-    protected $tableGateway;
+    private $tableGateway;
 
     /**
      * @var Process
      */
-    protected $process;
+    private $interrupter;
 
     /**
      * @var string
@@ -29,42 +35,51 @@ class WorkerManager
     private $workerManagerName;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @var string
      */
-    protected $tableName;
+    private $tableName;
 
     /**
      * @var int
      */
-    protected $processCount;
+    private $processCount;
 
+    /**
+     * @var ProcessManager
+     */
+    private $processManager;
+
+    /**
+     * WorkerManager constructor.
+     * @param TableGateway $tableGateway
+     * @param InterrupterInterface $interrupter
+     * @param string $workerManagerName
+     * @param int $processCount
+     * @param ProcessManager|null $processManager
+     * @param LoggerInterface|null $logger
+     * @throws \ReflectionException
+     */
     public function __construct(
         TableGateway $tableGateway,
-        Process $process,
+        InterrupterInterface $interrupter,
         string $workerManagerName,
         int $processCount,
+        ProcessManager $processManager = null,
         LoggerInterface $logger = null
-    )
-    {
+    ) {
+        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class, 'processManager' => ProcessManager::class,]);
         $this->tableGateway = $tableGateway;
-        $this->process = $process;
+        $this->interrupter = $interrupter;
         $this->setWorkerManagerName($workerManagerName);
         $this->processCount = $processCount;
         $this->tableName = $tableGateway->getTable();
-        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
-
-        $this->setUpSlots();
+        $this->processManager = $processManager ?? new ProcessManager();
     }
 
-    protected function setWorkerManagerName($workerManagerName)
+    private function setWorkerManagerName($workerManagerName)
     {
         if (!$workerManagerName) {
-            throw new \InvalidArgumentException("Worker manager name is invalid (empty)");
+            throw new \InvalidArgumentException('Worker manager name is invalid (empty)');
         }
 
         $this->workerManagerName = $workerManagerName;
@@ -73,10 +88,10 @@ class WorkerManager
 
     public function __invoke()
     {
-        $freeSlots = $this->getFreeSlots();
+        $freeSlots = $this->setupSlots();
 
         if (!$freeSlots) {
-            $this->logger->debug("All slots are in working");
+            $this->logger->debug('All slots are in working');
         }
 
         $pids = [];
@@ -88,21 +103,21 @@ class WorkerManager
         return $pids;
     }
 
-    protected function refreshSlot($slot): ?int
+    private function refreshSlot($slot): ?int
     {
         $adapter = $this->tableGateway->getAdapter();
         $adapter->getDriver()->getConnection()->beginTransaction();
 
         try {
-            $sql = "SELECT `id`, `pid`"
+            $sql = 'SELECT `id`, `pid`'
                 . " FROM {$adapter->getPlatform()->quoteIdentifier($this->tableGateway->getTable())}"
                 . " WHERE {$adapter->getPlatform()->quoteIdentifier('id')} ="
-                . " {$adapter->getPlatform()->quoteValue($slot['id'])}" . " FOR UPDATE";
+                . " {$adapter->getPlatform()->quoteValue($slot['id'])}" . ' FOR UPDATE';
 
             $statement = $adapter->getDriver()->createStatement($sql);
             $statement->execute();
-            $payload = $this->process->__invoke();
-            $info = LinuxPidKiller::pidInfo($payload->getId());
+            $payload = $this->interrupter->__invoke();
+            $info = $this->processManager->pidInfo($payload->getId());
             $this->tableGateway->update([
                 'pid' => $payload->getId(),
                 'pid_id' => $info['id']
@@ -112,41 +127,57 @@ class WorkerManager
             $this->logger->debug("Update slot with pid = {$payload->getId()} where id = {$slot['id']}");
         } catch (\Throwable $e) {
             $adapter->getDriver()->getConnection()->rollback();
-            $this->logger->error("Failed update slot", ['exception' => $e]);
+            $this->logger->error('Failed update slot', ['exception' => $e]);
 
             return null;
         }
 
-        return intval($payload->getId());
+        return (int)$payload->getId();
     }
 
-    protected function setUpSlots()
-    {
-        $this->tableGateway->delete(['worker_manager' => $this->workerManagerName]);
-        $processCount = $this->processCount;
-
-        while ($processCount) {
-            $this->tableGateway->insert([
-                'id' => uniqid($this->workerManagerName, true),
-                'pid' => '',
-                'pid_id' => '',
-                'worker_manager' => $this->workerManagerName,
-            ]);
-            $processCount--;
-        }
-    }
 
     /**
      * Get array of killed processes
      *
      * @return array
      */
-    protected function getFreeSlots(): array
+    private function setupSlots(): array
     {
         $slots = $this->tableGateway->select(['worker_manager' => $this->workerManagerName]);
-        $existingPids = LinuxPidKiller::ps();
-        $freeSlots = [];
 
+        $freeSlots = $this->receiveFreeSlots($slots);
+        if ($slots->count() < $this->processCount) {
+            for ($i = $slots->count(); $i < $this->processCount; $i++) {
+                $newSlot = [
+                    'id' => uniqid($this->workerManagerName, true),
+                    'pid' => '',
+                    'pid_id' => '',
+                    'worker_manager' => $this->workerManagerName,
+                ];
+                $this->tableGateway->insert($newSlot);
+                $freeSlots[] = $newSlot;
+            }
+        } elseif ($slots->count() > $this->processCount) {
+            for ($slot = false, $i = $slots->count(); $i > $this->processCount; $i--, $slot = next($freeSlots)) {
+                if (false !== $slot) {
+                    $this->tableGateway->delete(['id' => $slot['id']]);
+                } else {
+                    //No free slot left.
+                    return [];
+                }
+            }
+        }
+        return $freeSlots;
+    }
+
+    /**
+     * @param $slots
+     * @return array
+     */
+    private function receiveFreeSlots($slots): array
+    {
+        $existingPids = $this->processManager->ps();
+        $freeSlots = [];
         foreach ($slots as $slot) {
             $isSlotFree = true;
 
@@ -166,7 +197,7 @@ class WorkerManager
 
     public function __sleep()
     {
-        return ['process', 'workerManagerName', 'processCount', 'tableName'];
+        return ['process', 'workerManagerName', 'processCount', 'tableName', 'processManager'];
     }
 
     public function __wakeup()

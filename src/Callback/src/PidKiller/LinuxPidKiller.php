@@ -17,39 +17,53 @@ use RuntimeException;
 
 class LinuxPidKiller implements PidKillerInterface
 {
-    const DEF_MAX_MESSAGE_COUNT = 1000;
-
-    /** @var int */
-    protected $maxMessageCount;
-
-    /** @var QueueInterface */
-    protected $pidKillerQueue;
+    public const DEF_MAX_MESSAGE_COUNT = 1000;
 
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var int */
+    private $maxMessageCount;
+
+    /** @var QueueInterface */
+    private $pidKillerQueue;
+
+    /**
+     * @var ProcessManager
+     */
+    private $processManager;
+
+    /**
+     * LinuxPidKiller constructor.
+     * @param null $maxMessageCount
+     * @param ProcessManager|null $processManager
+     * @param QueueInterface|null $pidKillerQueue
+     * @param LoggerInterface|null $logger
+     * @throws \ReflectionException
+     */
     public function __construct(
         $maxMessageCount = null,
+        ProcessManager $processManager = null,
         QueueInterface $pidKillerQueue = null,
         LoggerInterface $logger = null
-    )
-    {
+    ) {
         InsideConstruct::setConstructParams([
-            "logger" => LoggerInterface::class,
+            'logger' => LoggerInterface::class,
+            'processManager' => ProcessManager::class,
         ]);
 
-        if (substr(php_uname(), 0, 7) == "Windows") {
+        if (strpos(php_uname(), 'Windows') === 0) {
             throw new RuntimeException('Pid killer does not work on Windows');
         }
 
-        if ($maxMessageCount == null) {
+        if ($maxMessageCount === null) {
             $maxMessageCount = self::DEF_MAX_MESSAGE_COUNT;
         }
-
+        $this->processManager = $processManager ?? new ProcessManager();
         $this->maxMessageCount = $maxMessageCount;
     }
 
-    public function getPidQueue()
+    public function getPidQueue(): QueueInterface
     {
         return $this->pidKillerQueue;
     }
@@ -74,14 +88,14 @@ class LinuxPidKiller implements PidKillerInterface
             throw new InvalidArgumentException("Field 'delaySeconds' is missing");
         }
 
-        $lstart = self::getPidStartTime($record['pid']);
+        $lstart = $this->processManager->getPidStartTime($record['pid']);
 
         if (!$lstart) {
             throw new RuntimeException("Process with pid {$record['pid']} does not exist");
         }
 
         $this->pidKillerQueue->addMessage(Message::createInstance([
-            'id' => self::generateId($record['pid'], $lstart),
+            'id' => $this->processManager->generateId($record['pid'], $lstart),
             QueueClient::KEY_DELAY_SECOND => $record['delaySeconds'],
         ]));
 
@@ -92,51 +106,39 @@ class LinuxPidKiller implements PidKillerInterface
         ]);
     }
 
-    public static function getPidStartTime($pid)
-    {
-        $pids = LinuxPidKiller::ps();
-
-        foreach ($pids as $pidInfo) {
-            if ($pid == $pidInfo['pid']) {
-                return $pidInfo['lstart'];
-            }
-        }
-
-        return null;
-    }
-
     public function __invoke()
     {
-        $this->logger->debug("PID-KILLER start working at {date}", [
+        $this->logger->debug('PID-KILLER start working at {date}', [
             'date' => date('D d.m H:i:s'),
         ]);
 
         $messageCount = 0;
 
-        $pids = self::ps();
+        $pids = $this->processManager->ps();
         while ($messageCount < $this->maxMessageCount && $queueMessage = $this->pidKillerQueue->getMessage()) {
             $messageCount++;
             $message = $queueMessage->getData();
 
-            $this->logger->debug("PID-KILLER get message from queue", [
+            $this->logger->debug('PID-KILLER get message from queue', [
                 'message' => $message,
             ]);
 
             foreach ($pids as $processInfo) {
                 $id = $processInfo['id'];
 
+                /** @noinspection TypeUnsafeComparisonInspection */
                 if ($id == $message['id']) {
                     [$pid] = explode('.', $message['id']);
-                    $result = exec("kill -9 {$pid}");
+                    $result = $this->processManager->kill($pid);
 
                     if ($result) {
-                        $this->logger->warning("PID-KILLER failed kill process message from queue", [
+                        $this->logger->warning('PID-KILLER failed kill process message from queue', [
                             'message' => $message,
                             'result' => $result,
                         ]);
                     } else {
                         $this->pidKillerQueue->deleteMessage($queueMessage);
-                        $this->logger->debug("PID-KILLER successfully kill process and delete message from queue", [
+                        $this->logger->debug('PID-KILLER successfully kill process and delete message from queue', [
                             'message' => $message,
                         ]);
                     }
@@ -144,90 +146,18 @@ class LinuxPidKiller implements PidKillerInterface
             }
         }
 
-        $this->logger->debug("PID-KILLER finish working at {date}", [
+        $this->logger->debug('PID-KILLER finish working at {date}', [
             'date' => date('D d.m H:i:s'),
         ]);
     }
 
-    public static function generateId($pid, $lstart)
-    {
-        return "{$pid}.{$lstart}";
-    }
-
-    /**
-     * Return result of linux ps command
-     *
-     * Result example
-     *  [
-     *      0 => [
-     *          'id' => '1.123434123',
-     *          'pid' => 1,
-     *          'lstart' => 123434123,
-     *      ],
-     *  ]
-     *
-     * @return array
-     */
-    public static function ps()
-    {
-        exec('ps -eo pid,lstart,cmd | grep php', $pidsInfo);
-        array_shift($pidsInfo);
-        $pids = [];
-
-        foreach ($pidsInfo as $pidInfo) {
-            try {
-                $pidInfo = trim($pidInfo);
-                preg_match('/^(?<pid>\d+)\s+(?<lstart>\w{3}\s+\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4})/', $pidInfo, $matches);
-                $timestamp = DateTime::createFromFormat('D M d H:i:s Y', $matches['lstart'])->getTimestamp();
-                $pid = intval($matches['pid']);
-                $pids[] = [
-                    'id' => self::generateId($pid, $timestamp),
-                    'pid' => $pid,
-                    'lstart' => $timestamp,
-                ];
-            } catch (\Throwable $exception) {
-                throw new RuntimeException("Has problem to parse process info: [$pidInfo][{$matches['pid']}][{$matches['lstart']}].", $exception->getCode(), $exception);
-            }
-        }
-
-        return $pids;
-    }
-
-    /**
-     * Return info for pid
-     *      [
-     *          'id' => '1.123434123',
-     *          'pid' => 1,
-     *          'lstart' => 123434123,
-     *      ]
-     *
-     * @param int $pid
-     * @return array|null
-     */
-    public static function pidInfo(int $pid)
-    {
-        $pidInfo = array_filter(self::ps(), function (array $pidInfo) use ($pid) {
-            return $pidInfo['pid'] === $pid;
-        });
-        if (empty($pidInfo)) {
-            return null;
-        }
-        return current($pidInfo);
-    }
-
-    public static function createIdFromPidAndTimestamp($pid, $timestamp = null)
-    {
-        $timestamp = $timestamp ?? time();
-
-        return "{$pid}.{$timestamp}";
-    }
 
     /**
      * @return array
      */
     public function __sleep()
     {
-        return ["pidKillerQueue", "maxMessageCount"];
+        return ['pidKillerQueue', 'maxMessageCount', 'processManager'];
     }
 
     /**
@@ -235,6 +165,6 @@ class LinuxPidKiller implements PidKillerInterface
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(["logger" => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
     }
 }
