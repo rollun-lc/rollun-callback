@@ -197,7 +197,7 @@ class WorkerManager
 
     public function __sleep()
     {
-        return ['process', 'workerManagerName', 'processCount', 'tableName', 'processManager'];
+        return ['interrupter', 'workerManagerName', 'processCount', 'tableName', 'processManager'];
     }
 
     public function __wakeup()
