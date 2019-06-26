@@ -158,7 +158,7 @@ class WorkerManager
                 $freeSlots[] = $newSlot;
             }
         } elseif ($slots->count() > $this->processCount) {
-            for ($slot = false, $i = $slots->count(); $i > $this->processCount; $i--, $slot = next($freeSlots)) {
+            for ($slot = current($freeSlots), $i = $slots->count(), $slotSkip = 0; $i > $this->processCount; $i--, $slot = next($freeSlots), $slotSkip++) {
                 if (false !== $slot) {
                     $this->tableGateway->delete(['id' => $slot['id']]);
                 } else {
@@ -166,6 +166,7 @@ class WorkerManager
                     return [];
                 }
             }
+            $freeSlots = array_slice($freeSlots, $slotSkip);
         }
         return $freeSlots;
     }
