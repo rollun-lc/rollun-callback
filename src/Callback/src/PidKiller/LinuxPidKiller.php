@@ -123,26 +123,24 @@ class LinuxPidKiller implements PidKillerInterface
                 'message' => $message,
             ]);
 
-            foreach ($pids as $processInfo) {
-                $id = $processInfo['id'];
+            $id = array_search($message['id'], array_column($pids, 'id'), true);
+            if ($id !== false) {
+                [$pid] = explode('.', $message['id']);
+                $result = $this->processManager->kill($pid);
 
-                /** @noinspection TypeUnsafeComparisonInspection */
-                if ($id == $message['id']) {
-                    [$pid] = explode('.', $message['id']);
-                    $result = $this->processManager->kill($pid);
-
-                    if ($result) {
-                        $this->logger->warning('PID-KILLER failed kill process message from queue', [
-                            'message' => $message,
-                            'result' => $result,
-                        ]);
-                    } else {
-                        $this->pidKillerQueue->deleteMessage($queueMessage);
-                        $this->logger->debug('PID-KILLER successfully kill process and delete message from queue', [
-                            'message' => $message,
-                        ]);
-                    }
+                if ($result) {
+                    $this->logger->warning('PID-KILLER failed kill process message from queue', [
+                        'message' => $message,
+                        'result' => $result,
+                    ]);
+                } else {
+                    $this->pidKillerQueue->deleteMessage($queueMessage);
+                    $this->logger->debug('PID-KILLER successfully kill process and delete message from queue', [
+                        'message' => $message,
+                    ]);
                 }
+            } else {
+                $this->pidKillerQueue->deleteMessage($queueMessage);
             }
         }
 
