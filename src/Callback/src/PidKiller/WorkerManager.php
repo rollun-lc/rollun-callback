@@ -6,11 +6,14 @@
 
 namespace rollun\callback\PidKiller;
 
+use phpDocumentor\Reflection\Types\This;
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\dic\InsideConstruct;
+use Zend\Db\ResultSet\ResultSetInterface;
 use Zend\Db\TableGateway\TableGateway;
+
 
 class WorkerManager
 {
@@ -48,6 +51,10 @@ class WorkerManager
      * @var ProcessManager
      */
     private $processManager;
+    /**
+     * @var int
+     */
+    private $slotTakenSecondsLimit;
 
     /**
      * WorkerManager constructor.
@@ -56,6 +63,7 @@ class WorkerManager
      * @param string $workerManagerName
      * @param int $processCount
      * @param ProcessManager|null $processManager
+     * @param float|int $slotTakenSecondsLimit
      * @param LoggerInterface|null $logger
      * @throws \ReflectionException
      */
@@ -65,6 +73,7 @@ class WorkerManager
         string $workerManagerName,
         int $processCount,
         ProcessManager $processManager = null,
+        $slotTakenSecondsLimit = 30 * 60,
         LoggerInterface $logger = null
     ) {
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class, 'processManager' => ProcessManager::class,]);
@@ -145,6 +154,7 @@ class WorkerManager
     {
         $slots = $this->tableGateway->select(['worker_manager' => $this->workerManagerName]);
 
+
         $freeSlots = $this->receiveFreeSlots($slots);
         if ($slots->count() < $this->processCount) {
             for ($i = $slots->count(); $i < $this->processCount; $i++) {
@@ -190,6 +200,16 @@ class WorkerManager
 
             if ($isSlotFree) {
                 $freeSlots[] = (array)$slot;
+            } else {
+                //FIXME: not good practice use id for get from it data
+                $startTaskTime = str_replace("{$slot['pid']}.", '', $slot['pid_id']);
+                $workSeconds = time() - $startTaskTime;
+                if ($workSeconds > $this->slotTakenSecondsLimit) {
+                    $this->logger->emergency('Slot busy longer than allowed time.', [
+                        'slot' => $slot,
+                        'workerManagerName' => $this->workerManagerName
+                    ]);
+                }
             }
         }
 
