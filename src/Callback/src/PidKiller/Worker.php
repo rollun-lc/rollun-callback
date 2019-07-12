@@ -82,6 +82,10 @@ class Worker
         try {
             $value = $this->unserialize($message->getData());
             $payload = $this->callback->__invoke($value);
+            if ($this->writer) {
+                $event = is_array($payload) ? $payload : (array)$payload;
+                $this->writer->write($event);
+            }
             $this->queue->deleteMessage($message);
         } catch (\Throwable $throwable) {
             $payload = [
@@ -90,11 +94,6 @@ class Worker
                 'exception' => $throwable,
             ];
             $this->logger->warning('Worker failed execute callback', $payload);
-        }
-
-        if ($this->writer) {
-            $event = is_array($payload) ? $payload : (array)$payload;
-            $this->writer->write($event);
         }
 
         return $payload;
