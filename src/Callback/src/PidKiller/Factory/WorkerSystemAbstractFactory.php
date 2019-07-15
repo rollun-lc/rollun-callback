@@ -143,6 +143,7 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
         $workerName = sprintf('%s_Worker', $requestedName);
         return (new WorkerAbstractFactory())($container, $workerName, [
             WorkerAbstractFactory::KEY_QUEUE => $options[WorkerAbstractFactory::KEY_QUEUE] ?? self::buildQueue($container, $requestedName, $options),
+            WorkerAbstractFactory::KEY_INFO => $options[WorkerAbstractFactory::KEY_INFO] ?? null,
             WorkerAbstractFactory::KEY_CALLABLE => $options[WorkerAbstractFactory::KEY_CALLABLE],
             WorkerAbstractFactory::KEY_WRITER => $options[WorkerAbstractFactory::KEY_WRITER] ?? null,
         ]);

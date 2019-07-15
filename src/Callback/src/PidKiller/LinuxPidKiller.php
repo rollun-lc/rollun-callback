@@ -97,6 +97,7 @@ class LinuxPidKiller implements PidKillerInterface
         $this->pidKillerQueue->addMessage(Message::createInstance([
             'id' => $this->processManager->generateId($record['pid'], $lstart),
             QueueClient::KEY_DELAY_SECOND => $record['delaySeconds'],
+            'Body' => $record['info'] ?? null,
         ]));
 
         $this->logger->debug("PID-KILLER add pid {pid} to queue at {date}", [

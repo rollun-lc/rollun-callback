@@ -17,7 +17,7 @@ use rollun\dic\InsideConstruct;
  * Class Worker
  * @package rollun\callback\Callback
  */
-class Worker
+class Worker implements InfoProviderInterface
 {
     /**
      * @var QueueInterface
@@ -38,6 +38,10 @@ class Worker
      * @var LoggerInterface
      */
     protected $logger;
+    /**
+     * @var string
+     */
+    private $info;
 
     /**
      * Worker constructor.
@@ -51,7 +55,8 @@ class Worker
         QueueInterface $queue,
         callable $callback,
         WriterInterface $writer = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        string $info = ""
     ) {
         $this->queue = $queue;
 
@@ -63,6 +68,7 @@ class Worker
         $this->writer = $writer;
         $this->callback = $callback;
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
+        $this->info = $info;
     }
 
     /**
@@ -123,5 +129,10 @@ class Worker
     public function __wakeup()
     {
         InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
+    }
+
+    public function getInfo(): string
+    {
+        return $this->info;
     }
 }

@@ -39,6 +39,8 @@ class WorkerAbstractFactory implements AbstractFactoryInterface
 
     public const KEY_WRITER = 'writer';
 
+    public const KEY_INFO = 'info';
+
     /**
      * @param ContainerInterface $container
      * @param string $requestedName
@@ -60,11 +62,13 @@ class WorkerAbstractFactory implements AbstractFactoryInterface
                 throw new \InvalidArgumentException("Invalid option '" . self::KEY_CALLABLE . "'");
             }
 
+
             $queue = is_string($serviceConfig[self::KEY_QUEUE]) ? $container->get($serviceConfig[self::KEY_QUEUE]) : $serviceConfig[self::KEY_QUEUE];
             $callable = is_string($serviceConfig[self::KEY_CALLABLE]) ? $container->get($serviceConfig[self::KEY_CALLABLE]) : $serviceConfig[self::KEY_CALLABLE];
             $writer = isset($serviceConfig[self::KEY_WRITER]) ? $container->get($serviceConfig[self::KEY_WRITER]) : null;
+            $info = $serviceConfig[self::KEY_INFO] ?? null;
 
-            return new Worker($queue, $callable, $writer);
+            return new Worker($queue, $callable, $writer, $info);
         } catch (\Throwable $throwable) {
             throw new ServiceNotCreatedException(sprintf('Can\'t service service %s. Reason: %s', $requestedName, $throwable->getMessage()), $throwable->getCode(), $throwable);
         }

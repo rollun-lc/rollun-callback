@@ -8,6 +8,7 @@ namespace rollun\callback\Callback\Interrupter;
 
 use ReflectionException;
 use rollun\callback\Callback\CallbackException;
+use rollun\callback\PidKiller\InfoProviderInterface;
 use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
@@ -78,7 +79,7 @@ class Process extends InterrupterAbstract
         $cmd .= ' APP_ENV=' . getenv('APP_ENV');
 
         $outStream = getenv('OUTPUT_STREAM');
-        if($outStream) {
+        if ($outStream) {
             $payload[self::STDOUT_KEY] = $outStream;
             $payload[self::STDERR_KEY] = $outStream;
         } else {
@@ -97,10 +98,14 @@ class Process extends InterrupterAbstract
         $pid = trim(shell_exec($cmd));
 
         if ($this->maxExecuteTime && $this->pidKiller) {
-            $this->pidKiller->create([
+            $record = [
                 'delaySeconds' => $this->maxExecuteTime,
                 'pid' => $pid,
-            ]);
+            ];
+            if ($this->callback instanceof InfoProviderInterface) {
+                $record['info'] = $this->callback->getInfo();
+            }
+            $this->pidKiller->create($record);
         }
 
         $payload = new SimplePayload($pid, $payload);
