@@ -73,7 +73,7 @@ class WorkerManager
         string $workerManagerName,
         int $processCount,
         ProcessManager $processManager = null,
-        $slotTakenSecondsLimit = 30 * 60,
+        $slotTakenSecondsLimit = 1800,
         LoggerInterface $logger = null
     ) {
         InsideConstruct::setConstructParams(['logger' => LoggerInterface::class, 'processManager' => ProcessManager::class,]);
@@ -83,6 +83,7 @@ class WorkerManager
         $this->processCount = $processCount;
         $this->tableName = $tableGateway->getTable();
         $this->processManager = $processManager ?? new ProcessManager();
+        $this->slotTakenSecondsLimit = $slotTakenSecondsLimit;
     }
 
     private function setWorkerManagerName($workerManagerName)
@@ -218,7 +219,7 @@ class WorkerManager
 
     public function __sleep()
     {
-        return ['interrupter', 'workerManagerName', 'processCount', 'tableName', 'processManager'];
+        return ['interrupter', 'workerManagerName', 'processCount', 'tableName', 'processManager', 'slotTakenSecondsLimit'];
     }
 
     public function __wakeup()
