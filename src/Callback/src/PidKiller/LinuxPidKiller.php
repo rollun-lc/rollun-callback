@@ -142,6 +142,9 @@ class LinuxPidKiller implements PidKillerInterface
                 }
             } else {
                 $this->pidKillerQueue->deleteMessage($queueMessage);
+                $this->logger->debug('PID-KILLER process already ended and delete message from queue', [
+                    'message' => $message,
+                ]);
             }
         }
 
