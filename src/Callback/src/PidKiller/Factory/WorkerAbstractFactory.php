@@ -67,7 +67,7 @@ class WorkerAbstractFactory implements AbstractFactoryInterface
             $queue = is_string($serviceConfig[self::KEY_QUEUE]) ? $container->get($serviceConfig[self::KEY_QUEUE]) : $serviceConfig[self::KEY_QUEUE];
             $callable = is_string($serviceConfig[self::KEY_CALLABLE]) ? $container->get($serviceConfig[self::KEY_CALLABLE]) : $serviceConfig[self::KEY_CALLABLE];
             $writer = isset($serviceConfig[self::KEY_WRITER]) ? $container->get($serviceConfig[self::KEY_WRITER]) : null;
-            $info = $serviceConfig[self::KEY_INFO] ?? null;
+            $info = $serviceConfig[self::KEY_INFO] ?? '';
             $logger = $container->get(LoggerInterface::class);
             return new Worker($queue, $callable, $writer, $logger, $info);
         } catch (\Throwable $throwable) {
