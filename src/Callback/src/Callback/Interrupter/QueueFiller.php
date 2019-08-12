@@ -6,6 +6,8 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use Jaeger\Tag\StringTag;
+use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
@@ -27,15 +29,20 @@ class QueueFiller implements InterrupterInterface
     protected $logger;
 
     /**
+     * @var Tracer
+     */
+    protected $tracer;
+
+    /**
      * ServiceQueue constructor.
      * @param QueueInterface $queue
      * @param LoggerInterface|null $logger
      * @throws ReflectionException
      */
-    public function __construct(QueueInterface $queue, LoggerInterface $logger = null)
+    public function __construct(QueueInterface $queue, LoggerInterface $logger = null, Tracer $tracer = null)
     {
         $this->queue = $queue;
-        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
+        InsideConstruct::init(['logger' => LoggerInterface::class, 'tracer' => Tracer::class]);
     }
 
     /**
@@ -64,8 +71,12 @@ class QueueFiller implements InterrupterInterface
      */
     public function __invoke($value): PayloadInterface
     {
+        $span = $this->tracer->start('QueueFiller::__invoke', [
+            new StringTag('queue', $this->queue->getName()),
+            new StringTag('value', Serializer::jsonSerialize($value))
+        ]);
         $serializedData = static::serializeMessage($value);
-        $message = new Message($serializedData);
+        $message = new Message(['Body' => $serializedData, 'TracerContext' => base64_encode(Serializer::jsonSerialize($span->getContext()))]);
         $payload = [
             'message' => $value,
             'queue' => $this->queue->getName(),
@@ -75,7 +86,7 @@ class QueueFiller implements InterrupterInterface
         $this->logger->info('Add message to queue', [
             'message' => $message,
         ]);
-
+        $this->tracer->finish($span);
         return new SimplePayload(null, $payload);
     }
 
@@ -93,6 +104,6 @@ class QueueFiller implements InterrupterInterface
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class, 'tracer' => Tracer::class]);
     }
 }

@@ -6,12 +6,17 @@
 
 namespace rollun\callback\PidKiller;
 
+use GuzzleHttp\Tests\Stream\Str;
+use Jaeger\Tag\StringTag;
+use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\QueueFiller;
 use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
+use rollun\logger\Processor\ExceptionBacktrace;
+use rollun\utils\Json\Serializer;
 
 /**
  * Class Worker
@@ -42,6 +47,10 @@ class Worker implements InfoProviderInterface
      * @var string
      */
     private $info;
+    /**
+     * @var Tracer|null
+     */
+    private $tracer;
 
     /**
      * Worker constructor.
@@ -49,6 +58,8 @@ class Worker implements InfoProviderInterface
      * @param callable $callback
      * @param WriterInterface|null $writer
      * @param LoggerInterface|null $logger
+     * @param Tracer|null $tracer
+     * @param string $info
      * @throws \ReflectionException
      */
     public function __construct(
@@ -56,7 +67,8 @@ class Worker implements InfoProviderInterface
         callable $callback,
         WriterInterface $writer = null,
         LoggerInterface $logger = null,
-        string $info = ""
+        Tracer $tracer = null,
+        string $info = ''
     ) {
         $this->queue = $queue;
 
@@ -67,7 +79,7 @@ class Worker implements InfoProviderInterface
 
         $this->writer = $writer;
         $this->callback = $callback;
-        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class]);
+        InsideConstruct::init(['logger' => LoggerInterface::class, 'tracer' => Tracer::class]);
         $this->info = $info;
     }
 
@@ -78,6 +90,7 @@ class Worker implements InfoProviderInterface
      */
     public function __invoke()
     {
+        $span = $this->tracer->start('Worker::__invoke');
         if (!$message = $this->queue->getMessage()) {
             $this->logger->debug('Queue {queue} is empty. Worker not started.', [
                 'queue' => $this->queue->getName(),
@@ -85,23 +98,30 @@ class Worker implements InfoProviderInterface
             return null;
         }
 
+        $startCallbackSpan = $this->tracer->start('Worker::start_callback', [
+            new StringTag('queue', $this->queue->getName()),
+        ], $message->getTracerContext());
         try {
             $value = $this->unserialize($message->getData());
+            $startCallbackSpan->addTag(new StringTag('value', Serializer::jsonSerialize($value)));
+
             $payload = $this->callback->__invoke($value);
             if ($this->writer) {
                 $event = is_array($payload) ? $payload : (array)$payload;
                 $this->writer->write($event);
             }
             $this->queue->deleteMessage($message);
+            $this->tracer->finish($startCallbackSpan);
         } catch (\Throwable $throwable) {
             $payload = [
                 'message' => $message ? $message->getMessage() : null,
                 'queue' => $this->queue->getName(),
                 'exception' => $throwable,
             ];
+            $startCallbackSpan->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($throwable))));
             $this->logger->warning('Worker failed execute callback', $payload);
         }
-
+        $this->tracer->finish($span);
         return $payload;
     }
 
@@ -128,7 +148,7 @@ class Worker implements InfoProviderInterface
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class, 'tracer' => Tracer::class]);
     }
 
     public function getInfo(): string

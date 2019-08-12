@@ -7,6 +7,7 @@
 namespace rollun\callback\PidKiller\Factory;
 
 use Interop\Container\ContainerInterface;
+use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\PidKiller\Worker;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
@@ -69,7 +70,8 @@ class WorkerAbstractFactory implements AbstractFactoryInterface
             $writer = isset($serviceConfig[self::KEY_WRITER]) ? $container->get($serviceConfig[self::KEY_WRITER]) : null;
             $info = $serviceConfig[self::KEY_INFO] ?? '';
             $logger = $container->get(LoggerInterface::class);
-            return new Worker($queue, $callable, $writer, $logger, $info);
+            $tracer = $container->get(Tracer::class);
+            return new Worker($queue, $callable, $writer, $logger, $tracer, $info);
         } catch (\Throwable $throwable) {
             throw new ServiceNotCreatedException(sprintf('Can\'t service service %s. Reason: %s', $requestedName, $throwable->getMessage()), $throwable->getCode(), $throwable);
         }

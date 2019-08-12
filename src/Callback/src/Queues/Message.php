@@ -4,11 +4,12 @@
  * @license LICENSE.md New BSD License
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace rollun\callback\Queues;
 
 use InvalidArgumentException;
+use Jaeger\Span\Context\SpanContext;
 
 class Message
 {
@@ -51,6 +52,14 @@ class Message
         }
 
         throw new InvalidArgumentException('No "Body" in the message');
+    }
+
+    public function getTracerContext(): ?SpanContext
+    {
+        if (isset($this->message['TracerContext'])) {
+            return \rollun\utils\Json\Serializer::jsonUnserialize(base64_decode($this->message['TracerContext']));
+        }
+        return null;
     }
 
     /**

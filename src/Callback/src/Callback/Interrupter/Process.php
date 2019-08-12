@@ -6,6 +6,7 @@
 
 namespace rollun\callback\Callback\Interrupter;
 
+use Jaeger\Tracer\Tracer;
 use ReflectionException;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\PidKiller\InfoProviderInterface;
@@ -41,6 +42,9 @@ class Process extends InterrupterAbstract
     /** @var PidKillerInterface */
     protected $pidKiller;
 
+    /** @var Tracer */
+    protected $tracer;
+
     /**
      * Process constructor.
      * @param callable $callback
@@ -51,11 +55,12 @@ class Process extends InterrupterAbstract
      */
     public function __construct(
         callable $callback,
-        PidKillerInterface $pidKiller = null,
+        $pidKiller = null,
         int $maxExecuteTime = null,
-        LifeCycleToken $lifecycleToken = null
+        LifeCycleToken $lifecycleToken = null,
+        Tracer $tracer = null
     ) {
-        InsideConstruct::setConstructParams(["lifecycleToken" => LifeCycleToken::class]);
+        InsideConstruct::setConstructParams(["lifecycleToken" => LifeCycleToken::class, 'tracer' => Tracer::class]);
         parent::__construct($callback);
 
         $this->pidKiller = $pidKiller;
@@ -69,13 +74,20 @@ class Process extends InterrupterAbstract
      */
     public function __invoke($value = null): PayloadInterface
     {
+        $span = $this->tracer->start('Process::__invoke');
+
+        $context = $span->getContext();
+        $traserContext = base64_encode(\rollun\utils\Json\Serializer::jsonSerialize($span->getContext()));
+
+
         $cmd = 'php ' . $this->getScriptName();
 
         $job = new Job($this->callback, $value);
 
         $serializedJob = $job->serializeBase64();
         $cmd .= ' ' . $serializedJob;
-        $cmd .= " {$this->lifecycleToken->serialize()}";
+        $cmd .= " lifecycleToken:{$this->lifecycleToken->serialize()}";
+        $cmd .= " tracerContext:$traserContext";
         $cmd .= ' APP_ENV=' . getenv('APP_ENV');
 
         $outStream = getenv('OUTPUT_STREAM');
@@ -109,7 +121,7 @@ class Process extends InterrupterAbstract
         }
 
         $payload = new SimplePayload($pid, $payload);
-
+        $this->tracer->finish($span);
         return $payload;
     }
 

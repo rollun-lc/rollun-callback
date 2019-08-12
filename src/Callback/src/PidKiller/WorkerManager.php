@@ -7,6 +7,8 @@
 namespace rollun\callback\PidKiller;
 
 use phpDocumentor\Reflection\Types\This;
+use Jaeger\Tag\StringTag;
+use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
@@ -21,6 +23,11 @@ class WorkerManager
      * @var LoggerInterface
      */
     protected $logger;
+
+    /**
+     * @var Tracer
+     */
+    protected $tracer;
 
     /**
      * @var TableGateway
@@ -65,6 +72,7 @@ class WorkerManager
      * @param ProcessManager|null $processManager
      * @param float|int $slotTakenSecondsLimit
      * @param LoggerInterface|null $logger
+     * @param Tracer|null $tracer
      * @throws \ReflectionException
      */
     public function __construct(
@@ -74,9 +82,14 @@ class WorkerManager
         int $processCount,
         ProcessManager $processManager = null,
         $slotTakenSecondsLimit = 1800,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        Tracer $tracer = null
     ) {
-        InsideConstruct::setConstructParams(['logger' => LoggerInterface::class, 'processManager' => ProcessManager::class,]);
+        InsideConstruct::setConstructParams([
+            'tracer' => Tracer::class,
+            'logger' => LoggerInterface::class,
+            'processManager' => ProcessManager::class,
+        ]);
         $this->tableGateway = $tableGateway;
         $this->interrupter = $interrupter;
         $this->setWorkerManagerName($workerManagerName);
@@ -98,6 +111,8 @@ class WorkerManager
 
     public function __invoke()
     {
+        $span = $this->tracer->start('WorkerManager::__invoke', [new StringTag('name', $this->workerManagerName)]);
+
         $freeSlots = $this->setupSlots();
 
         if (!$freeSlots) {
@@ -109,12 +124,18 @@ class WorkerManager
         foreach ($freeSlots as $freeSlot) {
             $pids[] = $this->refreshSlot($freeSlot);
         }
-
+        $span->addTag(new StringTag('pids', json_encode($pids)));
+        $this->tracer->finish($span);
         return $pids;
     }
 
     private function refreshSlot($slot): ?int
     {
+        $span = $this->tracer->start('WorkerManager::refreshSlot', [
+            new StringTag('name', $this->workerManagerName),
+            new StringTag('slots', json_encode($slot))
+        ]);
+
         $adapter = $this->tableGateway->getAdapter();
         $adapter->getDriver()->getConnection()->beginTransaction();
 
@@ -141,6 +162,7 @@ class WorkerManager
 
             return null;
         }
+        $this->tracer->finish($span);
 
         return (int)$payload->getId();
     }
@@ -153,8 +175,9 @@ class WorkerManager
      */
     private function setupSlots(): array
     {
-        $slots = $this->tableGateway->select(['worker_manager' => $this->workerManagerName]);
+        $span = $this->tracer->start('WorkerManager::setupSlots', [new StringTag('name', $this->workerManagerName)]);
 
+        $slots = $this->tableGateway->select(['worker_manager' => $this->workerManagerName]);
 
         $freeSlots = $this->receiveFreeSlots($slots);
         if ($slots->count() < $this->processCount) {
@@ -179,6 +202,7 @@ class WorkerManager
             }
             $freeSlots = array_slice($freeSlots, $slotSkip);
         }
+        $this->tracer->finish($span);
         return $freeSlots;
     }
 
@@ -188,6 +212,7 @@ class WorkerManager
      */
     private function receiveFreeSlots($slots): array
     {
+        $span = $this->tracer->start('WorkerManager::receiveFreeSlots', [new StringTag('name', $this->workerManagerName)]);
         $existingPids = $this->processManager->ps();
         $freeSlots = [];
         foreach ($slots as $slot) {
@@ -214,6 +239,7 @@ class WorkerManager
             }
         }
 
+        $this->tracer->finish($span);
         return $freeSlots;
     }
 
