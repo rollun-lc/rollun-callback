@@ -252,6 +252,7 @@ class WorkerManager
     {
         InsideConstruct::initWakeup([
             'logger' => LoggerInterface::class,
+            'tracer' => Tracer::class,
             'tableGateway' => $this->tableName,
         ]);
     }
