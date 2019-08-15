@@ -82,6 +82,8 @@ class QueueFiller implements InterrupterInterface
             'queue' => $this->queue->getName(),
         ];
 
+        //fix not found context problem
+        $this->tracer->flush();
         $this->queue->addMessage($message);
         $this->logger->info('Add message to queue', [
             'message' => $message,

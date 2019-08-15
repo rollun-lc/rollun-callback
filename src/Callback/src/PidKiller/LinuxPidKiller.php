@@ -7,7 +7,11 @@
 namespace rollun\callback\PidKiller;
 
 use DateTime;
+use GuzzleHttp\Tests\Stream\Str;
 use InvalidArgumentException;
+use Jaeger\Tag\ErrorTag;
+use Jaeger\Tag\StringTag;
+use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\ConfigProvider;
 use rollun\callback\Queues\Message;
@@ -32,6 +36,10 @@ class LinuxPidKiller implements PidKillerInterface
      * @var ProcessManager
      */
     private $processManager;
+    /**
+     * @var Tracer
+     */
+    private $tracer;
 
     /**
      * LinuxPidKiller constructor.
@@ -39,16 +47,19 @@ class LinuxPidKiller implements PidKillerInterface
      * @param ProcessManager|null $processManager
      * @param QueueInterface|null $pidKillerQueue
      * @param LoggerInterface|null $logger
+     * @param Tracer|null $tracer
      * @throws \ReflectionException
      */
     public function __construct(
         $maxMessageCount = null,
         ProcessManager $processManager = null,
         QueueInterface $pidKillerQueue = null,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        Tracer $tracer = null
     ) {
         InsideConstruct::setConstructParams([
             'logger' => LoggerInterface::class,
+            'tracer' => Tracer::class,
             'processManager' => ProcessManager::class,
         ]);
 
@@ -61,6 +72,7 @@ class LinuxPidKiller implements PidKillerInterface
         }
         $this->processManager = $processManager ?? new ProcessManager();
         $this->maxMessageCount = $maxMessageCount;
+        $this->tracer = $tracer;
     }
 
     public function getPidQueue(): QueueInterface
@@ -77,9 +89,14 @@ class LinuxPidKiller implements PidKillerInterface
      * ]
      *
      * @param $record
+     * @throws \rollun\utils\Json\Exception
      */
     public function create($record)
     {
+        $span = $this->tracer->start('LinuxPidKiller::create', [
+            new StringTag('pid', $record['pid']),
+            new StringTag('delaySeconds', $record['delaySeconds'])
+        ]);
         if (!isset($record['pid'])) {
             throw new InvalidArgumentException("Field 'pid' is missing");
         }
@@ -89,15 +106,19 @@ class LinuxPidKiller implements PidKillerInterface
         }
 
         $lstart = $this->processManager->getPidStartTime($record['pid']);
+        $id = $this->processManager->generateId($record['pid'], $lstart);
+        $span->addTag(new StringTag('pid_start_time', $lstart));
+        $span->addTag(new StringTag('pid_id', $id));
 
         if (!$lstart) {
             throw new RuntimeException("Process with pid {$record['pid']} does not exist");
         }
 
         $this->pidKillerQueue->addMessage(Message::createInstance([
-            'id' => $this->processManager->generateId($record['pid'], $lstart),
+            'id' => $id,
             QueueClient::KEY_DELAY_SECOND => $record['delaySeconds'],
             'Body' => $record['info'] ?? null,
+            'TracerContext' => \rollun\utils\Json\Serializer::jsonSerialize(base64_encode($this->tracer->getContext()))
         ]));
 
         $this->logger->debug("PID-KILLER add pid {pid} to queue at {date}", [
@@ -105,6 +126,8 @@ class LinuxPidKiller implements PidKillerInterface
             'pid' => $record['pid'],
             'lstart' => $lstart,
         ]);
+
+        $this->tracer->finish($span);
     }
 
     public function __invoke()
@@ -112,6 +135,7 @@ class LinuxPidKiller implements PidKillerInterface
         $this->logger->debug('PID-KILLER start working at {date}', [
             'date' => date('D d.m H:i:s'),
         ]);
+        $span = $this->tracer->start('LinuxPidKiller::__invoke');
 
         $messageCount = 0;
 
@@ -126,10 +150,20 @@ class LinuxPidKiller implements PidKillerInterface
 
             $id = array_search($message['id'], array_column($pids, 'id'), true);
             if ($id !== false) {
-                [$pid] = explode('.', $message['id']);
+                [$pid, $lstart] = explode('.', $message['id']);
+
+                $processKillSpan = $this->tracer->start('LinuxPidKiller::__kill', [
+                    new StringTag('pid_id', $id),
+                    new StringTag('pid', $pid),
+                    new StringTag('pid_start_time', $lstart),
+                ], $queueMessage->getTracerContext());
+
                 $result = $this->processManager->kill($pid);
 
+                $processKillSpan->addTag(new StringTag('kill_result', $result));
+
                 if ($result) {
+                    $processKillSpan->addTag(new ErrorTag());
                     $this->logger->warning('PID-KILLER failed kill process message from queue', [
                         'message' => $message,
                         'result' => $result,
@@ -140,6 +174,7 @@ class LinuxPidKiller implements PidKillerInterface
                         'message' => $message,
                     ]);
                 }
+                $this->tracer->finish($processKillSpan);
             } else {
                 $this->pidKillerQueue->deleteMessage($queueMessage);
                 $this->logger->debug('PID-KILLER process already ended and delete message from queue', [
@@ -151,6 +186,8 @@ class LinuxPidKiller implements PidKillerInterface
         $this->logger->debug('PID-KILLER finish working at {date}', [
             'date' => date('D d.m H:i:s'),
         ]);
+        $this->tracer->finish($span);
+
     }
 
 

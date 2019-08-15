@@ -107,6 +107,8 @@ class Process extends InterrupterAbstract
             $cmd .= " & echo $!";
         }
 
+        //fix not found context problem
+        $this->tracer->flush();
         $pid = trim(shell_exec($cmd));
 
         if ($this->maxExecuteTime && $this->pidKiller) {
