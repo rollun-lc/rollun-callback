@@ -36,6 +36,7 @@ class LinuxPidKiller implements PidKillerInterface
      * @var ProcessManager
      */
     private $processManager;
+
     /**
      * @var Tracer
      */
@@ -72,7 +73,6 @@ class LinuxPidKiller implements PidKillerInterface
         }
         $this->processManager = $processManager ?? new ProcessManager();
         $this->maxMessageCount = $maxMessageCount;
-        $this->tracer = $tracer;
     }
 
     public function getPidQueue(): QueueInterface
@@ -204,6 +204,6 @@ class LinuxPidKiller implements PidKillerInterface
      */
     public function __wakeup()
     {
-        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class,'tracer' => Tracer::class]);
     }
 }
