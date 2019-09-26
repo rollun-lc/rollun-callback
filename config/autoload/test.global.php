@@ -80,8 +80,8 @@ return [
         ]
     ],
     DbAdapterAbstractFactory::class => [
-        'testDbQueueClient' => [
-               'timeInflight' => 0,
+        'testDbQueue' => [
+            'timeInflight' => 0,
         ]
     ],
     QueueClientAbstractFactory::class => [

@@ -198,8 +198,9 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             foreach ($resultSet as $result) {
                 $message = [];
                 $message['id'] = $result->id;
-                $message['body'] = unserialize($result->body);
-                $message['time_in_flight'] = time();
+                $message['time-in-flight'] = time();
+                $message['delayed-until'] = $result->delayed_until;
+                $message['Body'] = unserialize($result->body);
                 $message['priority'] = intval($result->priority_level);
                 $messages[] = $message;
             }
