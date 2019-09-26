@@ -80,7 +80,7 @@ return [
         ]
     ],
     DbAdapterAbstractFactory::class => [
-        'requestedServiceName1' => [
+        'testDbQueueClient' => [
                'timeInflight' => 0,
         ]
     ],
@@ -92,6 +92,10 @@ return [
         'testFileQueueClient' => [
             'name' => 'fileQueue',
             'adapter' => 'testFileQueue',
+        ],
+        'testDbQueueClient' => [
+            'name' => 'dbQueue',
+            'adapter' => 'testDbQueue',
         ],
     ],
 ];
