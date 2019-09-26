@@ -7,6 +7,7 @@ namespace QueueClientTest\Adapter;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use rollun\callback\Queues\Adapter\DbAdapter;
 use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
 use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
 use ReputationVIP\QueueClient\Exception\QueueAliasException;
@@ -35,7 +36,8 @@ class DbAdapterTest extends TestCase
 
     public function getQueueClient(): QueueClient
     {
-        return $this->getContainer()->build('Application\QueueClient');
+        $db = $this->getContainer()->get('db');
+        return new QueueClient(new DbAdapter($db, 0));
     }
 
     /**
