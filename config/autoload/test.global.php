@@ -79,7 +79,11 @@ return [
             ],
         ]
     ],
-    DbAdapterAbstractFactory::class => [],
+    DbAdapterAbstractFactory::class => [
+        'requestedServiceName1' => [
+               'timeInflight' => 0,
+        ]
+    ],
     QueueClientAbstractFactory::class => [
         'testSqsQueueClient' => [
             'name' => 'sqsQueue',

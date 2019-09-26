@@ -10,21 +10,19 @@ namespace rollun\callback\Queues\Factory;
 
 use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
-use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Queues\Adapter\DbAdapter;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
- * Create instance of FileAdapter
+ * Create instance of DbAdapter
  *
  * Config example:
  *
  * <code>
  *  [
- *      FileAdapterAbstractFactory::class => [
+ *      DbAdapterAbstractFactory::class => [
  *          'requestedServiceName1' => [
  *              'priorityHandler' => 'priorityHandlerServiceName',
- *              'storageDirPath' => 'path/to/directory', // default 'data/queues'
  *              'timeInflight' => 0,
  *          ],
  *          'requestedServiceName2' => [
@@ -34,7 +32,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *  ]
  * </code>
  *
- * Class FileAdapterAbstractFactory
+ * Class DbAdapterAbstractFactory
  * @package rollun\callback\Queues\Factory
  */
 class DbAdapterAbstractFactory implements AbstractFactoryInterface

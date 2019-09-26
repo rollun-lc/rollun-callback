@@ -23,6 +23,10 @@ use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Db\Sql\Predicate\Expression as PredicateExpression;
 use Zend\Db\Metadata\Source\Factory;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Ddl;
+use Zend\Db\Sql\Ddl\Column;
+use Zend\Db\Sql\Ddl\Constraint;
+
 
 class DbAdapter extends AbstractAdapter implements AdapterInterface
 {
@@ -342,7 +346,12 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidArgumentException('Queue name empty or not defined.');
         }
         $tableName = $this->prepareTableName($queueName);
-        $this->db->query("DROP TABLE IF EXISTS $tableName", Adapter::QUERY_MODE_EXECUTE);
+        $table = new Ddl\DropTable($tableName);
+        $sql = new Sql($this->db);
+        $this->db->query(
+            $sql->buildSqlString($table),
+            Adapter::QUERY_MODE_EXECUTE
+        );
         return $this;
     }
 
@@ -366,15 +375,18 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             );
         }
         $tableName = $this->prepareTableName($queueName);
-        $sql = "CREATE TABLE $tableName (
-            `id` VARCHAR(45) NOT NULL, 
-            `priority_level` int(11) NOT NULL, 
-            `body` text COLLATE utf8_unicode_ci,
-            `time_in_flight` int(11) DEFAULT NULL,
-            `delayed_until` int(11) DEFAULT NULL,
-        PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-        $this->db->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $table = new Ddl\CreateTable($tableName);
+        $table->addColumn(new Column\Varchar('id', 45));
+        $table->addColumn(new Column\Integer('priority_level'));
+        $table->addColumn(new Column\Text('body'));
+        $table->addColumn(new Column\Integer('time_in_flight', true));
+        $table->addColumn(new Column\Integer('delayed_until', true));
+        $table->addConstraint(new Constraint\PrimaryKey('id'));
+        $sql = new Sql($this->db);
+        $this->db->query(
+            $sql->buildSqlString($table),
+            Adapter::QUERY_MODE_EXECUTE
+        );
 
         return $this;
     }
@@ -398,7 +410,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         $sourceTableName = $platform->quoteIdentifier($this->prepareTableName($sourceQueueName));
         $targetTableName = $platform->quoteIdentifier($this->prepareTableName($targetQueueName));
         $sql = "ALTER TABLE $sourceTableName RENAME TO $targetTableName;";
-        $this->db->query($sql);
+        $this->db->query($sql, Adapter::QUERY_MODE_EXECUTE);
         return $this;
     }
 
