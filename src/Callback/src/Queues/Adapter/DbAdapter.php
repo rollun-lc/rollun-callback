@@ -40,7 +40,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
 
     /**
      * @param Adapter                  $db
-     * @param int $timeInFlight
+     * @param int                      $timeInFlight
      * @param PriorityHandlerInterface $priorityHandler
      *
      * @throws QueueAccessException
@@ -114,6 +114,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             'time_in_flight' => null,
             'delayed_until'  => time() + $delaySeconds,
             'body'           => serialize($message),
+            'added_at'       => time(),
         ];
         $sql = new Sql($this->db);
         $select = $sql->insert()
@@ -182,7 +183,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                     ),
                     new PredicateExpression('delayed_until <= unix_timestamp(now())'),
                 ]
-            );
+            )
+            ->order('added_at');
         if (null !== $priority) {
             $select->where(['priority_level' => $priority->getLevel()]);
         }
@@ -382,6 +384,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         $table->addColumn(new Column\Text('body'));
         $table->addColumn(new Column\Integer('time_in_flight', true));
         $table->addColumn(new Column\Integer('delayed_until', true));
+        $table->addColumn(new Column\Integer('added_at'));
         $table->addConstraint(new Constraint\PrimaryKey('id'));
         $sql = new Sql($this->db);
         $this->db->query(
