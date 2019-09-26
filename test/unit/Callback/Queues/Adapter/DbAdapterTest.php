@@ -69,6 +69,37 @@ class DbAdapterTest extends TestCase
         $object->createQueue('a');
         $this->assertTrue(in_array('a', $object->listQueues()));
     }
+//
+//    public function testMajor()
+//    {
+//        $object = $this->createObject(5);
+//        $object->createQueue('a');
+//
+//        $object->addMessage('a', 'a');
+//        $object->addMessage('a','b');
+//        $object->addMessage('a','c');
+//        $object->addMessage('a','d');
+//
+//        $this->assertFalse($object->isEmpty('a'));
+//
+//        $messages = $object->getMessages('a', 1);
+//        $this->assertEquals($messages[0]['Body'], 'a');
+//        $messages = $object->getMessages('a', 1);
+//        $this->assertEquals($messages[0]['Body'], 'b');
+//        $messages = $object->getMessages('a', 1);
+//        $this->assertEquals($messages[0]['Body'], 'c');
+//        $messages = $object->getMessages('a', 1);
+//        $this->assertEquals($messages[0]['Body'], 'd');
+//
+//        $this->assertTrue($object->isEmpty('a'));
+//
+//        $object->addMessage('a', 'a');
+//        $object->addMessage('a', 'b');
+//
+//        $object->purgeQueue('a');
+//        $this->assertTrue($object->isEmpty('a'));
+//    }
+
 
     public function testCreateQueueWithBadSymbols()
     {
