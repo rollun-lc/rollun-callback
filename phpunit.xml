@@ -1,4 +1,4 @@
-<phpunit bootstrap="test/bootstrap.php" colors="true">
+<phpunit bootstrap="test/bootstrap.php" stopOnFailure="true" colors="true">
     <testsuites>
         <testsuite name="rollun\\test\\callback\\">
             <directory>./test/Callback/</directory>
