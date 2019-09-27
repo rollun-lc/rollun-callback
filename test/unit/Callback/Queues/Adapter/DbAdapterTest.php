@@ -84,21 +84,14 @@ class DbAdapterTest extends TestCase
 
         $messages = $object->getMessages('a', 1);
         $this->assertEquals($messages[0]['Body'], 'a');
-        $object->deleteMessage('a', $messages[0]);
-
         $messages = $object->getMessages('a', 1);
         $this->assertEquals($messages[0]['Body'], 'b');
-        $object->deleteMessage('a', $messages[0]);
-
         $messages = $object->getMessages('a', 1);
         $this->assertEquals($messages[0]['Body'], 'c');
-        $object->deleteMessage('a', $messages[0]);
-
         $messages = $object->getMessages('a', 1);
         $this->assertEquals($messages[0]['Body'], 'd');
-        $object->deleteMessage('a', $messages[0]);
 
-        $this->assertTrue($object->isEmpty('a'));
+        $this->assertFalse($object->isEmpty('a'));
 
         $object->addMessage('a', 'a');
         $object->addMessage('a', 'b');
@@ -153,6 +146,7 @@ class DbAdapterTest extends TestCase
         $object->addMessage('a', 'message');
 
         $this->assertTrue(!empty($object->getMessages('a')));
+        $this->assertTrue(empty($object->getMessages('a')));
         sleep(3);
         $this->assertTrue(!empty($object->getMessages('a')));
     }
@@ -185,9 +179,8 @@ class DbAdapterTest extends TestCase
         $object->createQueue('a');
         $object->addMessage('a', 'message');
         $object->getMessages('a');
-
         $this->assertTrue(!$object->isEmpty('a'));
-        $this->assertFalse(empty($object->getMessages('a')));
+        $this->assertTrue(empty($object->getMessages('a')));
     }
 
     public function testCreateQueueWithSpace()

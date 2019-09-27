@@ -12,6 +12,7 @@ use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use Exception;
 use InvalidArgumentException;
+use Throwable;
 use UnexpectedValueException;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\Driver\ResultInterface;
@@ -147,6 +148,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @throws InvalidArgumentException
      * @throws QueueAccessException
+     * @throws Throwable
      */
     public function getMessages($queueName, $nbMsg = 1, Priority $priority = null)
     {
@@ -191,22 +193,44 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         if ($nbMsg) {
             $select->limit($nbMsg);
         }
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $results = $statement->execute();
+
         $messages = [];
-        if ($results instanceof ResultInterface && $results->isQueryResult()) {
-            $resultSet = new ResultSet();
-            $resultSet->initialize($results);
-            foreach ($resultSet as $result) {
-                $message = [];
-                $message['id'] = $result->id;
-                $message['time-in-flight'] = time();
-                $message['delayed-until'] = $result->delayed_until;
-                $message['Body'] = unserialize($result->body);
-                $message['priority'] = intval($result->priority_level);
-                $messages[] = $message;
+        $this->db->getDriver()->getConnection()->beginTransaction();
+        try {
+            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE';
+            $statement = $this->db->getDriver()->createStatement($sqlString);
+            $results = $statement->execute();
+            $messageIds = [];
+            if ($results instanceof ResultInterface && $results->isQueryResult()) {
+                $resultSet = new ResultSet();
+                $resultSet->initialize($results);
+                foreach ($resultSet as $result) {
+                    $messageIds[] = $result->id;
+                    $message = [];
+                    $message['id'] = $result->id;
+                    $message['time-in-flight'] = time();
+                    $message['delayed-until'] = intval($result->delayed_until);
+                    $message['Body'] = unserialize($result->body);
+                    $message['priority'] = intval($result->priority_level);
+                    $messages[] = $message;
+                }
             }
+            if (!empty($messageIds)) {
+                $sqlUpdate = $sql->update($tableName)
+                    ->set(['time_in_flight' => time()])
+                    ->where(['id' => $messageIds]);
+                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
+                $statement->execute();
+
+            }
+
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (Throwable $e) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $e;
         }
+
+
         return $messages;
     }
 
@@ -324,7 +348,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             ->from($tableName)
             ->where(
                 [
-                    '(unix_timestamp(now()) - unix_timestamp(time_in_flight)) > ?' => $this->timeInFlight,
+                    '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
                     'time_in_flight'                                               => null,
                 ],
                 Predicate::OP_OR
