@@ -70,6 +70,22 @@ class DbAdapterTest extends TestCase
         $this->assertTrue(in_array('a', $object->listQueues()));
     }
 
+    public function testCreateQueueWithLongName()
+    {
+        $object = $this->createObject(5);
+        $queueName = str_repeat('abracadabra', 100);
+        $this->expectException(InvalidArgumentException::class);
+        $object->createQueue($queueName);
+    }
+
+    public function testCreateQueueWithLongNameNonAscii()
+    {
+        $object = $this->createObject(5);
+        $queueName = str_repeat('Ã', 33);
+        $this->expectException(InvalidArgumentException::class);
+        $object->createQueue($queueName);
+    }
+
     public function testMajor()
     {
         $object = $this->createObject(5);
@@ -105,6 +121,13 @@ class DbAdapterTest extends TestCase
     {
         $object = $this->createObject(5);
         $object->createQueue('â€š"Ã¾');
+        $this->assertTrue(true);
+    }
+
+    public function testCreateQueueWithNameStarsWithNumber()
+    {
+        $object = $this->createObject(5);
+        $object->createQueue('555a');
         $this->assertTrue(true);
     }
 

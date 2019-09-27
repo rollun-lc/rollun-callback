@@ -349,7 +349,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             ->where(
                 [
                     '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
-                    'time_in_flight'                                               => null,
+                    'time_in_flight'                               => null,
                 ],
                 Predicate::OP_OR
             );
@@ -394,6 +394,14 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         }
         if (strpos($queueName, ' ') !== false) {
             throw new InvalidArgumentException('Queue name must not contain white spaces.');
+        }
+
+        if (strlen($queueName) > 64) {
+            throw new InvalidArgumentException('Queue name length must not be grater then 64 symbols.');
+        }
+
+        if (false === preg_match("/^[\w]$/", $queueName, $resss)) {
+            throw new InvalidArgumentException('Queue name must contain symbols like /^[\w]$/ only.');
         }
 
         if ($this->isQueueExists($queueName)) {
