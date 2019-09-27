@@ -118,7 +118,6 @@ class DbAdapterTest extends TestCase
 
     public function testCreteSameQueueFailed()
     {
-        $this->expectException(\Exception::class);
         $object = $this->createObject(5);
         $object->createQueue('5a');
         $this->assertTrue(in_array('5a', $object->listQueues()));
