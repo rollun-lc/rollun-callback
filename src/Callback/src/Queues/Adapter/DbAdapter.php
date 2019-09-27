@@ -29,7 +29,7 @@ use Zend\Db\Sql\Ddl\Column;
 use Zend\Db\Sql\Ddl\Constraint;
 
 
-class DbAdapter extends AbstractAdapter implements AdapterInterface
+class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessagesInterface
 {
     const TABLE_NAME_PREFIX = 'queue_';
 
@@ -62,8 +62,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         $this->db = $db;
-        $this->timeInFlight = $timeInFlight;
-        $this->maxReceiveCount = $maxReceiveCount;
+        $this->timeInFlight = intval($timeInFlight);
+        $this->maxReceiveCount = intval($maxReceiveCount);
         $this->priorityHandler = $priorityHandler;
         return $this;
     }
@@ -186,7 +186,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                 [
                     new PredicateSet(
                         [
-                            new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->getTimeInFlight()),
+                            new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->timeInFlight),
                             new IsNull('time_in_flight'),
                         ],
                         PredicateSet::COMBINED_BY_OR
@@ -363,9 +363,9 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             ->from($tableName)
             ->where(
                 [
-                    '(unix_timestamp(now()) - time_in_flight) > ?' => $this->getTimeInFlight(),
+                    '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
                     'time_in_flight'                               => null,
-                    'receive_count < ?'                           => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
+                    'receive_count < ?'                            => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
                 ],
                 Predicate::OP_OR
             );
@@ -517,6 +517,172 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * @inheritdoc
+     *
+     * @throws InvalidArgumentException
+     * @throws QueueAccessException
+     * @throws UnexpectedValueException
+     */
+    public function getNumberDeadMessages($queueName): int
+    {
+        if (empty($queueName)) {
+            throw new InvalidArgumentException('Queue name empty or not defined.');
+        }
+
+        if (!$this->isQueueExists($queueName)) {
+            throw new QueueAccessException(
+                "Queue " . $queueName
+                . " doesn't exist, please create it before using it."
+            );
+        }
+
+        $tableName = $this->prepareTableName($queueName);
+        $sql = new Sql($this->db);
+        $select = $sql->select()
+            ->columns(['total' => new Expression('COUNT(*)')])
+            ->from($tableName)
+            ->where(['receive_count >= ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $results = $statement->execute();
+        $count = intval(($results->current())['total']);
+        return $count;
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * @throws InvalidArgumentException
+     * @throws QueueAccessException
+     * @throws Throwable
+     */
+    public function getDeadMessages($queueName, $nbMsg = 1): array
+    {
+        if (empty($queueName)) {
+            throw new InvalidArgumentException('Queue name empty or not defined.');
+        }
+
+        if (!is_numeric($nbMsg)) {
+            throw new InvalidArgumentException('Number of messages must be numeric.');
+        }
+
+        if ($nbMsg <= 0 || $nbMsg > static::MAX_NB_MESSAGES) {
+            throw new InvalidArgumentException('Number of messages is not valid.');
+        }
+
+        if (!$this->isQueueExists($queueName)) {
+            throw new QueueAccessException(
+                "Queue " . $queueName
+                . " doesn't exist, please create it before using it."
+            );
+        }
+        $tableName = $this->prepareTableName($queueName);
+        $sql = new Sql($this->db);
+        $select = $sql->select()
+            ->from($tableName)
+            ->where(['receive_count >= ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)])
+            ->order('added_at');
+        if ($nbMsg) {
+            $select->limit($nbMsg);
+        }
+        $messages = [];
+        $this->db->getDriver()->getConnection()->beginTransaction();
+        try {
+            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE';
+            $statement = $this->db->getDriver()->createStatement($sqlString);
+            $results = $statement->execute();
+            $messageIds = [];
+            if ($results instanceof ResultInterface && $results->isQueryResult()) {
+                $resultSet = new ResultSet();
+                $resultSet->initialize($results);
+                foreach ($resultSet as $result) {
+                    $messageIds[] = $result->id;
+                    $message = [];
+                    $message['id'] = $result->id;
+                    $message['time-in-flight'] = time();
+                    $message['delayed-until'] = intval($result->delayed_until);
+                    $message['Body'] = unserialize($result->body);
+                    $message['priority'] = intval($result->priority_level);
+                    $messages[] = $message;
+                }
+            }
+            if (!empty($messageIds)) {
+                $sqlUpdate = $sql->delete($tableName)
+                    ->where(['id' => $messageIds]);
+                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
+                $statement->execute();
+            }
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (Throwable $e) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $e;
+        }
+        return $messages;
+    }
+    /**
+     * @inheritdoc
+     *
+     * @throws InvalidArgumentException
+     * @throws QueueAccessException
+     * @throws Throwable
+     */
+    public function deleteDeadMessages($queueName, $nbMsg = 1)
+    {
+        if (empty($queueName)) {
+            throw new InvalidArgumentException('Queue name empty or not defined.');
+        }
+
+        if (!is_numeric($nbMsg)) {
+            throw new InvalidArgumentException('Number of messages must be numeric.');
+        }
+
+        if ($nbMsg <= 0 || $nbMsg > static::MAX_NB_MESSAGES) {
+            throw new InvalidArgumentException('Number of messages is not valid.');
+        }
+
+        if (!$this->isQueueExists($queueName)) {
+            throw new QueueAccessException(
+                "Queue " . $queueName
+                . " doesn't exist, please create it before using it."
+            );
+        }
+        $tableName = $this->prepareTableName($queueName);
+        $sql = new Sql($this->db);
+        $select = $sql->select()
+            ->columns(['id'])
+            ->from($tableName)
+            ->where(['receive_count >= ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)])
+            ->order('added_at');
+        if ($nbMsg) {
+            $select->limit($nbMsg);
+        }
+        $this->db->getDriver()->getConnection()->beginTransaction();
+        try {
+            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE';
+            $statement = $this->db->getDriver()->createStatement($sqlString);
+            $results = $statement->execute();
+            $messageIds = [];
+            if ($results instanceof ResultInterface && $results->isQueryResult()) {
+                $resultSet = new ResultSet();
+                $resultSet->initialize($results);
+                foreach ($resultSet as $result) {
+                    $messageIds[] = $result->id;
+                }
+            }
+            if (!empty($messageIds)) {
+                $sqlUpdate = $sql->delete($tableName)
+                    ->where(['id' => $messageIds]);
+                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
+                $statement->execute();
+            }
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (Throwable $e) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $e;
+        }
+        return $this;
+    }
+
+    /**
      * @param $haystack
      * @param $needle
      *
@@ -555,14 +721,11 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function makeTableNameSuffix(): string
     {
-        return '_' . $this->getTimeInFlight();
+        $suffixParams = [
+            $this->timeInFlight,
+            $this->maxReceiveCount,
+        ];
+        return '_' . implode('_', $suffixParams);
     }
 
-    /**
-     * @return int
-     */
-    protected function getTimeInFlight(): int
-    {
-        return intval($this->timeInFlight);
-    }
 }

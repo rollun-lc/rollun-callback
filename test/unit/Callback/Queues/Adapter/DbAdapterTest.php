@@ -11,7 +11,6 @@ use rollun\callback\Queues\Adapter\DbAdapter;
 use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
 use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
-use ReputationVIP\QueueClient\QueueClient;
 use Zend\Db\Metadata\Source\Factory;
 use Zend\Db\Sql\Ddl\DropTable;
 use Zend\Db\Sql\Sql;
@@ -22,11 +21,6 @@ class DbAdapterTest extends TestCase
      * @var Adapter
      */
     protected $db;
-
-    /**
-     * @var
-     */
-    protected $objects = [];
 
     protected function createObject($timeInFlight, $maxReceiveCount = 0): DbAdapter
     {
@@ -78,25 +72,71 @@ class DbAdapterTest extends TestCase
         $this->dropAllTables();
     }
 
+    public function testDeadMessages()
+    {
+        $object = $this->createObject(0, 1);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message1');
+        $object->addMessage('a', 'message2');
+        $object->addMessage('a', 'message3');
+        $object->addMessage('a', 'message');
+        $object->getMessages('a', 3);
+        sleep(1);
+        $this->assertFalse($object->isEmpty('a'));
+
+        $count =  $object->getNumberDeadMessages('a');
+        $deadMessages =  $object->getDeadMessages('a', 10);
+
+        $this->assertEquals(3, $count);
+        $this->assertCount(3, $deadMessages);
+        $this->assertEmpty($object->getDeadMessages('a'));
+    }
+
+    public function testDeleteDeadMessages()
+    {
+        $object = $this->createObject(0, 1);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message1');
+        $object->addMessage('a', 'message2');
+        $object->addMessage('a', 'message3');
+        $object->addMessage('a', 'message');
+        $object->getMessages('a', 3);
+        sleep(1);
+
+        $count =  $object->getNumberDeadMessages('a');
+        $this->assertEquals(3, $count);
+        $object->deleteDeadMessages('a');
+        $count =  $object->getNumberDeadMessages('a');
+        $this->assertEquals(2, $count);
+        $object->deleteDeadMessages('a');
+        $count =  $object->getNumberDeadMessages('a');
+        $this->assertEquals(1, $count);
+        $object->deleteDeadMessages('a');
+        $count =  $object->getNumberDeadMessages('a');
+        $this->assertEquals(0, $count);
+
+
+        $this->assertEquals(1, $object->getNumberMessages('a'));
+        $this->assertTrue(true);
+    }
+
     public function testOverflowMaxReceiveCounter()
     {
         $object = $this->createObject(0, 3);
         $object->createQueue('a');
         $object->addMessage('a', 'message');
-        $messages = $object->getMessages('a');
+        $object->getMessages('a');
         sleep(1);
         $this->assertFalse($object->isEmpty('a'));
 
-        $messages1 = $object->getMessages('a');
+        $object->getMessages('a');
         sleep(1);
         $this->assertFalse($object->isEmpty('a'));
 
-        $messages2 = $object->getMessages('a');
+        $object->getMessages('a');
         sleep(1);
         $this->assertTrue($object->isEmpty('a'));
     }
-
-
 
     public function testCreateQueues()
     {
@@ -359,9 +399,7 @@ class DbAdapterTest extends TestCase
         $object->createQueue('testQueueOne');
         $object->createQueue('testRegexQueueTwo');
         $object->createQueue('testQueueTwo');
-        $list = $object->listQueues();
         $diff = array_diff(['testQueue', 'testRegexQueue', 'testQueueOne', 'testRegexQueueTwo', 'testQueueTwo'], $object->listQueues());
-
         $this->assertEmpty($diff);
         $diff = array_diff(['testRegexQueue', 'testRegexQueueTwo'], $object->listQueues('testRegex'));
         $this->assertEmpty($diff);
