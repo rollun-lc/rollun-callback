@@ -31,6 +31,8 @@ use Zend\Db\Sql\Ddl\Constraint;
 
 class DbAdapter extends AbstractAdapter implements AdapterInterface
 {
+    const TABLE_NAME_PREFIX = 'queue_';
+
     const MAX_NB_MESSAGES = 10;
     /** @var Adapter $db */
     private $db;
@@ -69,10 +71,11 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         $metadata = Factory::createSourceFromAdapter($this->db);
         $result = [];
         foreach ($metadata->getTableNames() as $tableName) {
-            if (!empty($prefix) && !$this->startsWith($tableName, $prefix)) {
+            $queueName = $this->dePrepareTableName($tableName);
+            if (!empty($prefix) && !$this->startsWith($queueName, $prefix)) {
                 continue;
             }
-            $result[] = $tableName;
+            $result[] = $queueName;
         }
         $result = array_unique($result);
         return $result;
@@ -178,7 +181,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                 [
                     new PredicateSet(
                         [
-                            new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->timeInFlight),
+                            new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->getTimeInFlight()),
                             new IsNull('time_in_flight'),
                         ],
                         PredicateSet::COMBINED_BY_OR
@@ -348,7 +351,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             ->from($tableName)
             ->where(
                 [
-                    '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
+                    '(unix_timestamp(now()) - time_in_flight) > ?' => $this->getTimeInFlight(),
                     'time_in_flight'                               => null,
                 ],
                 Predicate::OP_OR
@@ -396,6 +399,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidArgumentException('Queue name must not contain white spaces.');
         }
 
+        $tableName = $this->prepareTableName($queueName);
+
         if (strlen($queueName) > 64) {
             throw new InvalidArgumentException('Queue name length must not be grater then 64 symbols.');
         }
@@ -409,7 +414,6 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                 'A queue named ' . $queueName . ' already exist.'
             );
         }
-        $tableName = $this->prepareTableName($queueName);
         $table = new Ddl\CreateTable($tableName);
         $table->addColumn(new Column\Varchar('id', 45));
         $table->addColumn(new Column\Integer('priority_level'));
@@ -514,8 +518,37 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return string
      */
-    private function prepareTableName(string $queueName): string
+    protected function prepareTableName(string $queueName): string
     {
-        return $queueName;
+        return static::TABLE_NAME_PREFIX . $queueName . $this->makeTableNameSuffix();
+    }
+
+    /**
+     * @param string $tableName
+     *
+     * @return string
+     */
+    protected function dePrepareTableName(string $tableName): string
+    {
+        $tableNameWithoutPrefix = substr($tableName, strlen(static::TABLE_NAME_PREFIX));
+        $suffix = $this->makeTableNameSuffix();
+        $tableNameWithoutSuffix = substr($tableNameWithoutPrefix, 0, -strlen($suffix));
+        return $tableNameWithoutSuffix;
+    }
+
+    /**
+     * @return string
+     */
+    protected function makeTableNameSuffix(): string
+    {
+        return '_' . $this->getTimeInFlight();
+    }
+
+    /**
+     * @return int
+     */
+    protected function getTimeInFlight(): int
+    {
+        return intval($this->timeInFlight);
     }
 }

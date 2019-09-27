@@ -12,6 +12,9 @@ use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
 use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use ReputationVIP\QueueClient\QueueClient;
+use Zend\Db\Metadata\Source\Factory;
+use Zend\Db\Sql\Ddl\DropTable;
+use Zend\Db\Sql\Sql;
 
 class DbAdapterTest extends TestCase
 {
@@ -19,6 +22,11 @@ class DbAdapterTest extends TestCase
      * @var Adapter
      */
     protected $db;
+
+    /**
+     * @var
+     */
+    protected $objects = [];
 
     protected function createObject($timeInFlight): DbAdapter
     {
@@ -34,11 +42,16 @@ class DbAdapterTest extends TestCase
         return $this->db;
     }
 
-
-    public function getQueueClient(): QueueClient
-    {
-        $db = $this->getDb();
-        return new QueueClient(new DbAdapter($db, 0));
+    protected function dropAllTables() {
+        $metadata = Factory::createSourceFromAdapter($this->getDb());
+        foreach ($metadata->getTableNames() as $tableName) {
+            $table = new DropTable($tableName);
+            $sql = new Sql($this->db);
+            $this->db->query(
+                $sql->buildSqlString($table),
+                Adapter::QUERY_MODE_EXECUTE
+            );
+        }
     }
 
     /**
@@ -46,10 +59,8 @@ class DbAdapterTest extends TestCase
      */
     public function setUp(): void
     {
-        $object = $this->createObject(0);
-        foreach ($object->listQueues() as $queue) {
-            $object->deleteQueue($queue);
-        }
+
+        $this->dropAllTables();
     }
 
     /**
@@ -57,13 +68,11 @@ class DbAdapterTest extends TestCase
      */
     public function tearDown(): void
     {
-        $object = $this->createObject(0);
-        foreach ($object->listQueues() as $queue) {
-            $object->deleteQueue($queue);
-        }
+
+        $this->dropAllTables();
     }
 
-    public function testCreateQueue()
+    public function testCreateQueues()
     {
         $object = $this->createObject(5);
         $object->createQueue('a');
@@ -324,7 +333,9 @@ class DbAdapterTest extends TestCase
         $object->createQueue('testQueueOne');
         $object->createQueue('testRegexQueueTwo');
         $object->createQueue('testQueueTwo');
+        $list = $object->listQueues();
         $diff = array_diff(['testQueue', 'testRegexQueue', 'testQueueOne', 'testRegexQueueTwo', 'testQueueTwo'], $object->listQueues());
+
         $this->assertEmpty($diff);
         $diff = array_diff(['testRegexQueue', 'testRegexQueueTwo'], $object->listQueues('testRegex'));
         $this->assertEmpty($diff);
