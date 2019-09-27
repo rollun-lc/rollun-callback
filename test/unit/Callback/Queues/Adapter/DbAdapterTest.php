@@ -309,6 +309,39 @@ class DbAdapterTest extends TestCase
 
     }
 
+    public function testIsEmptyWithNoMessages()
+    {
+        $object = $this->createObject(5);
+        $object->createQueue('a');
+        $this->assertTrue($object->isEmpty('a'));
+    }
+
+    public function testIsEmptyWithMessages()
+    {
+        $object = $this->createObject(5);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message');
+        $this->assertFalse($object->isEmpty('a'));
+    }
+
+    public function testIsEmptyWithMessagesInFlight()
+    {
+        $object = $this->createObject(5);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message');
+        $object->getMessages('a');
+        $this->assertFalse($object->isEmpty('a'));
+    }
+
+    public function testIsEmptyWithDelayedMessages()
+    {
+        $object = $this->createObject(5);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message', null, 5);
+        $this->assertFalse($object->isEmpty('a'));
+    }
+
+
     public function testGetPriorityHandler()
     {
         $object = $this->createObject(10);
