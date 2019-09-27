@@ -38,19 +38,23 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
     private $db;
     /** @var int */
     private $timeInFlight;
+    /** @var int */
+    private $maxReceiveCount;
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
     /**
      * @param Adapter                  $db
      * @param int                      $timeInFlight
+     * @param int                      $maxReceiveCount
      * @param PriorityHandlerInterface $priorityHandler
      *
      * @throws QueueAccessException
      */
     public function __construct(
         Adapter $db,
-        int $timeInFlight = null,
+        int $timeInFlight = 0,
+        int $maxReceiveCount = 0,
         PriorityHandlerInterface $priorityHandler = null
     ) {
         if (null === $priorityHandler) {
@@ -59,6 +63,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->db = $db;
         $this->timeInFlight = $timeInFlight;
+        $this->maxReceiveCount = $maxReceiveCount;
         $this->priorityHandler = $priorityHandler;
         return $this;
     }
@@ -187,6 +192,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                         PredicateSet::COMBINED_BY_OR
                     ),
                     new PredicateExpression('delayed_until <= unix_timestamp(now())'),
+                    new PredicateExpression('receive_count < ?', (intval($this->maxReceiveCount) ?: PHP_INT_MAX)),
                 ]
             )
             ->order('added_at');
@@ -220,7 +226,12 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
             }
             if (!empty($messageIds)) {
                 $sqlUpdate = $sql->update($tableName)
-                    ->set(['time_in_flight' => time()])
+                    ->set(
+                        [
+                            'time_in_flight' => time(),
+                            'receive_count'  => new Expression('receive_count + 1')
+                        ]
+                    )
                     ->where(['id' => $messageIds]);
                 $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
                 $statement->execute();
@@ -314,7 +325,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         $sql = new Sql($this->db);
         $select = $sql->select()
             ->columns(['total' => new Expression('COUNT(*)')])
-            ->from($tableName);
+            ->from($tableName)
+            ->where(['receive_count < ?' => (intval($this->maxReceiveCount) ? intval($this->maxReceiveCount) : PHP_INT_MAX)]);
         if (null !== $priority) {
             $select->where(['priority_level' => $priority->getLevel()]);
         }
@@ -353,6 +365,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
                 [
                     '(unix_timestamp(now()) - time_in_flight) > ?' => $this->getTimeInFlight(),
                     'time_in_flight'                               => null,
+                    'receive_count < ?'                           => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
                 ],
                 Predicate::OP_OR
             );
@@ -420,6 +433,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface
         $table->addColumn(new Column\Text('body'));
         $table->addColumn(new Column\Integer('time_in_flight', true));
         $table->addColumn(new Column\Integer('delayed_until', true));
+        $table->addColumn(new Column\Integer('receive_count', true, 0));
         $table->addColumn(new Column\Integer('added_at'));
         $table->addConstraint(new Constraint\PrimaryKey('id'));
         $sql = new Sql($this->db);

@@ -28,9 +28,9 @@ class DbAdapterTest extends TestCase
      */
     protected $objects = [];
 
-    protected function createObject($timeInFlight): DbAdapter
+    protected function createObject($timeInFlight, $maxReceiveCount = 0): DbAdapter
     {
-        return new DbAdapter($this->getDb(), $timeInFlight);
+        return new DbAdapter($this->getDb(), $timeInFlight, $maxReceiveCount);
     }
 
     protected function getDb(): Adapter
@@ -67,7 +67,6 @@ class DbAdapterTest extends TestCase
      */
     public function setUp(): void
     {
-
         $this->dropAllTables();
     }
 
@@ -76,9 +75,28 @@ class DbAdapterTest extends TestCase
      */
     public function tearDown(): void
     {
-
         $this->dropAllTables();
     }
+
+    public function testOverflowMaxReceiveCounter()
+    {
+        $object = $this->createObject(0, 3);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message');
+        $messages = $object->getMessages('a');
+        sleep(1);
+        $this->assertFalse($object->isEmpty('a'));
+
+        $messages1 = $object->getMessages('a');
+        sleep(1);
+        $this->assertFalse($object->isEmpty('a'));
+
+        $messages2 = $object->getMessages('a');
+        sleep(1);
+        $this->assertTrue($object->isEmpty('a'));
+    }
+
+
 
     public function testCreateQueues()
     {
@@ -204,7 +222,7 @@ class DbAdapterTest extends TestCase
 
     public function testGetMessageAndDelete()
     {
-        $object = $this->createObject(null);
+        $object = $this->createObject(0);
         $object->createQueue('a');
         $object->addMessage('a', 'message');
         $message = $object->getMessages('a');

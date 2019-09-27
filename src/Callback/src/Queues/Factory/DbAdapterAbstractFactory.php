@@ -24,6 +24,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *          'requestedServiceName1' => [
  *              'priorityHandler' => 'priorityHandlerServiceName',
  *              'timeInflight' => 0,
+ *              'maxReceiveCount' => 0,
  *          ],
  *          'requestedServiceName2' => [
  *
@@ -40,6 +41,8 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
     const KEY_PRIORITY_HANDLER = 'priorityHandler';
 
     const KEY_TIME_IN_FLIGHT = 'timeInflight';
+
+    public const KEY_MAX_RECEIVE_COUNT = 'maxReceiveCount';
 
     /**
      * @param ContainerInterface $container
@@ -71,8 +74,10 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
             $priorityHandler = null;
         }
 
-        $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;
         $db = $container->get('db');
-        return new DbAdapter($db, $timeInFlight, $priorityHandler);
+        $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;
+        $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? 0;
+
+        return new DbAdapter($db, $timeInFlight, $maxMessageCount, $priorityHandler);
     }
 }
