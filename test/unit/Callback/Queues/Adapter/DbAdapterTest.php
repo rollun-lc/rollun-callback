@@ -45,6 +45,9 @@ class DbAdapterTest extends TestCase
     protected function dropAllTables() {
         $metadata = Factory::createSourceFromAdapter($this->getDb());
         foreach ($metadata->getTableNames() as $tableName) {
+            if(!$this->startsWith($tableName, DbAdapter::TABLE_NAME_PREFIX)) {
+                continue;
+            }
             $table = new DropTable($tableName);
             $sql = new Sql($this->db);
             $this->db->query(
@@ -52,6 +55,11 @@ class DbAdapterTest extends TestCase
                 Adapter::QUERY_MODE_EXECUTE
             );
         }
+    }
+
+    private function startsWith(string $haystack, string $needle): bool
+    {
+        return $needle === '' || strrpos($haystack, $needle, -strlen($haystack)) !== false;
     }
 
     /**
