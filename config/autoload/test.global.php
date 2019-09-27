@@ -82,6 +82,7 @@ return [
     DbAdapterAbstractFactory::class => [
         'testDbQueue' => [
             'timeInflight' => 0,
+            'maxReceiveCount' => 1,
         ]
     ],
     QueueClientAbstractFactory::class => [
