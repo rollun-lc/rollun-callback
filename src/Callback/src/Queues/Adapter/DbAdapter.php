@@ -12,9 +12,11 @@ use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use Exception;
 use InvalidArgumentException;
+use rollun\dic\InsideConstruct;
 use Throwable;
 use UnexpectedValueException;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\AdapterInterface as DbAdapterInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Expression;
@@ -34,7 +36,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
     const TABLE_NAME_PREFIX = 'queue_';
 
     const MAX_NB_MESSAGES = 10;
-    /** @var Adapter $db */
+    /** @var DbAdapterInterface $db */
     private $db;
     /** @var int */
     private $timeInFlight;
@@ -618,6 +620,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         }
         return $messages;
     }
+
     /**
      * @inheritdoc
      *
@@ -728,4 +731,31 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         return '_' . implode('_', $suffixParams);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function __wakeup()
+    {
+        try {
+            InsideConstruct::initWakeup(
+                [
+                    "db" => DbAdapterInterface::class,
+                ]
+            );
+        } catch (\Throwable $e) {
+            throw new Exception("Can't deserialize itself. Reason: {$e->getMessage()}", 0, $e);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return [
+            'timeInFlight',
+            'maxReceiveCount',
+            'priorityHandler',
+        ];
+    }
 }

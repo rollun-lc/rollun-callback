@@ -72,7 +72,29 @@ class DbAdapterTest extends TestCase
         $this->dropAllTables();
     }
 
-    public function testDeadMessages()
+    public function testSerialize()
+    {
+        $object = $this->createObject(0, 1);
+
+        $serializedObject = serialize($object);
+        $object = unserialize($serializedObject);
+        $object->createQueue('a');
+        $object->addMessage('a', 'message1');
+        $object->addMessage('a', 'message2');
+        $object->addMessage('a', 'message3');
+        $object->addMessage('a', 'message');
+        $object->getMessages('a', 3);
+        sleep(1);
+        $this->assertFalse($object->isEmpty('a'));
+
+        $count = $object->getNumberDeadMessages('a');
+        $deadMessages = $object->getDeadMessages('a', 10);
+
+        $this->assertEquals(3, $count);
+        $this->assertCount(3, $deadMessages);
+    }
+
+        public function testDeadMessages()
     {
         $object = $this->createObject(0, 1);
         $object->createQueue('a');
