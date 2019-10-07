@@ -66,5 +66,6 @@ class QueueClientTest extends TestCase
         );
         $this->assertTrue($this->getContainer()->get('testSqsQueueClient') instanceof QueueClient);
         $this->assertTrue($this->getContainer()->get('testFileQueueClient') instanceof QueueClient);
+        $this->assertTrue($this->getContainer()->get('testDbQueueClient') instanceof QueueClient);
     }
 }
