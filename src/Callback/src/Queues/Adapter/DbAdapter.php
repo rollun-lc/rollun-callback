@@ -432,7 +432,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $table = new Ddl\CreateTable($tableName);
         $table->addColumn(new Column\Varchar('id', 45));
         $table->addColumn(new Column\Integer('priority_level'));
-        $table->addColumn(new Column\Text('body'));
+        $table->addColumn(new Column\Blob('body'));
         $table->addColumn(new Column\Integer('time_in_flight', true));
         $table->addColumn(new Column\Integer('delayed_until', true));
         $table->addColumn(new Column\Integer('receive_count', true, 0));
