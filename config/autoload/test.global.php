@@ -14,6 +14,7 @@ use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
+use rollun\callback\Queues\Factory\DbAdapterAbstractFactory;
 
 return [
     SerializedCallbackAbstractFactory::class => [
@@ -78,6 +79,12 @@ return [
             ],
         ]
     ],
+    DbAdapterAbstractFactory::class => [
+        'testDbQueue' => [
+            'timeInflight' => 0,
+            'maxReceiveCount' => 1,
+        ]
+    ],
     QueueClientAbstractFactory::class => [
         'testSqsQueueClient' => [
             'name' => 'sqsQueue',
@@ -86,6 +93,10 @@ return [
         'testFileQueueClient' => [
             'name' => 'fileQueue',
             'adapter' => 'testFileQueue',
+        ],
+        'testDbQueueClient' => [
+            'name' => 'dbQueue',
+            'adapter' => 'testDbQueue',
         ],
     ],
 ];

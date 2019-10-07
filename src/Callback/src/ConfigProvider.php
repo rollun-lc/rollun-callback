@@ -40,6 +40,7 @@ use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
+use rollun\callback\Queues\Factory\DbAdapterAbstractFactory;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 class ConfigProvider
@@ -55,6 +56,7 @@ class ConfigProvider
                     QueueClientAbstractFactory::class,
                     FileAdapterAbstractFactory::class,
                     SqsAdapterAbstractFactory::class,
+                    DbAdapterAbstractFactory::class,
 
                     // Interrupters
                     HttpAbstractFactory::class,
