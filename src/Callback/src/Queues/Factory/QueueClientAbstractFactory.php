@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
+use rollun\callback\Queues\Adapter\DbAdapter;
 use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 use rollun\callback\Queues\DeadLetterQueue;
@@ -137,6 +138,8 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
                 return (new SqsAdapterAbstractFactory())($container, $adapterName, $options);
             case FileAdapter::class:
                 return (new FileAdapterAbstractFactory())($container, $adapterName, $options);
+            case DbAdapter::class:
+                return (new DbAdapterAbstractFactory())($container, $adapterName, $options);
             default:
                 throw new \Zend\ServiceManager\Exception\InvalidArgumentException(sprintf('Unknown adapter type %s for queue %s', $adapterType, $requestedName));
         }

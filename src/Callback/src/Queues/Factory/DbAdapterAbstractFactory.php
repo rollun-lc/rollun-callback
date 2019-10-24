@@ -62,7 +62,8 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $serviceConfig = $container->get('config')[self::class][$requestedName];
+        /** @noinspection DuplicatedCode */
+        $serviceConfig = $options ?? $container->get('config')[self::class][$requestedName];
 
         if (isset($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
             if (!$container->has($serviceConfig[self::KEY_PRIORITY_HANDLER])) {
