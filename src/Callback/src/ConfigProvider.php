@@ -14,6 +14,7 @@ use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
+use rollun\callback\Callback\Interrupter\Factory\CronExpressionAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\HttpAbstractFactory;
 use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
@@ -69,6 +70,7 @@ class ConfigProvider
                     MultiplexerAbstractFactory::class,
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
+                    CronExpressionAbstractFactory::class,
 
                     // Pidkiller
                     WorkerAbstractFactory::class,
@@ -108,6 +110,7 @@ class ConfigProvider
                     MultiplexerAbstractFactory::class,
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
+                    CronExpressionAbstractFactory::class,
                 ],
             ],
             SqsAdapterAbstractFactory::class => [
