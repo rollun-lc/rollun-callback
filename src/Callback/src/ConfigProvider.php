@@ -14,7 +14,7 @@ use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
-use rollun\callback\Callback\Interrupter\Factory\CronExpressionAbstractFactory;
+use rollun\callback\Callback\Factory\CronExpressionAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\HttpAbstractFactory;
 use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
