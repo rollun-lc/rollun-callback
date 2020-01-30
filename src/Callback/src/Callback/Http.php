@@ -40,6 +40,16 @@ class Http
     protected $options = [];
 
     /**
+     * @var string
+     */
+    protected $method = 'POST';
+
+    /**
+     * @const array Allowed methods
+     */
+    const ALLOWED_METHODS  = ['GET','POST','PUT','PATCH','DELETE','HEAD'];
+
+    /**
      * @var LifeCycleToken
      */
     private $lifeCycleToken;
@@ -59,6 +69,10 @@ class Http
         if (isset($options['login']) && isset($options['password'])) {
             $this->login = $options['login'];
             $this->password = $options['password'];
+        }
+
+        if(isset($options['method']) && in_array($options['method'],self::ALLOWED_METHODS,true)){
+            $this->method = $options['method'];
         }
 
         $supportedKeys = [
@@ -89,7 +103,7 @@ class Http
             $httpClient->setAuth($this->login, $this->password);
         }
 
-        $httpClient->setMethod('POST');
+        $httpClient->setMethod($this->method);
         $httpClient->setRawBody(Serializer::jsonSerialize($value));
 
         return $httpClient;
