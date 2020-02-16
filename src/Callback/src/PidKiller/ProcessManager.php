@@ -44,7 +44,23 @@ class ProcessManager
      */
     public function ps(): array
     {
-        exec('ps -eo pid,lstart,cmd | grep php', $pidsInfo);
+        $options = [
+            "pid",
+            "lstart"
+        ];
+        switch (php_uname('s')) {
+            case "FreeBSD":
+            case "Darwin":
+                $options[] = 'command';
+                break;
+            case "Linux":
+                $options[] = 'cmd';
+                break;
+            default:
+                throw new RuntimeException(sprintf('Unsupported OS %s', php_uname('s')));
+        }
+        $cmd = sprintf('ps -eo %s | grep php', implode(',', $options));
+        exec($cmd, $pidsInfo);
         array_shift($pidsInfo);
         $pids = [];
 
