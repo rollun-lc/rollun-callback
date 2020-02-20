@@ -27,6 +27,7 @@ class WebhookMiddleware implements MiddlewareInterface
     {
         $this->middlewarePipe = new MiddlewarePipe();
 
+        $this->middlewarePipe->pipe(new ResourceResolver());
         $this->middlewarePipe->pipe(new GetParamsResolver());
         $this->middlewarePipe->pipe(new PostParamsResolver());
         $this->middlewarePipe->pipe($interrupterMiddleware);
