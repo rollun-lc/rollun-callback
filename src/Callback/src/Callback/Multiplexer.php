@@ -34,8 +34,12 @@ class Multiplexer
         $this->logger = $logger;
 
         ksort($callbacks);
-        foreach ($callbacks as $callback) {
-            $this->addCallback($callback);
+        foreach ($callbacks as $key => $callback) {
+            if (is_callable($callback)) {
+                $this->addCallback($callback);
+            } else {
+                $this->logger->error("Wrong callback at '{$key}'! Callable expected.");
+            }
         }
     }
 
@@ -51,19 +55,17 @@ class Multiplexer
 
         foreach ($this->callbacks as $key => $callback) {
             try {
-                $payload = $callback($value);
-
-                if ($payload instanceof PayloadInterface) {
-                    $result[$key] = $payload->getPayload();
-                    $interrupterWasCalled = true;
-                } else {
-                    $result[$key] = $payload;
-                }
-            } catch (\Exception $e) {
+                $result[$key] = $callback($value);
+            } catch (\Throwable $e) {
                 $this->logger->error(
                     "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", ['exception' => $e]
                 );
                 $result[$key] = $e;
+            }
+
+            if ($result[$key] instanceof PayloadInterface) {
+                $result[$key] = $result[$key]->getPayload();
+                $interrupterWasCalled = true;
             }
         }
 

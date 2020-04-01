@@ -15,6 +15,8 @@ use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\DbAdapterAbstractFactory;
+use Jaeger\Tracer\Tracer;
+use rollun\tracer\TracerFactory;
 
 return [
     SerializedCallbackAbstractFactory::class => [
@@ -97,6 +99,11 @@ return [
         'testDbQueueClient' => [
             'name' => 'dbQueue',
             'adapter' => 'testDbQueue',
+        ],
+    ],
+    'dependencies' => [
+        "factories" => [
+            Tracer::class => TracerFactory::class,
         ],
     ],
 ];

@@ -22,8 +22,9 @@ class MultiplexerTest extends TestCase
 
     protected function getContainer(): ServiceManager
     {
+        global $container;
         if ($this->container === null) {
-            $this->container = require 'config/container.php';
+            $this->container = $container;
         }
 
         return $this->container;
