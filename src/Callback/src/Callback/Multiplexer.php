@@ -34,11 +34,11 @@ class Multiplexer
         $this->logger = $logger;
 
         ksort($callbacks);
-        foreach ($callbacks as $callback) {
+        foreach ($callbacks as $key => $callback) {
             if (is_callable($callback)) {
                 $this->addCallback($callback);
             } else {
-                $this->logger->error('Wrong callback! Callable expected.');
+                $this->logger->error("Wrong callback at '{$key}'! Callable expected.");
             }
         }
     }
