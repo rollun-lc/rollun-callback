@@ -52,6 +52,8 @@ class JsonRenderer implements MiddlewareInterface
             $response = $response->withHeader($header, $value);
         }
 
+        $response = $response->withHeader('Content-Type', 'application/json');
+
         return $response;
     }
 }
