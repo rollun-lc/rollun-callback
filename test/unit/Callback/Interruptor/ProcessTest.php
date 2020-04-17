@@ -69,9 +69,40 @@ class ProcessTest extends TestCase
 
         $this->expectException(CallbackException::class);
 
+        $process();
+
+        unlink($logFile);
+    }
+
+    public function testUnserializedCallbackProcessLogging()
+    {
+        global $container;
+
+        $logFile = 'data/testOutput.log';
+
+        $callback = new SerializedCallback(new class {
+            public function __invoke(){}
+        });
+
+        $logger = $container->get(LoggerInterface::class);
+        foreach ($logger->getWriters() as $key => $writer) {
+            $writer->shutdown();
+        }
+        $logger->addWriter(new Stream($logFile));
+
+        $process = new Process($callback, null, null, $logger);
+
+        try {
+            $process();
+        } catch (\Throwable $exception) {
+
+        }
+
         $log = file_get_contents($logFile);
         $this->assertNotEmpty($log);
 
-        $process();
+
+
+        unlink($logFile);
     }
 }
