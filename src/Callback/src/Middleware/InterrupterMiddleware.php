@@ -67,7 +67,6 @@ class InterrupterMiddleware implements MiddlewareInterface
             $statusCode = 500;
         }
 
-        $statusCode = $result instanceof PayloadInterface ? 202 : 200;
         $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, $result);
         $request = $request->withAttribute(ResponseInterface::class, new EmptyResponse($statusCode));
         $response = $handler->handle($request);
