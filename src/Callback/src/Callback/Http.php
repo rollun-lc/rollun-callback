@@ -119,7 +119,7 @@ class Http
         $client = $this->createHttpClient($value);
         $response = $client->send();
 
-        if ($this->isResponseAcceptable($response)) {
+        if ($response->isSuccess()) {
             $payload = Serializer::jsonUnserialize($response->getBody());
         } else {
             $payload = [
