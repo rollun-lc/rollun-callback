@@ -60,7 +60,14 @@ class InterrupterMiddleware implements MiddlewareInterface
             $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
             $result = call_user_func($callable, $value);
 
-            $statusCode = $result instanceof PayloadInterface ? 202 : 200;
+            if ($result instanceof PayloadInterface) {
+                $statusCode = 202;
+            } elseif (is_array($result) && !empty($result['error'])) {
+                $statusCode = 500;
+            } else {
+                $statusCode = 200;
+            }
+
         } catch (\Throwable $t) {
             $result = ['error' => $t->getMessage()];
 
