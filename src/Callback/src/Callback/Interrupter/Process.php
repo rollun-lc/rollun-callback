@@ -78,6 +78,25 @@ class Process extends InterrupterAbstract
         $this->maxExecuteTime = $maxExecuteTime;
     }
 
+    public function __sleep()
+    {
+        return [
+            'callback',
+            'pidKiller',
+            'maxExecuteTime',
+        ];
+    }
+
+
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup([
+            "lifecycleToken" => LifeCycleToken::class,
+            'tracer' => Tracer::class,
+            'logger' => LoggerInterface::class
+        ]);
+    }
+
     /**
      * @param $value
      * @return PayloadInterface
