@@ -33,6 +33,21 @@ return [
 
             return [$time];
         },
+        'webhookCallback' => function($value) {
+            switch ($value) {
+                case 'primitive':
+                    return true;
+                    break;
+                case 'array':
+                    return ['result' => 'success'];
+                    break;
+                case 'error':
+                    return ['error' => 'Test error'];
+                    break;
+                case 'exception':
+                    throw new Exception('Test exception');
+            }
+        },
     ],
     CallbackAbstractFactoryAbstract::KEY => [
         'cronMultiplexer' => [

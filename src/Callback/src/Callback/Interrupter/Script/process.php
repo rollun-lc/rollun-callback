@@ -59,7 +59,7 @@ try {
     $callback = $job->getCallback();
     $value = $job->getValue();
     $logger->info("Interrupter 'Process' start.");
-    $logger->debug("Serialized job: $paramsString");
+    //$logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
     $logger->info("Interrupter 'Process' finish.");
     $tracer->finish($span);
