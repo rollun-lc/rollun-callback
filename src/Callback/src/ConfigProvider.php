@@ -20,6 +20,7 @@ use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueJobFillerAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueMessageFillerAbstractFactory;
+use rollun\callback\Callback\Ping;
 use rollun\callback\Middleware\GetParamsResolver;
 use rollun\callback\Middleware\InterrupterMiddleware;
 use rollun\callback\Middleware\InterrupterMiddlewareFactory;
@@ -84,7 +85,8 @@ class ConfigProvider
                     JsonRenderer::class => JsonRenderer::class,
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
-                    ProcessManager::class => ProcessManager::class
+                    ProcessManager::class => ProcessManager::class,
+                    Ping::class => Ping::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
@@ -128,6 +130,9 @@ class ConfigProvider
                     QueueClientAbstractFactory::KEY_ADAPTER => 'pidQueueAdapter',
                     QueueClientAbstractFactory::KEY_NAME => 'pidqueue',
                 ],
+            ],
+            SerializedCallbackAbstractFactory::class => [
+                'ping' => Ping::class,
             ],
         ];
     }

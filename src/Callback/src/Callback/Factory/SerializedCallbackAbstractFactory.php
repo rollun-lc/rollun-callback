@@ -42,6 +42,10 @@ class SerializedCallbackAbstractFactory implements AbstractFactoryInterface
             array_unshift($callable, $container->get(array_shift($callable)));
         }
 
+        if (is_string($callable) && $container->has($callable)){
+            $callable = $container->get($callable);
+        }
+
         return new SerializedCallback($callable);
     }
 }
