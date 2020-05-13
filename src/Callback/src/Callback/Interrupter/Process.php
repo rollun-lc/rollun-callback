@@ -7,6 +7,7 @@
 namespace rollun\callback\Callback\Interrupter;
 
 use Jaeger\Tracer\Tracer;
+use Psr\Log\LoggerInterface;
 use ReflectionException;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\PidKiller\InfoProviderInterface;
@@ -46,6 +47,11 @@ class Process extends InterrupterAbstract
     protected $tracer;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Process constructor.
      * @param callable $callback
      * @param PidKillerInterface|null $pidKiller
@@ -57,14 +63,38 @@ class Process extends InterrupterAbstract
         callable $callback,
         $pidKiller = null,
         int $maxExecuteTime = null,
+        LoggerInterface $logger = null,
         LifeCycleToken $lifecycleToken = null,
         Tracer $tracer = null
     ) {
-        InsideConstruct::setConstructParams(["lifecycleToken" => LifeCycleToken::class, 'tracer' => Tracer::class]);
+        InsideConstruct::setConstructParams([
+            "lifecycleToken" => LifeCycleToken::class,
+            'tracer' => Tracer::class,
+            'logger' => LoggerInterface::class
+        ]);
         parent::__construct($callback);
 
         $this->pidKiller = $pidKiller;
         $this->maxExecuteTime = $maxExecuteTime;
+    }
+
+    public function __sleep()
+    {
+        return [
+            'callback',
+            'pidKiller',
+            'maxExecuteTime',
+        ];
+    }
+
+
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup([
+            "lifecycleToken" => LifeCycleToken::class,
+            'tracer' => Tracer::class,
+            'logger' => LoggerInterface::class
+        ]);
     }
 
     /**
@@ -84,7 +114,13 @@ class Process extends InterrupterAbstract
 
         $job = new Job($this->callback, $value);
 
-        $serializedJob = $job->serializeBase64();
+        try {
+            $serializedJob = $job->serializeBase64();
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+            throw new CallbackException($exception->getMessage(), $exception->getCode(), $exception);
+        }
+
         $cmd .= ' ' . $serializedJob;
         $cmd .= " lifecycleToken:{$this->lifecycleToken->serialize()}";
         $cmd .= " tracerContext:$traserContext";

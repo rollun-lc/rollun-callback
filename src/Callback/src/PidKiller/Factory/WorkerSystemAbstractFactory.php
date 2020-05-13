@@ -39,7 +39,7 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
 
     public const DEFAULT_PROCESS_COUNT = 1;
 
-    public const DEFAULT_MAX_EXECUTE_TIME = 180;
+    public const DEFAULT_MAX_EXECUTE_TIME = null;
 
     public const DEFAULT_QUEUE_DELAY = 0;
 

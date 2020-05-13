@@ -59,11 +59,21 @@ class InterrupterMiddleware implements MiddlewareInterface
             $callable = $this->interrupterPluginManager->get($serviceName);
             $value = $request->getAttribute(AbstractParamsResolver::ATTRIBUTE_WEBHOOK_VALUE);
             $result = call_user_func($callable, $value);
+
+            if ($result instanceof PayloadInterface) {
+                $statusCode = 202;
+            } elseif (is_array($result) && !empty($result['error'])) {
+                $statusCode = 500;
+            } else {
+                $statusCode = 200;
+            }
+
         } catch (\Throwable $t) {
             $result = ['error' => $t->getMessage()];
+
+            $statusCode = 500;
         }
 
-        $statusCode = $result instanceof PayloadInterface ? 202 : 200;
         $request = $request->withAttribute(JsonRenderer::RESPONSE_DATA, $result);
         $request = $request->withAttribute(ResponseInterface::class, new EmptyResponse($statusCode));
         $response = $handler->handle($request);
