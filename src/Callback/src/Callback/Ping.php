@@ -2,8 +2,6 @@
 
 namespace rollun\callback\Callback;
 
-use Zend\Diactoros\Response\JsonResponse;
-
 /**
  * Class Ping
  *
