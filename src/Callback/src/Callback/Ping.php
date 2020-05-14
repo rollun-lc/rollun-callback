@@ -19,8 +19,6 @@ class Ping
      */
     public function __invoke($value)
     {
-        $test = '123';
-
         return [
             'ok' => true
         ];
