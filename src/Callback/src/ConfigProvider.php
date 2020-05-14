@@ -86,7 +86,6 @@ class ConfigProvider
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
                     ProcessManager::class => ProcessManager::class,
-                    Ping::class => Ping::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
@@ -114,6 +113,12 @@ class ConfigProvider
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
                 ],
+                'invokables' => [
+                    Ping::class => Ping::class
+                ],
+                'aliases'    => [
+                    'ping' => Ping::class
+                ]
             ],
             SqsAdapterAbstractFactory::class => [
                 'pidQueueAdapter' => [
@@ -130,9 +135,6 @@ class ConfigProvider
                     QueueClientAbstractFactory::KEY_ADAPTER => 'pidQueueAdapter',
                     QueueClientAbstractFactory::KEY_NAME => 'pidqueue',
                 ],
-            ],
-            SerializedCallbackAbstractFactory::class => [
-                'ping' => Ping::class,
             ],
         ];
     }
