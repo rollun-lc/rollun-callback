@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace rollun\callback\Callback\HealthChecker;
 
-use Zend\Http\Client;
+use rollun\callback\Callback\Http;
 
 /**
  * Class PingHealthChecker
@@ -22,22 +22,13 @@ class PingHealthChecker extends AbstractHealthChecker
      */
     public function isValid($value)
     {
-        $service = $this->getHost();
+        $host = $this->getHost();
 
-        $client = new Client($service . '/api/webhook/ping');
+        $object = new Http($host . '/api/webhook/ping1');
+        $payload = $object();
 
-        $headers['Content-Type'] = 'application/json';
-        $headers['Accept'] = 'application/json';
-        $headers['APP_ENV'] = getenv('APP_ENV');
-
-        $client->setHeaders($headers);
-
-        $client->setMethod('GET');
-
-        $response = $client->send();
-
-        if (!$response->isSuccess()) {
-            $this->addMessage("Service '$service' unavailable");
+        if (isset($payload['error'])) {
+            $this->addMessage("Service '$host' unavailable. Response: " . json_encode($payload));
 
             return false;
         }
