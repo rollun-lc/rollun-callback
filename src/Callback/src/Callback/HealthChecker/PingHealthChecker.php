@@ -24,7 +24,7 @@ class PingHealthChecker extends AbstractHealthChecker
     {
         $host = $this->getHost();
 
-        $object = new Http($host . '/api/webhook/ping1');
+        $object = new Http($host . '/api/webhook/ping');
         $payload = $object();
 
         if (isset($payload['error'])) {
