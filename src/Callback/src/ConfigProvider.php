@@ -27,6 +27,7 @@ use rollun\callback\Middleware\InterrupterMiddlewareFactory;
 use rollun\callback\Middleware\CallablePluginManager;
 use rollun\callback\Middleware\CallablePluginManagerFactory;
 use rollun\callback\Middleware\JsonRenderer;
+use rollun\callback\Middleware\MetricMiddleware;
 use rollun\callback\Middleware\PostParamsResolver;
 use rollun\callback\Middleware\WebhookMiddleware;
 use rollun\callback\Middleware\WebhookMiddlewareFactory;
@@ -86,6 +87,7 @@ class ConfigProvider
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
                     ProcessManager::class => ProcessManager::class,
+                    MetricMiddleware::class => MetricMiddleware::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,

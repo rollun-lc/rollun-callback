@@ -20,16 +20,19 @@ class WebhookMiddleware implements MiddlewareInterface
 
     /**
      * WebhookMiddleware constructor.
-     * @param InterrupterMiddleware $interrupterMiddleware
+     *
+     * @param InterrupterMiddleware        $interrupterMiddleware
+     * @param MetricMiddleware             $metricMiddleware
      * @param RequestHandlerInterface|null $renderer
      */
-    public function __construct(InterrupterMiddleware $interrupterMiddleware, RequestHandlerInterface $renderer = null)
+    public function __construct(InterrupterMiddleware $interrupterMiddleware, MetricMiddleware $metricMiddleware, RequestHandlerInterface $renderer = null)
     {
         $this->middlewarePipe = new MiddlewarePipe();
 
         $this->middlewarePipe->pipe(new ResourceResolver());
         $this->middlewarePipe->pipe(new GetParamsResolver());
         $this->middlewarePipe->pipe(new PostParamsResolver());
+        $this->middlewarePipe->pipe($metricMiddleware);
         $this->middlewarePipe->pipe($interrupterMiddleware);
 
         if ($renderer) {
