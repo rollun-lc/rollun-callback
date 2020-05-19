@@ -11,6 +11,8 @@ namespace rollun\callback;
 
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
+use rollun\callback\Callback\Factory\HealthCheckerAbstractFactory;
+use rollun\callback\Callback\Factory\HealthCheckerValidatorAbstractFactory;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
@@ -27,6 +29,7 @@ use rollun\callback\Middleware\InterrupterMiddlewareFactory;
 use rollun\callback\Middleware\CallablePluginManager;
 use rollun\callback\Middleware\CallablePluginManagerFactory;
 use rollun\callback\Middleware\JsonRenderer;
+use rollun\callback\Middleware\MetricMiddleware;
 use rollun\callback\Middleware\PostParamsResolver;
 use rollun\callback\Middleware\WebhookMiddleware;
 use rollun\callback\Middleware\WebhookMiddlewareFactory;
@@ -72,6 +75,8 @@ class ConfigProvider
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
+                    HealthCheckerAbstractFactory::class,
+                    HealthCheckerValidatorAbstractFactory::class,
 
                     // Pidkiller
                     WorkerAbstractFactory::class,
@@ -86,7 +91,7 @@ class ConfigProvider
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
                     ProcessManager::class => ProcessManager::class,
-                    Ping::class => Ping::class
+                    MetricMiddleware::class => MetricMiddleware::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
@@ -114,6 +119,12 @@ class ConfigProvider
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
                 ],
+                'invokables' => [
+                    Ping::class => Ping::class
+                ],
+                'aliases'    => [
+                    'ping' => Ping::class
+                ]
             ],
             SqsAdapterAbstractFactory::class => [
                 'pidQueueAdapter' => [
@@ -130,9 +141,6 @@ class ConfigProvider
                     QueueClientAbstractFactory::KEY_ADAPTER => 'pidQueueAdapter',
                     QueueClientAbstractFactory::KEY_NAME => 'pidqueue',
                 ],
-            ],
-            SerializedCallbackAbstractFactory::class => [
-                'ping' => Ping::class,
             ],
         ];
     }

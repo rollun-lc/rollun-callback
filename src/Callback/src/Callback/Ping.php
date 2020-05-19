@@ -2,8 +2,6 @@
 
 namespace rollun\callback\Callback;
 
-use Zend\Diactoros\Response\JsonResponse;
-
 /**
  * Class Ping
  *
@@ -19,8 +17,6 @@ class Ping
      */
     public function __invoke($value)
     {
-        $test = '123';
-
         return [
             'ok' => true
         ];

@@ -96,6 +96,38 @@ $worker = new Worker($queue, function ($value) {
 $worker(); // It is test1; It is test2;
 ```
 
+#### Health checker
+Абстрактный `Callback` со встроенным расписанием. Валидирует сервисы и в случае невалидности пишет лог.
+
+Пример конфига подключения:
+```php
+use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
+use rollun\callback\Callback\Factory\HealthCheckerAbstractFactory;
+use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
+use rollun\callback\Callback\Multiplexer;
+use rollun\callback\Callback\HealthChecker\HealthChecker;
+use rollun\callback\Callback\HealthChecker\Validator\PingValidator;
+
+return [
+ CallbackAbstractFactoryAbstract::KEY => [
+        'min_multiplexer'   => [
+            MultiplexerAbstractFactory::KEY_CLASS              => Multiplexer::class,
+            MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
+                'pingHealthChecker',
+            ],
+        ],
+        'pingHealthChecker' => [
+            HealthCheckerAbstractFactory::KEY_CLASS           => HealthChecker::class,
+            HealthCheckerAbstractFactory::KEY_CRON_EXPRESSION => '* * * * *',
+            HealthCheckerAbstractFactory::KEY_LOG_LEVEL       => 'error',
+            HealthCheckerAbstractFactory::KEY_VALIDATOR       => [
+                HealthCheckerAbstractFactory::KEY_CLASS => PingValidator::class,
+                PingValidator::KEY_HOST                 => 'http://rollun.local'
+            ],
+        ]
+    ],
+];
+```
 
 #### Http
 

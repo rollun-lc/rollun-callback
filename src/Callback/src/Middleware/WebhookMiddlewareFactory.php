@@ -21,7 +21,8 @@ class WebhookMiddlewareFactory
     public function __invoke(ContainerInterface $container): WebhookMiddleware
     {
         $interrupterMiddleware = $container->get(InterrupterMiddleware::class);
+        $metricMiddleware = $container->get(MetricMiddleware::class);
 
-        return new WebhookMiddleware($interrupterMiddleware);
+        return new WebhookMiddleware($interrupterMiddleware, $metricMiddleware);
     }
 }
