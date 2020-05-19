@@ -12,6 +12,7 @@ namespace rollun\callback;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Callback\Factory\HealthCheckerAbstractFactory;
+use rollun\callback\Callback\Factory\HealthCheckerValidatorAbstractFactory;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
@@ -75,6 +76,7 @@ class ConfigProvider
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
                     HealthCheckerAbstractFactory::class,
+                    HealthCheckerValidatorAbstractFactory::class,
 
                     // Pidkiller
                     WorkerAbstractFactory::class,
