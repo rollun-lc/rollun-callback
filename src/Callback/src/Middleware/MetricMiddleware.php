@@ -42,7 +42,7 @@ class MetricMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getUri()->getPath() == '/api/webhook/cron' && $request->getMethod() == 'GET') {
-            $this->logger->notice('METRICS', ['metricId' => 'webhook_cron_get', 'value' => 1]);
+            $this->logger->notice('METRICS', ['metricId' => 'webhook_cron_get__metric', 'value' => 1]);
         }
 
         return $handler->handle($request);
