@@ -48,7 +48,7 @@ class MetricMiddleware implements MiddlewareInterface
                     ->logger
                     ->notice(
                         'METRICS', [
-                            'metricId' => str_replace('-', '_', $serviceName) . '_webhook_cron_get__metric',
+                            'metricId' => str_replace('-', '_', $serviceName) . '__webhook_cron_get__metric',
                             'value'    => 1
                         ]
                     );
