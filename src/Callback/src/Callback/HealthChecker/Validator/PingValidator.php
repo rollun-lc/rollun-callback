@@ -41,6 +41,14 @@ class PingValidator extends AbstractValidator
     }
 
     /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return [];
+    }
+
+    /**
      * @throws \ReflectionException
      */
     public function __wakeup()
