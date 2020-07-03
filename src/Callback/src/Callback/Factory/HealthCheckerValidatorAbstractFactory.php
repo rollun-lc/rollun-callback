@@ -5,6 +5,7 @@ namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use rollun\callback\Callback\HealthChecker\Validator\AbstractValidator;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
@@ -59,9 +60,13 @@ class HealthCheckerValidatorAbstractFactory implements AbstractFactoryInterface
         // get config
         $config = $container->get('config')[self::KEY][$this->callbackName][self::KEY_VALIDATOR];
 
-        // get logger
-        $logger = ($container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
+        $validatorName = $config[self::KEY_CLASS];
+        $validator = ($container->has($validatorName)) ? $container->get($validatorName) : new $validatorName();
+        if (!$validator instanceof AbstractValidator) {
+            throw new \Exception('Validator should be instance of ' . AbstractValidator::class);
+        }
+        $validator->setConfig($config);
 
-        return new $config[self::KEY_CLASS]($config, $logger);
+        return $validator;
     }
 }

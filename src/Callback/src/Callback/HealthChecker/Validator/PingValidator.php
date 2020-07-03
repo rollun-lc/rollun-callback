@@ -5,6 +5,7 @@ namespace rollun\callback\Callback\HealthChecker\Validator;
 
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Http;
+use rollun\dic\InsideConstruct;
 use Zend\Http\Exception\RuntimeException;
 
 /**
@@ -21,34 +22,34 @@ class PingValidator extends AbstractValidator
     const KEY_OPTIONS = 'options';
 
     /**
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * @var LoggerInterface|null
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
      * PingValidator constructor.
      *
-     * @param array                $config
-     * @param LoggerInterface|null $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(array $config, ?LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger = null)
     {
-        $this->config = $config;
-        $this->logger = $logger;
+        InsideConstruct::init(
+            [
+                'logger' => LoggerInterface::class
+            ]
+        );
+    }
 
-        if (!empty($this->config[self::KEY_OPTIONS])) {
-            $this->options = $this->config[self::KEY_OPTIONS];
-        }
+    /**
+     * @throws \ReflectionException
+     */
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup(
+            [
+                'logger' => LoggerInterface::class
+            ]
+        );
     }
 
     /**
@@ -74,7 +75,7 @@ class PingValidator extends AbstractValidator
             $metricData = [
                 'metricId' => 'ping',
                 'value'    => ($isValid) ? 1 : 0,
-                'groups'   => ['host' => $this->config[self::KEY_HOST]],
+                'groups'   => ['host' => $this->getHost()],
             ];
 
             $this->logger->notice('METRICS_GAUGE', $metricData);
@@ -94,9 +95,15 @@ class PingValidator extends AbstractValidator
             return false;
         }
 
-        $host = $this->config[self::KEY_HOST];
+        // prepare options
+        $options = [];
+        if (!empty($this->config[self::KEY_OPTIONS])) {
+            $options = $this->config[self::KEY_OPTIONS];
+        }
 
-        $object = new Http($host . '/api/webhook/ping', $this->options);
+        $host = $this->getHost();
+
+        $object = new Http($host . '/api/webhook/ping', $options);
 
         try {
             $payload = $object();
@@ -113,5 +120,13 @@ class PingValidator extends AbstractValidator
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getHost(): string
+    {
+        return $this->config[self::KEY_HOST];
     }
 }

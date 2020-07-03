@@ -17,6 +17,7 @@ use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Factory\CronExpressionAbstractFactory;
+use rollun\callback\Callback\HealthChecker\Validator\PingValidator;
 use rollun\callback\Callback\Interrupter\Factory\HttpAbstractFactory;
 use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
@@ -91,7 +92,8 @@ class ConfigProvider
                     StandardPriorityHandler::class => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
                     ProcessManager::class => ProcessManager::class,
-                    MetricMiddleware::class => MetricMiddleware::class
+                    MetricMiddleware::class => MetricMiddleware::class,
+                    PingValidator::class => PingValidator::class
                 ],
                 "factories" => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
