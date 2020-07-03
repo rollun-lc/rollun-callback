@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
-use rollun\callback\Callback\HealthChecker\Validator\AbstractValidator;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
@@ -56,16 +55,8 @@ class HealthCheckerValidatorAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        // get config
         $config = $container->get('config')[self::KEY][$this->callbackName][self::KEY_VALIDATOR];
 
-        $validatorName = $config[self::KEY_CLASS];
-        $validator = ($container->has($validatorName)) ? $container->get($validatorName) : new $validatorName();
-        if (!$validator instanceof AbstractValidator) {
-            throw new \Exception('Validator should be instance of ' . AbstractValidator::class);
-        }
-        $validator->setConfig($config);
-
-        return $validator;
+        return new $config[self::KEY_CLASS]($config);
     }
 }

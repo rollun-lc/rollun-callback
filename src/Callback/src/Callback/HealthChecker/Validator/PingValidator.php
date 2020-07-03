@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace rollun\callback\Callback\HealthChecker\Validator;
 
-use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Http;
-use rollun\dic\InsideConstruct;
 use Zend\Http\Exception\RuntimeException;
 
 /**
@@ -22,42 +20,27 @@ class PingValidator extends AbstractValidator
     const KEY_OPTIONS = 'options';
 
     /**
-     * @var LoggerInterface
+     * @var array
      */
-    protected $logger;
+    protected $config;
+
+    /**
+     * @var array
+     */
+    protected $options = [];
 
     /**
      * PingValidator constructor.
      *
-     * @param LoggerInterface $logger
+     * @param array $config
      */
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct(array $config)
     {
-        InsideConstruct::init(
-            [
-                'logger' => LoggerInterface::class
-            ]
-        );
-    }
+        $this->config = $config;
 
-    /**
-     * @return array
-     */
-    public function __sleep()
-    {
-        return [];
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-        InsideConstruct::initWakeup(
-            [
-                'logger' => LoggerInterface::class
-            ]
-        );
+        if (!empty($this->config[self::KEY_OPTIONS])) {
+            $this->options = $this->config[self::KEY_OPTIONS];
+        }
     }
 
     /**
@@ -65,53 +48,15 @@ class PingValidator extends AbstractValidator
      */
     public function isValid($value)
     {
-        // run validation
-        $isValid = $this->runValidation($value);
-
-        // send metrics to prometheus
-        $this->sendPrometheusMetrics($isValid);
-
-        return $isValid;
-    }
-
-    /**
-     * @param bool $isValid
-     */
-    protected function sendPrometheusMetrics(bool $isValid): void
-    {
-        if ($this->logger instanceof LoggerInterface) {
-            $metricData = [
-                'metricId' => 'ping',
-                'value'    => ($isValid) ? 1 : 0,
-                'groups'   => ['host' => $this->getHost()],
-            ];
-
-            $this->logger->notice('METRICS_GAUGE', $metricData);
-        }
-    }
-
-    /**
-     * @param $value
-     *
-     * @return bool
-     */
-    protected function runValidation($value): bool
-    {
         if (empty($this->config[self::KEY_HOST])) {
             $this->addMessage("Host is not set for PingValidator");
 
             return false;
         }
 
-        // prepare options
-        $options = [];
-        if (!empty($this->config[self::KEY_OPTIONS])) {
-            $options = $this->config[self::KEY_OPTIONS];
-        }
+        $host = $this->config[self::KEY_HOST];
 
-        $host = $this->getHost();
-
-        $object = new Http($host . '/api/webhook/ping', $options);
+        $object = new Http($host . '/api/webhook/ping', $this->options);
 
         try {
             $payload = $object();
@@ -128,13 +73,5 @@ class PingValidator extends AbstractValidator
         }
 
         return true;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getHost(): string
-    {
-        return $this->config[self::KEY_HOST];
     }
 }

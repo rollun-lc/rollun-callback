@@ -18,20 +18,7 @@ abstract class AbstractValidator implements ValidatorInterface
     /**
      * @var array
      */
-    protected $config = [];
-
-    /**
-     * @var array
-     */
     protected $messages = [];
-
-    /**
-     * @param array $config
-     */
-    public function setConfig(array $config)
-    {
-        $this->config = $config;
-    }
 
     /**
      * @inheritDoc
