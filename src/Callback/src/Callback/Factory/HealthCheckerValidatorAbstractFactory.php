@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace rollun\callback\Callback\Factory;
 
 use Interop\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\HealthChecker\Validator\AbstractValidator;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
