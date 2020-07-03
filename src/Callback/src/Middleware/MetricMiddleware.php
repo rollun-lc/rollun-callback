@@ -37,6 +37,14 @@ class MetricMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Wake up
+     */
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup(['logger' => LoggerInterface::class]);
+    }
+
+    /**
      * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -44,14 +52,11 @@ class MetricMiddleware implements MiddlewareInterface
         if ($request->getUri()->getPath() == '/api/webhook/cron' && $request->getMethod() == 'GET') {
             $serviceName = getenv('SERVICE_NAME');
             if (!empty($serviceName)) {
-                $this
-                    ->logger
-                    ->notice(
-                        'METRICS', [
-                            'metricId' => str_replace('-', '_', $serviceName) . '__webhook_cron_get__metric',
-                            'value'    => 1
-                        ]
-                    );
+                // prepare metric id
+                $metricId = str_replace('-', '_', $serviceName) . '__webhook_cron_get__metric';
+
+                // send metrics
+                $this->logger->notice('METRICS', ['metricId' => $metricId, 'value' => 1]);
             }
         }
 
