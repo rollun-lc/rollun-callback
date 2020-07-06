@@ -1,17 +1,10 @@
 <?php
-
 declare(strict_types=1);
-
-/**
- * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
- * @license LICENSE.md New BSD License
- */
 
 namespace rollun\callback;
 
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
-use rollun\callback\Callback\Factory\HealthCheckerAbstractFactory;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
@@ -40,13 +33,20 @@ use rollun\callback\PidKiller\LinuxPidKiller;
 use rollun\callback\PidKiller\PidKillerInterface;
 use rollun\callback\PidKiller\ProcessManager;
 use rollun\callback\PidKiller\QueueClient;
-use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\DbAdapterAbstractFactory;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
+/**
+ * Class ConfigProvider
+ *
+ * @author    r.ratsun <r.ratsun.rollun@gmail.com>
+ *
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license   LICENSE.md New BSD License
+ */
 class ConfigProvider
 {
     const PID_KILLER_SERVICE = 'pidKillerService';
@@ -54,7 +54,7 @@ class ConfigProvider
     public function __invoke()
     {
         return [
-            'dependencies' => [
+            'dependencies'                                 => [
                 'abstract_factories' => [
                     // Queues
                     QueueClientAbstractFactory::class,
@@ -74,7 +74,6 @@ class ConfigProvider
                     SerializedCallbackAbstractFactory::class,
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
-                    HealthCheckerAbstractFactory::class,
 
                     // Pidkiller
                     WorkerAbstractFactory::class,
@@ -82,23 +81,23 @@ class ConfigProvider
                     WorkerProducerAbstractFactory::class,
                     WorkerSystemAbstractFactory::class,
                 ],
-                'invokables' => [
-                    GetParamsResolver::class => GetParamsResolver::class,
-                    PostParamsResolver::class => PostParamsResolver::class,
-                    JsonRenderer::class => JsonRenderer::class,
-                    StandardPriorityHandler::class => StandardPriorityHandler::class,
+                'invokables'         => [
+                    GetParamsResolver::class         => GetParamsResolver::class,
+                    PostParamsResolver::class        => PostParamsResolver::class,
+                    JsonRenderer::class              => JsonRenderer::class,
+                    StandardPriorityHandler::class   => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
-                    ProcessManager::class => ProcessManager::class,
-                    MetricMiddleware::class => MetricMiddleware::class
+                    ProcessManager::class            => ProcessManager::class,
+                    MetricMiddleware::class          => MetricMiddleware::class
                 ],
-                "factories" => [
+                "factories"          => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
-                    WebhookMiddleware::class => WebhookMiddlewareFactory::class,
+                    WebhookMiddleware::class     => WebhookMiddlewareFactory::class,
                     CallablePluginManager::class => CallablePluginManagerFactory::class,
-                    LinuxPidKiller::class => InvokableFactory::class,
+                    LinuxPidKiller::class        => InvokableFactory::class,
                 ],
-                'aliases' => [
-                    self::PID_KILLER_SERVICE => LinuxPidKiller::class,
+                'aliases'            => [
+                    self::PID_KILLER_SERVICE  => LinuxPidKiller::class,
                     PidKillerInterface::class => self::PID_KILLER_SERVICE,
                 ],
             ],
@@ -117,27 +116,27 @@ class ConfigProvider
                     TickerAbstractFactory::class,
                     CronExpressionAbstractFactory::class,
                 ],
-                'invokables' => [
+                'invokables'         => [
                     Ping::class => Ping::class
                 ],
-                'aliases'    => [
+                'aliases'            => [
                     'ping' => Ping::class
                 ]
             ],
-            SqsAdapterAbstractFactory::class => [
+            SqsAdapterAbstractFactory::class               => [
                 'pidQueueAdapter' => [
                     SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG => [
-                        'key' => getenv('AWS_KEY'),
+                        'key'    => getenv('AWS_KEY'),
                         'secret' => getenv('AWS_SECRET'),
                         'region' => getenv('AWS_REGION'),
                     ],
                 ],
             ],
-            QueueClientAbstractFactory::class => [
+            QueueClientAbstractFactory::class              => [
                 'pidKillerQueue' => [
-                    QueueClientAbstractFactory::KEY_CLASS => QueueClient::class,
+                    QueueClientAbstractFactory::KEY_CLASS   => QueueClient::class,
                     QueueClientAbstractFactory::KEY_ADAPTER => 'pidQueueAdapter',
-                    QueueClientAbstractFactory::KEY_NAME => 'pidqueue',
+                    QueueClientAbstractFactory::KEY_NAME    => 'pidqueue',
                 ],
             ],
         ];

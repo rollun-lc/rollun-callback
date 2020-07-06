@@ -15,13 +15,9 @@ InsideConstruct::setContainer($container);
 $lifeCycleToken = LifeCycleToken::generateToken();
 $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
-$callback = $container->get('testHealthChecker');
-$callback = unserialize(serialize($callback));
-$callback();
-
-$callback = $container->get('test2HealthChecker');
-$callback = unserialize(serialize($callback));
-$callback();
+//$callback = $container->get('testHealthChecker');
+//$callback = unserialize(serialize($callback));
+//$callback();
 
 echo 'Done !';
 die();
