@@ -7,6 +7,7 @@ use Cron\CronExpression;
 use Interop\Container\ContainerInterface;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\HealthChecker\HealthChecker;
+use Zend\Validator\ValidatorInterface;
 
 /**
  * Class HealthCheckerAbstractFactory
@@ -46,8 +47,14 @@ class HealthCheckerAbstractFactory extends CallbackAbstractFactoryAbstract
         // get cron expression
         $cronExpression = CronExpression::factory($config[static::KEY_CRON_EXPRESSION]);
 
-        // get validator
-        $validator = $container->get($config[static::KEY_VALIDATOR][static::KEY_CLASS]);
+        // prepare validator class
+        $validatorClass = $config[static::KEY_VALIDATOR][static::KEY_CLASS];
+        if (!is_a($validatorClass, ValidatorInterface::class, true)) {
+            throw new CallbackException($validatorClass . 'should be implements of ' . ValidatorInterface::class);
+        }
+
+        // create validator
+        $validator = new $validatorClass($config[static::KEY_VALIDATOR]);
 
         return new $config[static::KEY_CLASS]($cronExpression, $validator, $config[static::KEY_LOG_LEVEL]);
     }
