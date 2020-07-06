@@ -29,6 +29,16 @@ abstract class AbstractValidator implements ValidatorInterface
     }
 
     /**
+     * @param bool $isValid
+     *
+     * @return array
+     */
+    public function getMetricDataForPrometheus(bool $isValid): array
+    {
+        return [];
+    }
+
+    /**
      * @param string $message
      *
      * @return $this
