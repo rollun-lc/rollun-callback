@@ -5,6 +5,7 @@ namespace rollun\callback\Callback\HealthChecker;
 
 use Cron\CronExpression;
 use Psr\Log\LoggerInterface;
+use rollun\callback\Callback\HealthChecker\Validator\AbstractValidator;
 use rollun\dic\InsideConstruct;
 use Zend\Validator\ValidatorInterface;
 
@@ -87,11 +88,25 @@ class HealthChecker
     public function __invoke($value = null)
     {
         if ($this->cronExpression->isDue()) {
-            if (!$this->validator->isValid($value)) {
+            $isValid = $this->validator->isValid($value);
+            if (!$isValid) {
                 foreach ($this->validator->getMessages() as $message) {
                     $this->logger->log($this->level, $message);
                 }
             }
+
+            // send metrics to prometheus
+            $this->sendMetricsToPrometheus($isValid);
+        }
+    }
+
+    /**
+     * @param bool $isValid
+     */
+    protected function sendMetricsToPrometheus(bool $isValid): void
+    {
+        if ($this->validator instanceof AbstractValidator && !empty($metricData = $this->validator->getMetricDataForPrometheus($isValid))) {
+            $this->logger->notice('METRICS_GAUGE', $metricData);
         }
     }
 }

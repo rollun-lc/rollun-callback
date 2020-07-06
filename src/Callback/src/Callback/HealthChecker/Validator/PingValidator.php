@@ -74,4 +74,19 @@ class PingValidator extends AbstractValidator
 
         return true;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMetricDataForPrometheus(bool $isValid): array
+    {
+        // prepare host
+        $host = str_replace(['http://', 'https://'], ['', ''], $this->config[self::KEY_HOST]);
+
+        return [
+            'metricId' => 'ping',
+            'value'    => ($isValid) ? 1 : 0,
+            'groups'   => ['host' => $host],
+        ];
+    }
 }
