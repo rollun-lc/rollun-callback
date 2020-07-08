@@ -106,6 +106,11 @@ class Http
         $httpClient->setMethod($this->method);
         $httpClient->setRawBody(Serializer::jsonSerialize($value));
 
+        // TODO add tests
+        if ($this->method === 'GET') {
+            $httpClient->setParameterGet($value);
+        }
+
         return $httpClient;
     }
 
