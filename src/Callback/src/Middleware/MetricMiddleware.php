@@ -50,17 +50,15 @@ class MetricMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getUri()->getPath() == '/api/webhook/cron' && $request->getMethod() == 'GET') {
-            if (!empty(getenv('SERVICE_NAME'))) {
-                // prepare metric data
-                $metricData = [
-                    PrometheusWriter::METRIC_ID => 'webhook_cron',
-                    PrometheusWriter::VALUE     => 1
-                ];
+        if ($request->getUri()->getPath() == '/api/webhook/cron' && $request->getMethod() == 'GET' && !empty(getenv('SERVICE_NAME'))) {
+            // prepare metric data
+            $metricData = [
+                PrometheusWriter::METRIC_ID => 'webhook_cron',
+                PrometheusWriter::VALUE     => 1
+            ];
 
-                // send metric
-                $this->logger->notice('METRICS_COUNTER', $metricData);
-            }
+            // send metric
+            $this->logger->notice('METRICS_COUNTER', $metricData);
         }
 
         return $handler->handle($request);
