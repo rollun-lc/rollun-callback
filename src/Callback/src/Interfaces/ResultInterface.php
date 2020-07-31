@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace rollun\callback\Interfaces;
 
 /**
- * Interface BodyInterface
+ * Interface ResultInterface
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-interface BodyInterface
+interface ResultInterface
 {
     /**
      * Get data
