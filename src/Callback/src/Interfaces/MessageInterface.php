@@ -11,14 +11,16 @@ namespace rollun\callback\Interfaces;
 interface MessageInterface
 {
     /**
+     * Get level og message
+     *
      * @return string
      */
     public function getLevel(): string;
 
     /**
+     * Get message text
+     *
      * @return string
      */
     public function getText(): string;
 }
-
-

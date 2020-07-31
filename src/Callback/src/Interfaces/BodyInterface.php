@@ -4,21 +4,23 @@ declare(strict_types=1);
 namespace rollun\callback\Interfaces;
 
 /**
- * Interface TaskUpdatedInterface
+ * Interface BodyInterface
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-interface TaskUpdatedInterface
+interface BodyInterface
 {
     /**
-     * @return OkInterface
+     * Get data
+     *
+     * @return object|null
      */
-    public function getMeta(): OkInterface;
+    public function getData(): ?object;
 
     /**
+     * Get messages
+     *
      * @return MessageInterface[]|null
      */
     public function getMessages(): ?array;
 }
-
-

@@ -6,24 +6,35 @@ namespace rollun\callback\Interfaces;
 /**
  * Interface TaskInterface
  *
- * @author r.ratsun <r.ratsun.rolun@gmail.com>
+ * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
 interface TaskInterface
 {
     /**
-     * @return array|null
+     * Get task id
+     *
+     * @return string
      */
-    public function getData(): ?array;
+    public function getId(): string;
 
     /**
-     * @return BaseTaskMetaInterface
+     * Get task current status
+     *
+     * @return string
      */
-    public function getMeta(): BaseTaskMetaInterface;
+    public function getStatus(): string;
 
     /**
-     * @return MessageInterface[]|null
+     * Get task current stage
+     *
+     * @return string
      */
-    public function getMessages(): ?array;
+    public function getStage(): string;
+
+    /**
+     * Get datetime when task was start
+     *
+     * @return \DateTime|null
+     */
+    public function getStartTime(): ?\DateTime;
 }
-
-
