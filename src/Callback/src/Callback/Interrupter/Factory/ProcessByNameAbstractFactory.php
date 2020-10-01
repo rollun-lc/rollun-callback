@@ -7,14 +7,12 @@
 namespace rollun\callback\Callback\Interrupter\Factory;
 
 use Interop\Container\ContainerInterface;
-use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interrupter\Process;
-use rollun\callback\Callback\SerializedCallback;
+use rollun\callback\Callback\Interrupter\ProcessByName;
 use rollun\callback\ConfigProvider;
 
-class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
+class ProcessByNameAbstractFactory extends InterruptAbstractFactoryAbstract
 {
-    public const DEFAULT_CLASS = Process::class;
+    public const DEFAULT_CLASS = ProcessByName::class;
 
     public const KEY_MAX_EXECUTE_TIME = 'maxExecuteTime';
 
@@ -31,13 +29,6 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
         $class = $factoryConfig[static::KEY_CLASS];
         $callback = $factoryConfig[static::KEY_CALLBACK_SERVICE];
 
-        if (is_string($callback)) {
-            if (!$container->has($callback)) {
-                throw new CallbackException("Service with name '$callback' - not found.");
-            }
-            $callback = $container->get($callback);
-        }
-
         $maxExecuteTime = $factoryConfig[self::KEY_MAX_EXECUTE_TIME] ?? null;
         $pidKiller = null;
 
@@ -47,6 +38,6 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
             $maxExecuteTime = null;
         }
 
-        return new $class(new SerializedCallback($callback), $pidKiller, $maxExecuteTime);
+        return new $class($callback, $pidKiller, $maxExecuteTime);
     }
 }

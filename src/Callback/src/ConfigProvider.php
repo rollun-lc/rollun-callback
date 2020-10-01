@@ -12,6 +12,7 @@ use rollun\callback\Callback\Factory\CronExpressionAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\HttpAbstractFactory;
 use rollun\callback\Callback\Factory\HttpClientAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
+use rollun\callback\Callback\Interrupter\Factory\ProcessByNameAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueJobFillerAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\QueueMessageFillerAbstractFactory;
 use rollun\callback\Callback\Ping;
@@ -66,6 +67,7 @@ class ConfigProvider
                     HttpAbstractFactory::class,
                     HttpClientAbstractFactory::class,
                     ProcessAbstractFactory::class,
+                    ProcessByNameAbstractFactory::class,
                     QueueJobFillerAbstractFactory::class,
                     QueueMessageFillerAbstractFactory::class,
 

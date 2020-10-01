@@ -10,6 +10,7 @@ use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Interrupter\Factory\InterruptAbstractFactoryAbstract;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
 use rollun\callback\Callback\Interrupter\Process;
+use rollun\callback\Callback\Interrupter\ProcessByName;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
@@ -61,6 +62,10 @@ return [
         ],
     ],
     InterruptAbstractFactoryAbstract::KEY => [
+        'cronCallbackProcessByName' => [
+            ProcessAbstractFactory::KEY_CLASS => ProcessByName::class,
+            ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'cronCallback',
+        ],
         'testInterrupter' => [
             ProcessAbstractFactory::KEY_CLASS => Process::class,
             ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'testCallback',

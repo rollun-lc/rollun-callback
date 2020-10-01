@@ -12,13 +12,13 @@ use Interop\Container\ContainerInterface;
 
 abstract class InterruptAbstractFactoryAbstract implements AbstractFactoryInterface
 {
-    const KEY = 'interrupt';
+    public const KEY = 'interrupt';
 
-    const KEY_CLASS = 'class';
+    public const KEY_CLASS = 'class';
 
-    const KEY_CALLBACK_SERVICE = 'callbackService';
+    public const KEY_CALLBACK_SERVICE = 'callbackService';
 
-    const DEFAULT_CLASS = InterrupterInterface::class;
+    public const DEFAULT_CLASS = InterrupterInterface::class;
 
     /**
      * @param ContainerInterface $container
