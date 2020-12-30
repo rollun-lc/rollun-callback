@@ -13,7 +13,6 @@ use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
 use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WriterInterface;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
-use Zend\Log\Writer\Noop;
 
 class WorkerAbstractFactoryTest extends TestCase
 {

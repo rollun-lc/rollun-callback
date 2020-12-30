@@ -9,11 +9,11 @@ namespace rollun\test\functional\Callback\PidKiller;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Interrupter\QueueFiller;
 use rollun\callback\PidKiller\Worker;
+use rollun\callback\PidKiller\WriterInterface;
 use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueClient;
 use rollun\utils\Json\Exception;
-use Zend\Log\Writer\WriterInterface;
 
 class WorkerTest extends TestCase
 {
