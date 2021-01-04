@@ -29,6 +29,8 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run test suite
+      env:
+        APP_ENV: dev
       run: |
-        cp .env.dist .env
+        # cp .env.dist .env
         composer run-script test
