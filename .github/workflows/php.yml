@@ -30,5 +30,5 @@ jobs:
 
     - name: Run test suite
       run: |
-        # cp .env.dist .env
+        cp .env.dist .env
         composer run-script test
