@@ -83,7 +83,6 @@ class ProcessByName implements InterrupterInterface
     public function __sleep()
     {
         return [
-            'callback',
             'pidKiller',
             'maxExecuteTime',
             'callableServiceName',
