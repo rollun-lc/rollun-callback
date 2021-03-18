@@ -58,15 +58,20 @@ try {
     $job = Job::unserializeBase64($paramsString);
     $callback = $job->getCallback();
     $value = $job->getValue();
-    $logger->info("Interrupter 'Process' start.");
+    $logger->info("Interrupter 'Process' start.", [
+        'memory' => memory_get_peak_usage()
+    ]);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
-    $logger->info("Interrupter 'Process' finish.");
+    $logger->info("Interrupter 'Process' finish.", [
+        'memory' => memory_get_peak_usage()
+    ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
     $span->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($e))));
     $logger->error('When execute process, catch error', [
-        'exception' => $e
+        'exception' => $e,
+        'memory' => memory_get_peak_usage()
     ]);
 } finally {
     $tracer->flush();

@@ -12,9 +12,8 @@ use Jaeger\Span\Context\SpanContext;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
-use rollun\dic\InsideConstruct;
 use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interrupter\Job;
+use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
 
@@ -56,15 +55,22 @@ try {
     }
     $callable = $container->get($callableServiceName);
 
-    $logger->info("Interrupter 'Process' start.");
+    $logger->info("Interrupter 'Process' start.", [
+        'name' => $callableServiceName,
+    ]);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callable, null);
-    $logger->info("Interrupter 'Process' finish.");
+    $logger->info("Interrupter 'Process' finish.", [
+        'name' => $callableServiceName,
+        'memory' => memory_get_peak_usage()
+    ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
     $span->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($e))));
     $logger->error('When execute process, catch error', [
-        'exception' => $e
+        'exception' => $e,
+        'name' => $callableServiceName,
+        'memory' => memory_get_peak_usage()
     ]);
 } finally {
     $tracer->flush();
