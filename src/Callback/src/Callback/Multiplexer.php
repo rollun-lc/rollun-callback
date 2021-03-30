@@ -15,8 +15,6 @@ use rollun\dic\InsideConstruct;
 
 class Multiplexer
 {
-    private const CALLBACK_DEFAULT_NAME = 'Unknown';
-
     /**
      * @var CallbackObject[]
      */
@@ -123,7 +121,7 @@ class Multiplexer
             if (!$callback instanceof SerializedCallback) {
                 $callback = new SerializedCallback($callback);
             }
-            return new CallbackObject($callback, self::CALLBACK_DEFAULT_NAME);
+            return new CallbackObject($callback);
         }
 
         if (is_array($callback)) {

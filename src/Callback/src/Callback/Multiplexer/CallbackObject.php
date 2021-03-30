@@ -19,6 +19,8 @@ class CallbackObject
 
     public const NAME_KEY = 'name';
 
+    private const CALLBACK_DEFAULT_NAME = 'Unknown';
+
     /**
      * @var callable
      */
@@ -29,10 +31,10 @@ class CallbackObject
      */
     private $name;
 
-    public function __construct(callable $callback, string $name)
+    public function __construct(callable $callback, ?string $name = null)
     {
         $this->callback = $callback;
-        $this->name = $name;
+        $this->name = empty($name) ? self::CALLBACK_DEFAULT_NAME : $name;
     }
 
     public function __invoke($value = null)
@@ -53,7 +55,8 @@ class CallbackObject
     public static function createFromArray(array $array): self
     {
         self::validateArray($array);
-        return new self($array[self::CALLBACK_KEY], $array[self::NAME_KEY]);
+        $name = isset($array[self::NAME_KEY]) ? $array[self::NAME_KEY] : null;
+        return new self($array[self::CALLBACK_KEY], $name);
     }
 
     /**
@@ -62,19 +65,18 @@ class CallbackObject
      */
     private static function validateArray(array $array)
     {
-        if (!isset($array[self::NAME_KEY])) {
-            throw new InvalidArgumentException('Array must have the key ' . self::CALLBACK_KEY);
-        }
-        if (!is_string($array[self::NAME_KEY])) {
+        if (isset($array[self::NAME_KEY]) && !is_string($array[self::NAME_KEY])) {
             throw new InvalidArgumentException('The name must be a string');
         }
 
         if (!isset($array[self::CALLBACK_KEY])) {
-            throw new InvalidArgumentException("Cant find callback for name {$array[self::NAME_KEY]}, because" .
+            $additional = isset($array[self::NAME_KEY]) ? " for name {$array[self::NAME_KEY]}" : '';
+            throw new InvalidArgumentException("Cant find callback{$additional}, because" .
                 " array doesn't contain key " . self::CALLBACK_KEY);
         }
         if (!is_callable($array[self::CALLBACK_KEY])) {
-            throw new InvalidArgumentException("Wrong callback with name {$array[self::NAME_KEY]}'! Callable expected.");
+            $additional = isset($array[self::NAME_KEY]) ? " with name {$array[self::NAME_KEY]}" : '';
+            throw new InvalidArgumentException("Wrong callback{$additional}! Callable expected.");
         }
     }
 }
