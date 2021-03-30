@@ -61,6 +61,22 @@ $multiplexer = new Multiplexer([
 $multiplexer('The same'); // 1. The same; 2. The same; 3. The same;
 ```
 
+Иногда в логах полезно видеть имена мультиплексера и калбеков. Имя мультиплексера можно передать как третий необязательный
+аргумент конструктора (если его не передать, то имя присвоится автоматически как 'undefined'). А для того чтобы можно 
+было присвоить имя калбекам создан объект rollun\callback\Callback\Multiplexer\CallbackObject. Вы можете передать его 
+вместо калбека, или массив (который сам преобразуется в этот объект).  
+
+```php
+$multiplexer = new Multiplexer([
+    1 => CallbackObject(function ($val) { echo "1. $val; "; }, 'callbackName1'),
+    3 => [
+            CallbackObject::CALLBACK_KEY => function ($val) { echo "3. $val; "; },
+            CallbackObject::NAME_KEY => 'callbackName3'
+         ],
+    2 => function ($val) { echo "2. $val; "; },
+], 'multiplexerName');
+$multiplexer('The same'); // 1. The same; 2. The same; 3. The same;
+```
 
 #### Ticker 
 
@@ -211,10 +227,11 @@ return [
     ],
     
     CallbackAbstractFactoryAbstract::KEY => [
+        // 'multiplexer' - имя мультиплексера
         'multiplexer' => [
             MultiplexerAbstractFactory::KEY_CLASS => Multiplexer::class,
             MultiplexerAbstractFactory::KEY_CALLBACKS_SERVICES => [
-                'serializedCallback',
+                'serializedCallback', // будет именем калбека
                 'processInterrupter',
                 'ticker',
                 'extractor',
