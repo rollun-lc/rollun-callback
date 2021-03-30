@@ -25,20 +25,29 @@ class Multiplexer
     private $logger;
 
     /**
-     * Multiplexer constructor.
-     * @param array $callbacks
-     * @param LoggerInterface|null $logger
+     * @var string|null
      */
-    public function __construct(LoggerInterface $logger, array $callbacks = [])
+    private $name;
+
+    /**
+     * Multiplexer constructor.
+     * @param LoggerInterface|null $logger
+     * @param array $callbacks
+     * @param string|null $name multiplexer name
+     */
+    public function __construct(LoggerInterface $logger, array $callbacks = [], ?string $name = null)
     {
         $this->logger = $logger;
+        $this->name = empty($name) ? 'undefined' : $name;
 
         ksort($callbacks);
         foreach ($callbacks as $key => $callback) {
             if (is_callable($callback)) {
                 $this->addCallback($callback);
             } else {
-                $this->logger->error("Wrong callback at '{$key}'! Callable expected.");
+                $this->logger->error("Wrong callback at '{$key}'! Callable expected.", [
+                    'multiplexer' => $this->name,
+                ]);
             }
         }
     }
@@ -58,7 +67,10 @@ class Multiplexer
                 $result[$key] = $callback($value);
             } catch (\Throwable $e) {
                 $this->logger->error(
-                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", ['exception' => $e]
+                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", [
+                        'exception' => $e,
+                        'multiplexer' => $this->name
+                    ]
                 );
                 $result[$key] = $e;
             }

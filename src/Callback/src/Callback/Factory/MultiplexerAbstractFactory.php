@@ -47,7 +47,8 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
 
         $logger = $container->get(LoggerInterface::class);
         $class = $factoryConfig[static::KEY_CLASS];
-        $multiplexer = new $class($logger, $callbacks);
+        $name = is_string($requestedName) ? $requestedName : null;
+        $multiplexer = new $class($logger, $callbacks, $name);
 
         return $multiplexer;
     }
