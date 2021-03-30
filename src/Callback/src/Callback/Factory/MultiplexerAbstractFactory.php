@@ -35,9 +35,14 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
             foreach ($callbackService as $name => $callback) {
                 if (is_callable($callback)) {
                     $callbacks[$name] = $callback instanceof SerializedCallback ? $callback : new SerializedCallback($callback);
+                } elseif (is_array($callback) || $callback instanceof Multiplexer\CallbackObject) {
+                    $callbacks[$name] = $callback;
                 } else {
                     if ($container->has($callback)) {
-                        $callbacks[$name] = ($container->get($callback));
+                        $callbacks[$name] = [
+                            Multiplexer\CallbackObject::CALLBACK_KEY => $container->get($callback),
+                            Multiplexer\CallbackObject::NAME_KEY => $callback
+                        ];
                     } else {
                         $logger->alert("Callback with name $callback not found in container.");
                     }
