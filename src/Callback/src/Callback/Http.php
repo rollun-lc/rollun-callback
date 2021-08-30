@@ -48,11 +48,17 @@ class Http
      * @const array Allowed methods
      */
     const ALLOWED_METHODS  = ['GET','POST','PUT','PATCH','DELETE','HEAD'];
+    
+    protected const SUPPORTED_KEYS = [
+        'maxredirects',
+        'useragent',
+        'timeout',
+    ];
 
     /**
      * @var LifeCycleToken
      */
-    private $lifeCycleToken;
+    protected $lifeCycleToken;
 
     /**
      * HttpClient constructor.
@@ -74,13 +80,8 @@ class Http
         if(isset($options['method']) && in_array($options['method'],self::ALLOWED_METHODS,true)){
             $this->method = $options['method'];
         }
-
-        $supportedKeys = [
-            'maxredirects',
-            'useragent',
-            'timeout',
-        ];
-        $this->options = array_intersect_key($options, array_flip($supportedKeys));
+        
+        $this->options = array_intersect_key($options, array_flip(static::SUPPORTED_KEYS));
     }
 
     /**

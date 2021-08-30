@@ -6,6 +6,7 @@ namespace rollun\callback;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
+use rollun\callback\Callback\Factory\ProxyAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
 use rollun\callback\Callback\Factory\TickerAbstractFactory;
 use rollun\callback\Callback\Factory\CronExpressionAbstractFactory;
@@ -65,6 +66,7 @@ class ConfigProvider
 
                     // Interrupters
                     HttpAbstractFactory::class,
+                    ProxyAbstractFactory::class,
                     HttpClientAbstractFactory::class,
                     ProcessAbstractFactory::class,
                     ProcessByNameAbstractFactory::class,
@@ -107,6 +109,7 @@ class ConfigProvider
                 'abstract_factories' => [
                     // Interrupters
                     HttpAbstractFactory::class,
+                    ProxyAbstractFactory::class,
                     HttpClientAbstractFactory::class,
                     ProcessAbstractFactory::class,
                     QueueJobFillerAbstractFactory::class,
