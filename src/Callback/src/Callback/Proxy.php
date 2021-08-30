@@ -37,11 +37,7 @@ class Proxy extends Http
 
         $httpClient->setMethod($this->method);
 
-        if (
-            $this->method === 'POST'
-            && $headers->has('content-type')
-            && $headers->get('content-type')->getFieldValue() === 'application/json'
-        ) {
+        if ($this->method === 'POST') {
             $httpClient->setRawBody(Serializer::jsonSerialize($value));
         } elseif ($this->method === 'GET') {
             $httpClient->setParameterGet($value);
