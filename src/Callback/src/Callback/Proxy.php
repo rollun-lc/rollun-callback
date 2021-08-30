@@ -53,7 +53,7 @@ class Proxy extends Http
     protected function prepareHeaders()
     {
         $excluded = [
-            'header',
+            'host',
             'content-length'
         ];
         $headers = new Headers();
