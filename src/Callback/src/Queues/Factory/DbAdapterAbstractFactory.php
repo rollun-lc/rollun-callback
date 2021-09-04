@@ -42,6 +42,8 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
 
     const KEY_TIME_IN_FLIGHT = 'timeInflight';
 
+    public const KEY_DB_ADAPTER = 'adapter';
+
     public const KEY_MAX_RECEIVE_COUNT = 'maxReceiveCount';
 
     /**
@@ -75,7 +77,7 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
             $priorityHandler = null;
         }
 
-        $db = $container->get('db');
+        $db = $container->get($serviceConfig[self::KEY_DB_ADAPTER] ?? 'db');
         $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;
         $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? 0;
 
