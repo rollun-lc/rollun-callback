@@ -3,6 +3,8 @@
 
 namespace rollun\callback\Queues\Adapter;
 
+use Exception;
+use InvalidArgumentException;
 use ReputationVIP\QueueClient\Adapter\AbstractAdapter;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
@@ -10,25 +12,23 @@ use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
 use ReputationVIP\QueueClient\PriorityHandler\Priority\Priority;
 use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
-use Exception;
-use InvalidArgumentException;
 use rollun\dic\InsideConstruct;
 use Throwable;
 use UnexpectedValueException;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\AdapterInterface as DbAdapterInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\IsNull;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Predicate\PredicateSet;
-use Zend\Db\Sql\Predicate\Expression as PredicateExpression;
 use Zend\Db\Metadata\Source\Factory;
-use Zend\Db\Sql\Sql;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Ddl;
 use Zend\Db\Sql\Ddl\Column;
 use Zend\Db\Sql\Ddl\Constraint;
+use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Predicate\Expression as PredicateExpression;
+use Zend\Db\Sql\Predicate\IsNull;
+use Zend\Db\Sql\Predicate\Predicate;
+use Zend\Db\Sql\Predicate\PredicateSet;
+use Zend\Db\Sql\Sql;
 
 
 class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessagesInterface
@@ -46,17 +46,17 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
     private $priorityHandler;
 
     /**
-     * @param Adapter                  $db
-     * @param int                      $timeInFlight
-     * @param int                      $maxReceiveCount
+     * @param Adapter $db
+     * @param int $timeInFlight
+     * @param int $maxReceiveCount
      * @param PriorityHandlerInterface $priorityHandler
      *
      * @throws QueueAccessException
      */
     public function __construct(
-        Adapter $db,
-        int $timeInFlight = 0,
-        int $maxReceiveCount = 0,
+        Adapter                  $db,
+        int                      $timeInFlight = 0,
+        int                      $maxReceiveCount = 0,
         PriorityHandlerInterface $priorityHandler = null
     ) {
         if (null === $priorityHandler) {
@@ -117,15 +117,15 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         }
         $tableName = $this->prepareTableName($queueName);
         $new_message = [
-            'id'             => uniqid(
+            'id' => uniqid(
                 $queueName . $priority->getLevel(),
                 true
             ),
             'priority_level' => $priority->getLevel(),
             'time_in_flight' => null,
-            'delayed_until'  => time() + $delaySeconds,
-            'body'           => serialize($message),
-            'added_at'       => time(),
+            'delayed_until' => time() + $delaySeconds,
+            'body' => serialize($message),
+            'added_at' => time(),
         ];
         $sql = new Sql($this->db);
         $select = $sql->insert()
@@ -231,7 +231,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                     ->set(
                         [
                             'time_in_flight' => time(),
-                            'receive_count'  => new Expression('receive_count + 1')
+                            'receive_count' => new Expression('receive_count + 1')
                         ]
                     )
                     ->where(['id' => $messageIds]);
@@ -254,7 +254,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
      * @inheritdoc
      *
      * @param string $queueName
-     * @param array  $message
+     * @param array $message
      *
      * @return $this|AdapterInterface
      * @throws Exception
@@ -291,16 +291,21 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 "Queue " . $queueName . " doesn't exist, please create it before use it."
             );
         }
-
-        $tableName = $this->prepareTableName($queueName);
-        $sql = new Sql($this->db);
-        $delete = $sql->delete($tableName)
-            ->where(['id' => $message['id']]);
-        if (null !== $priority) {
-            $delete->where(['priority_level' => $priority->getLevel()]);
+        try {
+            $tableName = $this->prepareTableName($queueName);
+            $sql = new Sql($this->db);
+            $delete = $sql->delete($tableName)
+                ->where(['id' => $message['id']]);
+            if (null !== $priority) {
+                $delete->where(['priority_level' => $priority->getLevel()]);
+            }
+            $statement = $sql->prepareStatementForSqlObject($delete);
+            $statement->execute();
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (\Throwable $exception) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $exception;
         }
-        $statement = $sql->prepareStatementForSqlObject($delete);
-        $statement->execute();
         return $this;
     }
 
@@ -366,8 +371,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             ->where(
                 [
                     '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
-                    'time_in_flight'                               => null,
-                    'receive_count < ?'                            => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
+                    'time_in_flight' => null,
+                    'receive_count < ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
                 ],
                 Predicate::OP_OR
             );
