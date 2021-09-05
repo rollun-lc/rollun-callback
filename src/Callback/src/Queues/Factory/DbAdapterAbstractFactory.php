@@ -77,10 +77,11 @@ class DbAdapterAbstractFactory implements AbstractFactoryInterface
             $priorityHandler = null;
         }
 
-        $db = $container->get($serviceConfig[self::KEY_DB_ADAPTER] ?? 'db');
+        $dbAdapterName = $serviceConfig[self::KEY_DB_ADAPTER] ?? 'db';
+        $db = $container->get($dbAdapterName);
         $timeInFlight = $serviceConfig[self::KEY_TIME_IN_FLIGHT] ?? 0;
         $maxMessageCount = $serviceConfig[self::KEY_MAX_RECEIVE_COUNT] ?? 0;
 
-        return new DbAdapter($db, $timeInFlight, $maxMessageCount, $priorityHandler);
+        return new DbAdapter($db, $timeInFlight, $maxMessageCount, $priorityHandler, $dbAdapterName);
     }
 }

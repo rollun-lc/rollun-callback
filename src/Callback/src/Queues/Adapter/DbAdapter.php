@@ -44,6 +44,10 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
     private $maxReceiveCount;
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
+    /**
+     * @var string
+     */
+    private $_dbAdapterName;
 
     /**
      * @param Adapter $db
@@ -57,17 +61,17 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         Adapter                  $db,
         int                      $timeInFlight = 0,
         int                      $maxReceiveCount = 0,
-        PriorityHandlerInterface $priorityHandler = null
+        PriorityHandlerInterface $priorityHandler = null,
+        string $_dbAdapterName = 'db'
     ) {
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
         }
-
         $this->db = $db;
-        $this->timeInFlight = intval($timeInFlight);
-        $this->maxReceiveCount = intval($maxReceiveCount);
+        $this->timeInFlight = $timeInFlight;
+        $this->maxReceiveCount = $maxReceiveCount;
         $this->priorityHandler = $priorityHandler;
-        return $this;
+        $this->_dbAdapterName = $_dbAdapterName;
     }
 
     /**
@@ -744,7 +748,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         try {
             InsideConstruct::initWakeup(
                 [
-                    "db" => DbAdapterInterface::class,
+                    "db" => $this->_dbAdapterName,
                 ]
             );
         } catch (\Throwable $e) {
@@ -758,6 +762,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
     public function __sleep()
     {
         return [
+            '_dbAdapterName',
             'timeInFlight',
             'maxReceiveCount',
             'priorityHandler',
