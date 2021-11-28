@@ -295,6 +295,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 "Queue " . $queueName . " doesn't exist, please create it before use it."
             );
         }
+        $this->db->getDriver()->getConnection()->beginTransaction();
         try {
             $tableName = $this->prepareTableName($queueName);
             $sql = new Sql($this->db);
