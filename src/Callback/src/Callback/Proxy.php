@@ -4,8 +4,8 @@ namespace rollun\callback\Callback;
 
 use Psr\Http\Message\RequestInterface;
 use rollun\utils\Json\Serializer;
-use Zend\Http\Client;
-use Zend\Http\Headers;
+use Laminas\Http\Client;
+use Laminas\Http\Headers;
 
 class Proxy extends Http
 {

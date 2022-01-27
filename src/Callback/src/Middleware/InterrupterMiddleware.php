@@ -14,7 +14,7 @@ use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
 use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
-use Zend\Diactoros\Response\EmptyResponse;
+use Laminas\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
 {

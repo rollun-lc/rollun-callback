@@ -18,7 +18,7 @@ use rollun\callback\Callback\Interrupter\Job;
 use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
 
-/** @var Zend\ServiceManager\ServiceManager $container */
+/** @var Laminas\ServiceManager\ServiceManager $container */
 $container = include 'config/container.php';
 InsideConstruct::setContainer($container);
 $lifeCycleToke = LifeCycleToken::generateToken();

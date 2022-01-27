@@ -9,7 +9,7 @@ namespace rollun\callback\Callback\Factory;
 use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
 use rollun\callback\Callback\SerializedCallback;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 class SerializedCallbackAbstractFactory implements AbstractFactoryInterface
 {

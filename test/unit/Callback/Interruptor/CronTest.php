@@ -63,4 +63,22 @@ class CronTest extends TestCase
         $data = explode("\n", $minFileData);
         $this->assertEquals(4, count(array_diff($data, [''])));
     }
+
+    public function testCronError()
+    {
+        $httpClient = new Client($this->url, ["timeout" => 65]);
+        $headers['Content-Type'] = 'text/text';
+        $headers['Accept'] = 'application/json';
+        $httpClient->setHeaders($headers);
+        $httpClient->setMethod('POST');
+        $req = $httpClient->send();
+
+        $this->assertTrue($req->getStatusCode() >= 200 && $req->getStatusCode() < 300);
+
+        sleep(5);
+
+        $minFileData = file_get_contents('data' . DIRECTORY_SEPARATOR . 'interrupt_min');
+        $data = explode("\n", $minFileData);
+        $this->assertEquals(4, count(array_diff($data, [''])));
+    }
 }

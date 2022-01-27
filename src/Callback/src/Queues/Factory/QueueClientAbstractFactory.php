@@ -18,7 +18,7 @@ use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\QueueClient;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Create instance of QueueClient
@@ -141,7 +141,7 @@ class QueueClientAbstractFactory implements AbstractFactoryInterface
             case DbAdapter::class:
                 return (new DbAdapterAbstractFactory())($container, $adapterName, $options);
             default:
-                throw new \Zend\ServiceManager\Exception\InvalidArgumentException(sprintf('Unknown adapter type %s for queue %s', $adapterType, $requestedName));
+                throw new \Laminas\ServiceManager\Exception\InvalidArgumentException(sprintf('Unknown adapter type %s for queue %s', $adapterType, $requestedName));
         }
     }
 }

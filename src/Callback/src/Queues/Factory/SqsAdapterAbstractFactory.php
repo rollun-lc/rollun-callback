@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 use rollun\callback\Queues\DeadLetterQueue;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Create instance of SQSAdapter

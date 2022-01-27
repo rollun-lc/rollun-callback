@@ -12,8 +12,8 @@ use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\logger\LifeCycleToken;
 use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
-use Zend\Http\Client;
-use Zend\Http\Response;
+use Laminas\Http\Client;
+use Laminas\Http\Response;
 
 class Http
 {

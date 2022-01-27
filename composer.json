@@ -1,7 +1,7 @@
 {
   "name": "rollun-com/rollun-callback",
   "description": "Callback",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "type": "library",
   "license": "GPL-3.0",
   "authors": [
@@ -15,32 +15,22 @@
     }
   ],
   "require": {
-    "php": "^7.2",
+    "php": "^8.0",
     "ext-json": "*",
     "ext-openssl": "*",
-    "aws/aws-sdk-php": "2.8.31",
-    "zendframework/zend-stdlib": "^3.1",
-    "zendframework/zend-servicemanager": "^3.3",
-    "zendframework/zend-http": "^2.5",
+    "aws/aws-sdk-php": "^2.8.31",
+    "laminas/laminas-stdlib": "^3.7.0",
+    "laminas/laminas-servicemanager": "^3.10",
+    "laminas/laminas-http": "^2.15",
     "reputation-vip/queue-client": "^2.0",
-    "opis/closure": "^2.1.0",
-    "rollun-com/rollun-utils": "^5.0",
-    "rollun-com/rollun-logger": "^5.1 || ^6.0",
-    "zendframework/zend-json": "^3.1",
-    "zendframework/zend-stratigility": "^3.0",
-    "zendframework/zend-diactoros": "^2.0",
-    "zendframework/zend-db": "^2.10",
+    "opis/closure": "4.x-dev",
+    "rollun-com/rollun-utils": "dev-laminas",
+    "rollun-com/rollun-logger": "dev-laminas",
+    "laminas/laminas-json": "3.4.x-dev",
+    "laminas/laminas-stratigility": "3.6.x-dev",
+    "laminas/laminas-diactoros": "2.9.x-dev",
+    "laminas/laminas-db": "2.14.x-dev",
     "mtdowling/cron-expression": "^1.2"
-  },
-  "require-dev": {
-    "zendframework/zend-config-aggregator": "^1.1",
-    "zendframework/zend-expressive": "^3.2",
-    "zendframework/zend-expressive-helpers": "^5.1",
-    "zendframework/zend-expressive-fastroute": "^3.0",
-    "symfony/dotenv": "^4.2",
-    "phpunit/phpunit": "^7.0",
-    "squizlabs/php_codesniffer": "^3.0",
-    "filp/whoops": "^2.3"
   },
   "autoload": {
     "psr-4": {
@@ -60,5 +50,28 @@
     "code-sniffer": "phpcs .",
     "code-beautiful": "phpcbf .",
     "server": "php -S 0.0.0.0:8000 -t public public/index.php"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/home/yurii/www/rollun/rollun-utils"
+    },
+    {
+      "type": "path",
+      "url": "/home/yurii/www/rollun/rollun-installer"
+    },
+    {
+      "type": "path",
+      "url": "/home/yurii/www/rollun/rollun-dic"
+    },
+    {
+      "type": "path",
+      "url": "/home/yurii/www/rollun/rollun-logger"
+    }
+  ],
+  "config": {
+    "allow-plugins": {
+      "rollun-com/rollun-installer": true
+    }
   }
 }

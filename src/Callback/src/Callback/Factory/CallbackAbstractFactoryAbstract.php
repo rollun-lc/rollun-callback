@@ -6,7 +6,7 @@
 
 namespace rollun\callback\Callback\Factory;
 
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 
 abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterface
