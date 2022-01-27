@@ -53,20 +53,20 @@
   },
   "repositories": [
     {
-      "type": "path",
-      "url": "/home/yurii/www/rollun/rollun-utils"
+      "type": "github",
+      "url": "git@github.com:rollun-com/rollun-utils.git"
     },
     {
-      "type": "path",
-      "url": "/home/yurii/www/rollun/rollun-installer"
+      "type": "github",
+      "url": "git@github.com:rollun-com/rollun-installer.git"
     },
     {
-      "type": "path",
-      "url": "/home/yurii/www/rollun/rollun-dic"
+      "type": "github",
+      "url": "git@github.com:rollun-com/rollun-dic.git"
     },
     {
-      "type": "path",
-      "url": "/home/yurii/www/rollun/rollun-logger"
+      "type": "github",
+      "url": "git@github.com:rollun-com/rollun-logger.git"
     }
   ],
   "config": {
