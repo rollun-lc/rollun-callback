@@ -19,7 +19,7 @@ use Zend\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
 {
-    const DEFAULT_ATTRIBUTE_NAME = 'resourceName';
+    public const DEFAULT_ATTRIBUTE_NAME = 'resourceName';
 
     /**
      * @var string
