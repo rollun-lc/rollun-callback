@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -21,27 +22,37 @@ class WebhookMiddleware implements MiddlewareInterface
     /**
      * WebhookMiddleware constructor.
      *
-     * @param InterrupterMiddleware        $interrupterMiddleware
-     * @param MetricMiddleware             $metricMiddleware
+     * @param InterrupterMiddleware $interrupterMiddleware
+     * @param MetricMiddleware $metricMiddleware
      * @param RequestHandlerInterface|null $renderer
+     * @param array $middlewares
      */
-    public function __construct(InterrupterMiddleware $interrupterMiddleware, MetricMiddleware $metricMiddleware, RequestHandlerInterface $renderer = null)
-    {
+    public function __construct(
+        InterrupterMiddleware $interrupterMiddleware,
+        MetricMiddleware $metricMiddleware,
+        RequestHandlerInterface $renderer = null,
+        array $middlewares = []
+    ) {
         $this->middlewarePipe = new MiddlewarePipe();
-
-        $this->middlewarePipe->pipe(new ResourceResolver());
-        $this->middlewarePipe->pipe(new GetParamsResolver());
-        $this->middlewarePipe->pipe(new PostParamsResolver());
-        $this->middlewarePipe->pipe($metricMiddleware);
-        $this->middlewarePipe->pipe($interrupterMiddleware);
-
         if ($renderer) {
             $renderer = new RequestHandlerMiddleware($renderer);
         } else {
             $renderer = new JsonRenderer();
         }
 
-        $this->middlewarePipe->pipe($renderer);
+        // Это можно вынести в фабрику
+        $middlewares = array_merge([
+            new ResourceResolver(),
+            new GetParamsResolver(),
+            new PostParamsResolver(),
+            $metricMiddleware,
+            $interrupterMiddleware,
+            $renderer
+        ], $middlewares);
+
+        foreach ($middlewares as $middleware) {
+            $this->middlewarePipe->pipe($middleware);
+        }
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
