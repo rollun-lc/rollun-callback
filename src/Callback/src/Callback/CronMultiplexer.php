@@ -19,6 +19,8 @@ class CronMultiplexer extends Multiplexer
      */
     public function __invoke($value = null)
     {
+        $this->logger->debug("Cron multiplexer started");
+
         $result = [];
         ksort($this->callbacks);
         $interrupterWasCalled = false;
