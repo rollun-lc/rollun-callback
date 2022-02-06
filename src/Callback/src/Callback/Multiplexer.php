@@ -23,12 +23,12 @@ class Multiplexer
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var string|null
      */
-    private $name;
+    protected $name;
 
     /**
      * Multiplexer constructor.
