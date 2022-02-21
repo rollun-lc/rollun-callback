@@ -8,7 +8,6 @@ chdir($path);
 
 require 'vendor/autoload.php';
 
-use Jaeger\Span\Context\SpanContext;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
@@ -16,11 +15,12 @@ use rollun\callback\Callback\CallbackException;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
+use rollun\utils\FailedProcesses\Service\ProcessTracker;
 
 /** @var Zend\ServiceManager\ServiceManager $container */
 $container = include 'config/container.php';
 InsideConstruct::setContainer($container);
-$lifeCycleToke = LifeCycleToken::generateToken();
+$lifeCycleToken = LifeCycleToken::generateToken();
 
 $callableServiceName = null;
 $parentLifecycleToken = null;
@@ -39,9 +39,19 @@ foreach ($argv as $i => $value) {
 }
 
 if ($parentLifecycleToken) {
-    $lifeCycleToke->unserialize($parentLifecycleToken);
+    $lifeCycleToken->unserialize($parentLifecycleToken);
 }
-$container->setService(LifeCycleToken::class, $lifeCycleToke);
+
+$needTrackProcesses = getenv('TRACK_PROCESSES') === 'true';
+
+if ($needTrackProcesses) {
+    ProcessTracker::storeProcessData(
+        $lifeCycleToken->toString(),
+        $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
+    );
+}
+
+$container->setService(LifeCycleToken::class, $lifeCycleToken);
 
 /** @var Tracer $tracer */
 $tracer = $container->get(Tracer::class);
@@ -49,7 +59,7 @@ $tracer = $container->get(Tracer::class);
 $logger = $container->get(LoggerInterface::class);
 
 try {
-    $span = $tracer->start('process.php', [], $spanContext);
+    $span = $tracer->start('processByName.php', [], $spanContext);
     if ($callableServiceName === null) {
         throw new CallbackException('There is not callable service name');
     }
@@ -74,4 +84,7 @@ try {
     ]);
 } finally {
     $tracer->flush();
+    if ($needTrackProcesses) {
+        ProcessTracker::clearProcessData();
+    }
 }
