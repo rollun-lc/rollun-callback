@@ -18,9 +18,6 @@ use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
 use rollun\utils\FailedProcesses\Service\ProcessTracker;
 
-/** @var Zend\ServiceManager\ServiceManager $container */
-$container = include 'config/container.php';
-InsideConstruct::setContainer($container);
 $lifeCycleToken = LifeCycleToken::generateToken();
 
 $paramsString = null;
@@ -43,14 +40,14 @@ if ($parentLifecycleToken) {
     $lifeCycleToken->unserialize($parentLifecycleToken);
 }
 
-$needTrackProcesses = getenv('TRACK_PROCESSES') === 'true';
+ProcessTracker::storeProcessData(
+    $lifeCycleToken->toString(),
+    $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
+);
 
-if ($needTrackProcesses) {
-    ProcessTracker::storeProcessData(
-        $lifeCycleToken->toString(),
-        $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
-    );
-}
+/** @var Zend\ServiceManager\ServiceManager $container */
+$container = include 'config/container.php';
+InsideConstruct::setContainer($container);
 
 $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
@@ -64,28 +61,26 @@ try {
     if ($paramsString === null) {
         throw new CallbackException('There is not params string');
     }
+    $logger->info("Interrupter 'Process' start.", [
+        'memory' => memory_get_peak_usage(true)
+    ]);
     /* @var $job Job */
     $job = Job::unserializeBase64($paramsString);
     $callback = $job->getCallback();
     $value = $job->getValue();
-    $logger->info("Interrupter 'Process' start.", [
-        'memory' => memory_get_peak_usage()
-    ]);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
     $logger->info("Interrupter 'Process' finish.", [
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true)
     ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
     $span->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($e))));
     $logger->error('When execute process, catch error', [
         'exception' => $e,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true)
     ]);
 } finally {
     $tracer->flush();
-    if ($needTrackProcesses) {
-        ProcessTracker::clearProcessData();
-    }
+    ProcessTracker::clearProcessData();
 }

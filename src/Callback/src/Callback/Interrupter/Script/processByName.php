@@ -17,9 +17,6 @@ use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
 use rollun\utils\FailedProcesses\Service\ProcessTracker;
 
-/** @var Zend\ServiceManager\ServiceManager $container */
-$container = include 'config/container.php';
-InsideConstruct::setContainer($container);
 $lifeCycleToken = LifeCycleToken::generateToken();
 
 $callableServiceName = null;
@@ -42,14 +39,14 @@ if ($parentLifecycleToken) {
     $lifeCycleToken->unserialize($parentLifecycleToken);
 }
 
-$needTrackProcesses = getenv('TRACK_PROCESSES') === 'true';
+ProcessTracker::storeProcessData(
+    $lifeCycleToken->toString(),
+    $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
+);
 
-if ($needTrackProcesses) {
-    ProcessTracker::storeProcessData(
-        $lifeCycleToken->toString(),
-        $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
-    );
-}
+/** @var Zend\ServiceManager\ServiceManager $container */
+$container = include 'config/container.php';
+InsideConstruct::setContainer($container);
 
 $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
@@ -63,16 +60,16 @@ try {
     if ($callableServiceName === null) {
         throw new CallbackException('There is not callable service name');
     }
-    $callable = $container->get($callableServiceName);
-
     $logger->info("Interrupter 'Process' start.", [
         'name' => $callableServiceName,
+        'memory' => memory_get_peak_usage(true),
     ]);
+    $callable = $container->get($callableServiceName);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callable, null);
     $logger->info("Interrupter 'Process' finish.", [
         'name' => $callableServiceName,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true),
     ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
@@ -80,11 +77,9 @@ try {
     $logger->error('When execute process, catch error', [
         'exception' => $e,
         'name' => $callableServiceName,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true),
     ]);
 } finally {
     $tracer->flush();
-    if ($needTrackProcesses) {
-        ProcessTracker::clearProcessData();
-    }
+    ProcessTracker::clearProcessData();
 }
