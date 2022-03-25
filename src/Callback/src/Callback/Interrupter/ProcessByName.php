@@ -27,7 +27,7 @@ class ProcessByName implements InterrupterInterface
     const STDERR_KEY = 'stderr';
     const PID_KEY = 'pid';
 
-    const SCRIPT_PATH = '/Script/service.php';
+    const SCRIPT_PATH = '/Script/processByName.php';
 
     /**
      * @var LifecycleToken
