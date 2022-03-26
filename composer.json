@@ -79,8 +79,8 @@
       "url": "git@github.com:rollun-com/rollun-logger.git"
     },
     {
-      "type": "path",
-      "url": "../rollun-guzzle"
+      "type": "github",
+      "url": "git@github.com:orlyk-rollun/guzzle3.git"
     }
   ],
   "config": {
