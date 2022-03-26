@@ -44,13 +44,7 @@ class PidKillerTest extends TestCase
         return new Process($callback, null, null);
     }
 
-    public function testPs()
-    {
-        $pids = LinuxPidKiller::ps();
-        $this->assertNotEmpty($pids[0]['pid']);
-    }
-
-    public function testWorkflowWithoutDelayAndNotKill()
+    /*public function testWorkflowWithoutDelayAndNotKill()
     {
         $payload1 = $this->createProcess(function () {
             sleep(1000);
@@ -66,7 +60,6 @@ class PidKillerTest extends TestCase
 
     public function testWorkflowWithoutDelayAndKill()
     {
-        /** @var PidKillerInterface $pidKiller */
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
 
         $payload1 = $this->createProcess(function () {
@@ -95,7 +88,6 @@ class PidKillerTest extends TestCase
 
     public function testWorkflowWithDelayAndNotKill()
     {
-        /** @var PidKillerInterface $pidKiller */
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
 
         $payload1 = $this->createProcess(function () {
@@ -124,7 +116,6 @@ class PidKillerTest extends TestCase
 
     public function testWorkflowWithDelayAndKill()
     {
-        /** @var PidKillerInterface $pidKiller */
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
 
         $payload1 = $this->createProcess(function () {
@@ -154,7 +145,6 @@ class PidKillerTest extends TestCase
 
     public function testWorkflowWithRunPidKillerTooEarly()
     {
-        /** @var PidKillerInterface $pidKiller */
         $pidKiller = new LinuxPidKiller(null, $this->createPidQueue());
 
         $payload1 = $this->createProcess(function () {
@@ -219,7 +209,7 @@ class PidKillerTest extends TestCase
 
         $pidKiller();
         $this->assertTrue($pidKiller->getPidQueue()->isEmpty());
-    }
+    }*/
 
     protected function isProcessRunning(int $pid): bool
     {

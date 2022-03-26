@@ -9,7 +9,7 @@ use rollun\callback\PidKiller\Factory\WorkerSystemAbstractFactory;
 use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WorkerManager;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -35,19 +35,20 @@ class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
             ]
         ]);
 
+        // queue
         $container->expects($this->at(1))->method('get')->with($queue)->willReturn(
             QueueClientAbstractFactory::createSimpleQueueClient()
         );
+        // callback
         $container->expects($this->at(2))->method('get')->with($callable)->willReturn(function () {
         });
 
         /** @var TableGateway|MockObject $container */
         $tableGateway = $this->getMockBuilder(TableGateway::class)->disableOriginalConstructor()->getMock();
 
-        //need be 4.
-        $container->expects($this->at(4))->method('get')
+        //need be 5.
+        $container->expects($this->at(5))->method('get')
             ->with(WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY)->willReturn($tableGateway);
-
 
         $worker = $factory($container, $testWorkerSystem);
         $this->assertInstanceOf(WorkerManager::class, $worker);

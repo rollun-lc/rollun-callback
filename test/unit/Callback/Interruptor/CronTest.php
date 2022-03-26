@@ -4,11 +4,11 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\unit\Queues;
+namespace rollun\test\unit\Callback\Interruptor;
 
 use PHPUnit\Framework\TestCase;
-use Zend\Http\Client;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Http\Client;
+use Laminas\ServiceManager\ServiceManager;
 
 class CronTest extends TestCase
 {
@@ -28,13 +28,13 @@ class CronTest extends TestCase
         return $this->container;
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->url = getenv("HOST") . '/api/webhook/cron';
         $this->deleteJob();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->deleteJob();
     }

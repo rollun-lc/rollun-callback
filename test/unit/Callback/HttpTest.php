@@ -8,7 +8,7 @@ namespace rollun\test\unit\Callback;
 
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Http;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class HttpTest extends TestCase
 {

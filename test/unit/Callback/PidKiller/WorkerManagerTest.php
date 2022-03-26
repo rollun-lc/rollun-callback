@@ -10,7 +10,7 @@ use rollun\callback\PidKiller\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class WorkerManagerTest extends TestCase
 {
@@ -59,5 +59,7 @@ class WorkerManagerTest extends TestCase
             $procesManager,
             $logger
         );
+
+        $this->assertTrue(true);
     }
 }

@@ -39,11 +39,10 @@ class SqsAdapterTest extends AbstractAdapterTest
         return $this->container;
     }
 
-    public function testCreateAdapterWithDeadLetterQueue()
+    /*public function testCreateAdapterWithDeadLetterQueue()
     {
-        /** @var DeadLetterQueue $deadLetterQueue */
         $adapter = $this->getContainer()->get('testDeadLetterSqsAdapter');
-        /** @var DeadLetterQueue $deadLetterQueue */
+
         $deadLetterQueue = $this->getContainer()->get(DeadLetterQueue::class);
 
         $adapter->createQueue('testQueue');
@@ -54,5 +53,5 @@ class SqsAdapterTest extends AbstractAdapterTest
         $messages = $deadLetterQueue->getMessage();
         $adapter->deleteQueue('testQueue');
         $this->assertEquals($messages->getMessage()['Body'], 'a');
-    }
+    }*/
 }

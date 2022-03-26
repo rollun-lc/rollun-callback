@@ -4,8 +4,8 @@
  * @license LICENSE.md New BSD License
  */
 
-use Zend\ServiceManager\Config;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\Config;
+use Laminas\ServiceManager\ServiceManager;
 
 // Load configuration
 $config = require __DIR__ . '/config.php';

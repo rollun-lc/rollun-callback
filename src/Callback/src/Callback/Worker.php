@@ -73,8 +73,8 @@ class Worker
             ]);
         }
 
-        while ((time() - $startTime) < self::WORK_SECOND && !$this->queue->isEmpty()) {
-            $message = $this->queue->getMessage();
+        while ((time() - $startTime) < self::WORK_SECOND && $message = $this->queue->getMessage()) {
+            //$message = $this->queue->getMessage();
             $value = $this->unserialize($message->getData());
 
             try {

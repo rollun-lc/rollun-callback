@@ -1,7 +1,7 @@
 {
   "name": "rollun-com/rollun-callback",
   "description": "Callback",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "type": "library",
   "license": "GPL-3.0",
   "authors": [
@@ -23,14 +23,24 @@
     "laminas/laminas-servicemanager": "^3.10",
     "laminas/laminas-http": "^2.15",
     "reputation-vip/queue-client": "^2.0",
-    "opis/closure": "4.x-dev",
-    "rollun-com/rollun-utils": "dev-laminas",
-    "rollun-com/rollun-logger": "dev-laminas",
-    "laminas/laminas-json": "3.4.x-dev",
-    "laminas/laminas-stratigility": "3.6.x-dev",
-    "laminas/laminas-diactoros": "2.9.x-dev",
-    "laminas/laminas-db": "2.14.x-dev",
-    "mtdowling/cron-expression": "^1.2"
+    "opis/closure": "^3.6.3",
+    "rollun-com/rollun-utils": "^7.0.0",
+    "rollun-com/rollun-logger": "^7.0.0",
+    "laminas/laminas-json": "^3.3.0",
+    "laminas/laminas-stratigility": "^3.5.0",
+    "laminas/laminas-diactoros": "^2.8.0",
+    "laminas/laminas-db": "^2.13.4",
+    "mtdowling/cron-expression": "^1.2",
+    "symfony/event-dispatcher": "4.4.*",
+    "guzzle/guzzle": "dev-php-8.0 as v3.9.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5.10",
+    "symfony/dotenv": "^6.0.3",
+    "laminas/laminas-config-aggregator": "^1.7",
+    "mezzio/mezzio-helpers": "^5.8",
+    "mezzio/mezzio": "^3.9",
+    "mezzio/mezzio-fastroute": "^3.4"
   },
   "autoload": {
     "psr-4": {
@@ -67,6 +77,10 @@
     {
       "type": "github",
       "url": "git@github.com:rollun-com/rollun-logger.git"
+    },
+    {
+      "type": "path",
+      "url": "../rollun-guzzle"
     }
   ],
   "config": {

@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-use Zend\Db\Adapter\AdapterInterface;
+use Laminas\Db\Adapter\AdapterInterface;
 
 return [
     'dependencies' => [

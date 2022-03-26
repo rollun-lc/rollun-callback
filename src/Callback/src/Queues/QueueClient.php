@@ -97,7 +97,12 @@ class QueueClient implements QueueInterface
 
         if (isset($messages[0])) {
             //Fixed double Body
-            $message = new Message(array_merge($messages[0], $messages[0]['Body']));
+            // TODO Check
+            $message = new Message(
+                is_array($messages[0]['Body'])
+                    ? array_merge($messages[0], $messages[0]['Body'])
+                    : $messages[0]
+            );
         } else {
             $message = null;
         }

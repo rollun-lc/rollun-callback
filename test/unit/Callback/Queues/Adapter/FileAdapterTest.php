@@ -18,7 +18,7 @@ class FileAdapterTest extends TestCase
         return new FileAdapter($this->repository, $timeInFlight);
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         $dir = getenv('FILE_ADAPTER_REPOSITORY') ?? sys_get_temp_dir();
         $this->repository = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -29,7 +29,7 @@ class FileAdapterTest extends TestCase
         }
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->rrmdir($this->repository);
     }
