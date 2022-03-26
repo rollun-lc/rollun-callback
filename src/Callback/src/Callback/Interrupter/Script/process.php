@@ -8,7 +8,6 @@ chdir($path);
 
 require 'vendor/autoload.php';
 
-use Jaeger\Span\Context\SpanContext;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
@@ -17,11 +16,9 @@ use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interrupter\Job;
 use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
+use rollun\utils\FailedProcesses\Service\ProcessTracker;
 
-/** @var Laminas\ServiceManager\ServiceManager $container */
-$container = include 'config/container.php';
-InsideConstruct::setContainer($container);
-$lifeCycleToke = LifeCycleToken::generateToken();
+$lifeCycleToken = LifeCycleToken::generateToken();
 
 $paramsString = null;
 $parentLifecycleToken = null;
@@ -40,9 +37,19 @@ foreach ($argv as $i => $value) {
 }
 
 if ($parentLifecycleToken) {
-    $lifeCycleToke->unserialize($parentLifecycleToken);
+    $lifeCycleToken->unserialize($parentLifecycleToken);
 }
-$container->setService(LifeCycleToken::class, $lifeCycleToke);
+
+ProcessTracker::storeProcessData(
+    $lifeCycleToken->toString(),
+    $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
+);
+
+/** @var Laminas\ServiceManager\ServiceManager $container */
+$container = include 'config/container.php';
+InsideConstruct::setContainer($container);
+
+$container->setService(LifeCycleToken::class, $lifeCycleToken);
 
 /** @var Tracer $tracer */
 $tracer = $container->get(Tracer::class);
@@ -54,25 +61,26 @@ try {
     if ($paramsString === null) {
         throw new CallbackException('There is not params string');
     }
+    $logger->info("Interrupter 'Process' start.", [
+        'memory' => memory_get_peak_usage(true)
+    ]);
     /* @var $job Job */
     $job = Job::unserializeBase64($paramsString);
     $callback = $job->getCallback();
     $value = $job->getValue();
-    $logger->info("Interrupter 'Process' start.", [
-        'memory' => memory_get_peak_usage()
-    ]);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
     $logger->info("Interrupter 'Process' finish.", [
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true)
     ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
     $span->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($e))));
     $logger->error('When execute process, catch error', [
         'exception' => $e,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true)
     ]);
 } finally {
     $tracer->flush();
+    ProcessTracker::clearProcessData();
 }

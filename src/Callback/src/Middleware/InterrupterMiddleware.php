@@ -10,15 +10,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
-use rollun\callback\Promise\SimplePayload;
 use rollun\utils\Json\Exception;
 use rollun\utils\Json\Serializer;
 use Laminas\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
 {
-    const DEFAULT_ATTRIBUTE_NAME = 'resourceName';
+    public const DEFAULT_ATTRIBUTE_NAME = 'resourceName';
 
     /**
      * @var string
@@ -31,14 +32,24 @@ class InterrupterMiddleware implements MiddlewareInterface
     protected $interrupterPluginManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * InterrupterMiddleware constructor.
      * @param CallablePluginManager $interrupterPluginManager
      * @param string|null $attributeName
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(CallablePluginManager $interrupterPluginManager, string $attributeName = null)
-    {
+    public function __construct(
+        CallablePluginManager $interrupterPluginManager,
+        string $attributeName = null,
+        ?LoggerInterface $logger = null
+    ) {
         $this->interrupterPluginManager = $interrupterPluginManager;
         $this->attributeName = $attributeName ?: self::DEFAULT_ATTRIBUTE_NAME;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -67,10 +78,9 @@ class InterrupterMiddleware implements MiddlewareInterface
             } else {
                 $statusCode = 200;
             }
-
-        } catch (\Throwable $t) {
-            $result = ['error' => $t->getMessage()];
-
+        } catch (\Throwable $e) {
+            $result = ['error' => $e->getMessage()];
+            $this->logException($e, $request);
             $statusCode = 500;
         }
 
@@ -79,5 +89,14 @@ class InterrupterMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         return $response;
+    }
+
+    private function logException(\Throwable $e, ServerRequestInterface $request)
+    {
+        $this->logger->error('Unexpected callback exception.', [
+            'exception' => $e,
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
     }
 }

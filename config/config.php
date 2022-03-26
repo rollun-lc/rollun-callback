@@ -29,6 +29,8 @@ $aggregator = new ConfigAggregator([
     // Rollun providers
     \rollun\callback\ConfigProvider::class,
     \rollun\logger\ConfigProvider::class,
+    \rollun\utils\Metrics\ConfigProvider::class,
+    \rollun\utils\FailedProcesses\ConfigProvider::class,
 
     // Default App module config
     // Load application config in a pre-defined order in such a way that local settings

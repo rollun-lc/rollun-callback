@@ -8,7 +8,6 @@ chdir($path);
 
 require 'vendor/autoload.php';
 
-use Jaeger\Span\Context\SpanContext;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
@@ -16,11 +15,9 @@ use rollun\callback\Callback\CallbackException;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 use rollun\logger\Processor\ExceptionBacktrace;
+use rollun\utils\FailedProcesses\Service\ProcessTracker;
 
-/** @var Laminas\ServiceManager\ServiceManager $container */
-$container = include 'config/container.php';
-InsideConstruct::setContainer($container);
-$lifeCycleToke = LifeCycleToken::generateToken();
+$lifeCycleToken = LifeCycleToken::generateToken();
 
 $callableServiceName = null;
 $parentLifecycleToken = null;
@@ -39,9 +36,19 @@ foreach ($argv as $i => $value) {
 }
 
 if ($parentLifecycleToken) {
-    $lifeCycleToke->unserialize($parentLifecycleToken);
+    $lifeCycleToken->unserialize($parentLifecycleToken);
 }
-$container->setService(LifeCycleToken::class, $lifeCycleToke);
+
+ProcessTracker::storeProcessData(
+    $lifeCycleToken->toString(),
+    $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
+);
+
+/** @var Laminas\ServiceManager\ServiceManager $container */
+$container = include 'config/container.php';
+InsideConstruct::setContainer($container);
+
+$container->setService(LifeCycleToken::class, $lifeCycleToken);
 
 /** @var Tracer $tracer */
 $tracer = $container->get(Tracer::class);
@@ -49,20 +56,20 @@ $tracer = $container->get(Tracer::class);
 $logger = $container->get(LoggerInterface::class);
 
 try {
-    $span = $tracer->start('process.php', [], $spanContext);
+    $span = $tracer->start('processByName.php', [], $spanContext);
     if ($callableServiceName === null) {
         throw new CallbackException('There is not callable service name');
     }
-    $callable = $container->get($callableServiceName);
-
     $logger->info("Interrupter 'Process' start.", [
         'name' => $callableServiceName,
+        'memory' => memory_get_peak_usage(true),
     ]);
+    $callable = $container->get($callableServiceName);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callable, null);
     $logger->info("Interrupter 'Process' finish.", [
         'name' => $callableServiceName,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true),
     ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
@@ -70,8 +77,9 @@ try {
     $logger->error('When execute process, catch error', [
         'exception' => $e,
         'name' => $callableServiceName,
-        'memory' => memory_get_peak_usage()
+        'memory' => memory_get_peak_usage(true),
     ]);
 } finally {
     $tracer->flush();
+    ProcessTracker::clearProcessData();
 }
