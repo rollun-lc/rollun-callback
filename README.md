@@ -33,8 +33,10 @@
 #### 2.1. Метод \rollun\test\functional\Callback\Queues\Adapter\SqsAdapterTest::testCreateAdapterWithDeadLetterQueue()
 При попытке получить с контейнера сервис DeadLetterQueue::class, выбрасывается исключение. Такой сервис не сконфигурирован.
 
+
 #### 2.2. Класс \rollun\test\functional\Callback\PidKiller\WorkerManagerTest
-В данном классе все тесты вызывают метод \rollun\callback\PidKiller\LinuxPidKiller::ps(), который был удален 25.06.2019
+~~В данном классе все тесты вызывают метод \rollun\callback\PidKiller\LinuxPidKiller::ps(), который был удален 25.06.2019~~
+Поправил
 
 #### 2.3. Класс \rollun\test\unit\Callback\Queues\Adapter\SqsAdapterTest
 Закомментировал все тесты

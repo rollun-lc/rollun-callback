@@ -43,7 +43,7 @@ class SqsAdapterTest extends AbstractAdapterTest
     {
         $adapter = $this->getContainer()->get('testDeadLetterSqsAdapter');
 
-        $deadLetterQueue = $this->getContainer()->get(DeadLetterQueue::class);
+        $deadLetterQueue = $this->getContainer()->get('deadLetter');
 
         $adapter->createQueue('testQueue');
         $adapter->addMessage('testQueue', 'a');
