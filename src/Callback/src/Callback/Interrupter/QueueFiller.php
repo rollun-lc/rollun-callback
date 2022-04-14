@@ -10,6 +10,7 @@ use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
+use ReputationVIP\QueueClient\PriorityHandler\Priority\Priority;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
 use rollun\callback\Queues\Message;
@@ -69,7 +70,7 @@ class QueueFiller implements InterrupterInterface
      * @return PayloadInterface
      * @throws Exception
      */
-    public function __invoke($value): PayloadInterface
+    public function __invoke($value, Priority $priority = null): PayloadInterface
     {
         $span = $this->tracer->start('QueueFiller::__invoke', [
             new StringTag('queue', $this->queue->getName()),
@@ -84,7 +85,7 @@ class QueueFiller implements InterrupterInterface
 
         //fix not found context problem
         $this->tracer->flush();
-        $this->queue->addMessage($message);
+        $this->queue->addMessage($message, $priority);
         $this->logger->info('Add message to queue', [
             'message' => $message,
         ]);
