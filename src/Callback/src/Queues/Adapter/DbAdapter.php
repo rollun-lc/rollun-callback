@@ -209,10 +209,34 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             $select->limit($nbMsg);
         }
 
+        $sqlString = $sql->buildSqlString($select);
+        $statement = $this->db->getDriver()->createStatement($sqlString);
+        $results = $statement->execute();
+        $messageIds = [];
+        if ($results instanceof ResultInterface && $results->isQueryResult()) {
+            $resultSet = new ResultSet();
+            $resultSet->initialize($results);
+            foreach ($resultSet as $result) {
+                $messageIds[] = $result->id;
+            }
+        }
+
         $messages = [];
+
+        if (empty($messageIds)) {
+            return $messages;
+        }
+
+        // need to request records specifically by their id, to lock only this records and not all records in the table
+        // (previous select will lock all table if requested with FOR UPDATE option)
+        $selectByIds = $sql->select()
+            ->from($tableName)
+            ->where(['id' => $messageIds]);
+
         $this->db->getDriver()->getConnection()->beginTransaction();
         try {
-            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE';
+            // need to use SKIP LOCKED option, to skip messages, that are already used by other process
+            $sqlString = $sql->buildSqlString($selectByIds) . ' FOR UPDATE SKIP LOCKED';
             $statement = $this->db->getDriver()->createStatement($sqlString);
             $results = $statement->execute();
             $messageIds = [];
