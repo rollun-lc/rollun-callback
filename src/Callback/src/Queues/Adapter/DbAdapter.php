@@ -227,8 +227,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             return $messages;
         }
 
-        // need to request records specifically by their id, to lock only this records and not all records in the table
-        // (previous select will lock all table if requested with FOR UPDATE option)
+        // need to request records specifically by their id, to lock only these records and not all records in the table
+        // (previous select will lock all table if requested with FOR UPDATE option, even with LIMIT set to 1)
         // https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-gap-locks
         $selectByIds = $sql->select()
             ->from($tableName)
