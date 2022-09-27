@@ -213,6 +213,9 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $count = 0;
 
         while (empty($messages) && $count < 3) {
+            if ($count > 0) {
+                sleep(1);
+            }
             $messageIds = $this->getAvailableMessageIds($sql, $select);
 
             if (empty($messageIds)) {
