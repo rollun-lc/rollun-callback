@@ -29,7 +29,7 @@ use Zend\Db\Sql\Predicate\IsNull;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Db\Sql\Predicate\PredicateSet;
 use Zend\Db\Sql\Sql;
-
+use Zend\Db\Sql\SqlInterface;
 
 class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessagesInterface
 {
@@ -209,72 +209,19 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             $select->limit($nbMsg);
         }
 
-        $sqlString = $sql->buildSqlString($select);
-        $statement = $this->db->getDriver()->createStatement($sqlString);
-        $results = $statement->execute();
-        $messageIds = [];
-        if ($results instanceof ResultInterface && $results->isQueryResult()) {
-            $resultSet = new ResultSet();
-            $resultSet->initialize($results);
-            foreach ($resultSet as $result) {
-                $messageIds[] = $result->id;
-            }
-        }
-
         $messages = [];
+        $count = 0;
 
-        if (empty($messageIds)) {
-            return $messages;
-        }
+        while (empty($messages) && $count < 3) {
+            $messageIds = $this->getAvailableMessageIds($sql, $select);
 
-        // need to request records specifically by their id, to lock only these records and not all records in the table
-        // (previous select will lock all table if requested with FOR UPDATE option, even with LIMIT set to 1)
-        // https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-gap-locks
-        $selectByIds = $sql->select()
-            ->from($tableName)
-            ->where(['id' => $messageIds]);
-
-        $this->db->getDriver()->getConnection()->beginTransaction();
-        try {
-            // need to use SKIP LOCKED option, to skip messages, that are already used by other process
-            $sqlString = $sql->buildSqlString($selectByIds) . ' FOR UPDATE SKIP LOCKED';
-            $statement = $this->db->getDriver()->createStatement($sqlString);
-            $results = $statement->execute();
-            $messageIds = [];
-            if ($results instanceof ResultInterface && $results->isQueryResult()) {
-                $resultSet = new ResultSet();
-                $resultSet->initialize($results);
-                foreach ($resultSet as $result) {
-                    $messageIds[] = $result->id;
-                    $message = [];
-                    $message['id'] = $result->id;
-                    $message['time-in-flight'] = time();
-                    $message['delayed-until'] = intval($result->delayed_until);
-                    $message['Body'] = unserialize($result->body);
-                    $message['priority'] = intval($result->priority_level);
-                    $messages[] = $message;
-                }
-            }
-            if (!empty($messageIds)) {
-                $sqlUpdate = $sql->update($tableName)
-                    ->set(
-                        [
-                            'time_in_flight' => time(),
-                            'receive_count' => new Expression('receive_count + 1')
-                        ]
-                    )
-                    ->where(['id' => $messageIds]);
-                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
-                $statement->execute();
-
+            if (empty($messageIds)) {
+                break;
             }
 
-            $this->db->getDriver()->getConnection()->commit();
-        } catch (Throwable $e) {
-            $this->db->getDriver()->getConnection()->rollback();
-            throw $e;
+            $messages = $this->getNotLockedMessages($sql, $tableName, $messageIds);
+            $count++;
         }
-
 
         return $messages;
     }
@@ -718,6 +665,75 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             throw $e;
         }
         return $this;
+    }
+
+    private function getAvailableMessageIds(Sql $sql, SqlInterface $select): array
+    {
+        $sqlString = $sql->buildSqlString($select);
+        $statement = $this->db->getDriver()->createStatement($sqlString);
+        $results = $statement->execute();
+
+        $messageIds = [];
+        if ($results instanceof ResultInterface && $results->isQueryResult()) {
+            $resultSet = new ResultSet();
+            $resultSet->initialize($results);
+            foreach ($resultSet as $result) {
+                $messageIds[] = $result->id;
+            }
+        }
+
+        return $messageIds;
+    }
+
+    private function getNotLockedMessages(Sql $sql, string $tableName, array $messageIds): array
+    {
+        $select = $sql->select()
+            ->from($tableName)
+            ->where(['id' => $messageIds]);
+
+        $messages = [];
+
+        $this->db->getDriver()->getConnection()->beginTransaction();
+        try {
+            // need to use SKIP LOCKED option, to skip messages, that are already used by other process
+            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE SKIP LOCKED';
+            $statement = $this->db->getDriver()->createStatement($sqlString);
+            $results = $statement->execute();
+            $freeMessageIds = [];
+            if ($results instanceof ResultInterface && $results->isQueryResult()) {
+                $resultSet = new ResultSet();
+                $resultSet->initialize($results);
+                foreach ($resultSet as $result) {
+                    $freeMessageIds[] = $result->id;
+                    $message = [];
+                    $message['id'] = $result->id;
+                    $message['time-in-flight'] = time();
+                    $message['delayed-until'] = intval($result->delayed_until);
+                    $message['Body'] = unserialize($result->body);
+                    $message['priority'] = intval($result->priority_level);
+                    $messages[] = $message;
+                }
+            }
+            if (!empty($freeMessageIds)) {
+                $sqlUpdate = $sql->update($tableName)
+                    ->set(
+                        [
+                            'time_in_flight' => time(),
+                            'receive_count' => new Expression('receive_count + 1')
+                        ]
+                    )
+                    ->where(['id' => $freeMessageIds]);
+                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
+                $statement->execute();
+            }
+
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (Throwable $e) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $e;
+        }
+
+        return $messages;
     }
 
     /**
