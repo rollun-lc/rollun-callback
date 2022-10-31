@@ -4,4 +4,4 @@
 выполнение другому процессу, машине или очереди. Так же эта библиотека дает возможность быстро поднять `endpoint` для 
 работы `webhook` - сервис, который сразу же возвращает управление, несмотря на длительность возможных операций.
 
-* [Документация](https://rollun-com.github.io/rollun-datastore)
+* [Документация](https://github.com/rollun-com/rollun-callback/blob/master/docs/index.md)
