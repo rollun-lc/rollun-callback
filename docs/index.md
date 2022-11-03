@@ -211,6 +211,7 @@ Interrupter разновидность `callable` для "параллельно
 ```php
 return [
     SerializedCallbackAbstractFactory::class => [
+        //testCallback1 в данному випадку є іменем колбека
         'testCallback1' => 'CallMe::class',
         'testCallback2' => ['service', 'invokableMethod'],
         'testCallback3' => 'CallMe::invokableMethod',
@@ -277,6 +278,8 @@ return [
 По сути это `callable`, который который поднимается по названию сервиса, вызывается и отдает ответ.
 В зависимости от того будет ли это `Interrupter` или `Callback` буде возвращен результат `PayloadInterface` или 
 `mixed` (тип зависит от возвращаемого типа `Callback`) соответственно.
+
+Всі типи колбеків можуть бути викликані вебхуком без додаткової конфігурації.
 
 Для того чтобы использовать `webhook`, нужно подключить следующий роутинг, где `resourceName` - это газвание сервиса.
 
@@ -377,4 +380,61 @@ sleep(10);
 
 // kill process
 $pidKiller();
+```
+
+## Common issues and examples
+#### Якщо callback використовує сервіси, то його створення потрібно робити через фабрику, котра передасть сервіси в конструктор
+Приклад конфігурації:
+```php
+return [
+    'dependencies' => [
+            'factories' => [
+                SomeCallback::class => SomeCallbackFactory::class
+            ],
+        ],
+        SerializedCallbackAbstractFactory::class => [
+            'doSomethingCallback' => [SomeCallback::class, 'doSomething'],
+        ],
+    ]
+];
+```
+### Важливо!!!
+Callback неможливо (не варто) серіалізувати разом з сервісами (може виникнути помилка). Колбеки з сервісами повинні використовувати `__sleep` та `__wakeup`
+Приклад коллбеку з сервісом:
+```php
+<?php
+namespace App\Callbacks;
+
+use rollun\datastore\DataStore\DbTable;
+use rollun\dic\InsideConstruct;
+
+class DBInteractor {
+    //$dataStore зберігає сервіс. Його серіалізувати неможна
+    private DbTable $dataStore;
+    private $number = 0;
+
+    function __construct(DbTable $dataStore, $number = 0) 
+    {
+        $this->dataStore = $dataStore;
+        $this->number = $number;
+    }
+
+    //Ця функція буде виконана при серіалізації. Вона повинна повернути імена властивостей дозволених до серіалізації
+    function __sleep()
+    {
+        return ['number'];
+    }
+
+    //Звісно післа десеріалізації $dataStore буде пустим і наш коллбек буде недієздатним без нього тож ми використовуємо __wakeup щоб отримати сервіс
+    function __wakeup()
+    {
+        //Швидкий спосіб. Увага! dataStore повинен бути в контейнері, інакше нічого не вийде
+        InsideConstruct::initWakeup(['dataStore' => 'dataStore']);
+    }
+
+    function doSomething()
+    {
+        //TODO
+    }
+}
 ```
