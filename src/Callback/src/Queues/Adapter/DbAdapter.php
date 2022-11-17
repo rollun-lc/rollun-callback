@@ -188,6 +188,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $sql = new Sql($this->db);
         $select = $sql->select()
             ->from($tableName)
+            ->columns(['id'])
             ->where(
                 [
                     new PredicateSet(
@@ -229,7 +230,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             if (empty($messageIds)) {
                 break;
             }
-            $messages = $this->getNotLockedMessages($sql, $tableName, $messageIds, $nbMsg);
+            $messages = $this->getNotLockedMessages($tableName, $messageIds, $nbMsg);
 
             // если нашлись сообщения - то повторные попытки не нужны, поэтому прерываем цикл
             if (!empty($messages)) {
@@ -683,8 +684,10 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         return $this;
     }
 
-    private function getNotLockedMessages(Sql $sql, string $tableName, array $messageIds, int $nbMsg): array
+    private function getNotLockedMessages(string $tableName, array $messageIds, int $nbMsg): array
     {
+        $sql = new Sql($this->db);
+
         $select = $sql->select()
             ->from($tableName)
             ->where(['id' => $messageIds])
