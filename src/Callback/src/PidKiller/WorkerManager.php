@@ -140,6 +140,8 @@ class WorkerManager
         $adapter->getDriver()->getConnection()->beginTransaction();
 
         try {
+            // without PRIMARY KEY this request will lock all records in the table,
+            // so be sure to set id as primary key to avoid "Lock timeout"
             $sql = 'SELECT `id`, `pid`'
                 . " FROM {$adapter->getPlatform()->quoteIdentifier($this->tableGateway->getTable())}"
                 . " WHERE {$adapter->getPlatform()->quoteIdentifier('id')} ="

@@ -284,6 +284,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 "Queue " . $queueName . " doesn't exist, please create it before use it."
             );
         }
+        // HACK: тут нужна транзакция, чтобы внешний код (который будет вызывать deleteMessage)
+        // не мог откатить транзакцию, и таким образом вернуть ненужное сообщение обратно в очередь
         $this->db->getDriver()->getConnection()->beginTransaction();
         try {
             $tableName = $this->prepareTableName($queueName);
