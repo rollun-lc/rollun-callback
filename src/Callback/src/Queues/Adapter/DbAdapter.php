@@ -188,6 +188,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $sql = new Sql($this->db);
         $select = $sql->select()
             ->from($tableName)
+            ->columns(['id'])
             ->where(
                 [
                     new PredicateSet(
@@ -206,13 +207,15 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             $select->where(['priority_level' => $priority->getLevel()]);
         }
         if ($nbMsg) {
-            $select->limit($nbMsg);
+            // 10 - запас с учетом сообщений, залоченных другими процессами
+            $select->limit($nbMsg + 10);
         }
 
         $messages = [];
-        $this->db->getDriver()->getConnection()->beginTransaction();
-        try {
-            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE';
+
+        // 3 попытки на случай, если все полученные сообщения будут уже залочены другими процессами
+        for ($i = 1; $i <= 3; $i++) {
+            $sqlString = $sql->buildSqlString($select);
             $statement = $this->db->getDriver()->createStatement($sqlString);
             $results = $statement->execute();
             $messageIds = [];
@@ -221,35 +224,21 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 $resultSet->initialize($results);
                 foreach ($resultSet as $result) {
                     $messageIds[] = $result->id;
-                    $message = [];
-                    $message['id'] = $result->id;
-                    $message['time-in-flight'] = time();
-                    $message['delayed-until'] = intval($result->delayed_until);
-                    $message['Body'] = unserialize($result->body);
-                    $message['priority'] = intval($result->priority_level);
-                    $messages[] = $message;
                 }
             }
-            if (!empty($messageIds)) {
-                $sqlUpdate = $sql->update($tableName)
-                    ->set(
-                        [
-                            'time_in_flight' => time(),
-                            'receive_count' => new Expression('receive_count + 1')
-                        ]
-                    )
-                    ->where(['id' => $messageIds]);
-                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
-                $statement->execute();
-
+            // если по этому запросу не нашлось записей - значит очередь пустая и продолжать нет смысла
+            if (empty($messageIds)) {
+                break;
             }
+            $messages = $this->getNotLockedMessages($tableName, $messageIds, $nbMsg);
 
-            $this->db->getDriver()->getConnection()->commit();
-        } catch (Throwable $e) {
-            $this->db->getDriver()->getConnection()->rollback();
-            throw $e;
+            // если нашлись сообщения - то повторные попытки не нужны, поэтому прерываем цикл
+            if (!empty($messages)) {
+                break;
+            }
+            // ждем немного для обновления локов на таблице
+            sleep(1);
         }
-
 
         return $messages;
     }
@@ -295,6 +284,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 "Queue " . $queueName . " doesn't exist, please create it before use it."
             );
         }
+        // HACK: тут нужна транзакция, чтобы внешний код (который будет вызывать deleteMessage)
+        // не мог откатить транзакцию, и таким образом вернуть ненужное сообщение обратно в очередь
         $this->db->getDriver()->getConnection()->beginTransaction();
         try {
             $tableName = $this->prepareTableName($queueName);
@@ -693,6 +684,60 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             throw $e;
         }
         return $this;
+    }
+
+    private function getNotLockedMessages(string $tableName, array $messageIds, int $nbMsg): array
+    {
+        $sql = new Sql($this->db);
+
+        $select = $sql->select()
+            ->from($tableName)
+            ->where(['id' => $messageIds])
+            ->limit($nbMsg);
+
+        $messages = [];
+
+        $this->db->getDriver()->getConnection()->beginTransaction();
+        try {
+            // need to use SKIP LOCKED option, to skip messages, that are already used by other process
+            $sqlString = $sql->buildSqlString($select) . ' FOR UPDATE SKIP LOCKED';
+            $statement = $this->db->getDriver()->createStatement($sqlString);
+            $results = $statement->execute();
+            $freeMessageIds = [];
+            if ($results instanceof ResultInterface && $results->isQueryResult()) {
+                $resultSet = new ResultSet();
+                $resultSet->initialize($results);
+                foreach ($resultSet as $result) {
+                    $freeMessageIds[] = $result->id;
+                    $message = [];
+                    $message['id'] = $result->id;
+                    $message['time-in-flight'] = time();
+                    $message['delayed-until'] = intval($result->delayed_until);
+                    $message['Body'] = unserialize($result->body);
+                    $message['priority'] = intval($result->priority_level);
+                    $messages[] = $message;
+                }
+            }
+            if (!empty($freeMessageIds)) {
+                $sqlUpdate = $sql->update($tableName)
+                    ->set(
+                        [
+                            'time_in_flight' => time(),
+                            'receive_count' => new Expression('receive_count + 1')
+                        ]
+                    )
+                    ->where(['id' => $freeMessageIds]);
+                $statement = $sql->prepareStatementForSqlObject($sqlUpdate);
+                $statement->execute();
+            }
+
+            $this->db->getDriver()->getConnection()->commit();
+        } catch (Throwable $e) {
+            $this->db->getDriver()->getConnection()->rollback();
+            throw $e;
+        }
+
+        return $messages;
     }
 
     /**
