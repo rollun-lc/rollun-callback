@@ -53,7 +53,7 @@ var_dump($callback('World')); // 'Hello World'
 Пример:
 
 ```php
-$multiplexer = new Multiplexer([
+$multiplexer = new Multiplexer($logger, [
     1 => function ($val) { echo "1. $val; "; },
     3 => function ($val) { echo "3. $val; "; },
     2 => function ($val) { echo "2. $val; "; },
