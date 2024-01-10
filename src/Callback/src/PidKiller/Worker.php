@@ -91,7 +91,18 @@ class Worker implements InfoProviderInterface
     public function __invoke()
     {
         $span = $this->tracer->start('Worker::__invoke');
-        if (!$message = $this->queue->getMessage()) {
+
+        try {
+            $message = $this->queue->getMessage();
+        } catch (\Throwable $e) {
+            $this->logger->warning('Error while getting message from queue', [
+                'queue' => $this->queue->getName(),
+                'exception' => $e,
+            ]);
+            return null;
+        }
+
+        if (!$message) {
             $this->logger->debug('Queue {queue} is empty. Worker not started.', [
                 'queue' => $this->queue->getName(),
             ]);
