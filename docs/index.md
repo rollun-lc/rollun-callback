@@ -21,12 +21,29 @@ php -S localhost:8000 -t public
 > Переменная окружения HOST должна совпадать с хостом на котором запускаеться php-fpm, в данном случае это 
 http://localhost:8000
 
+
 ## Callback и Interrupter
 
 `Callback` и `Interrupter` - это `callable`(invokable) объекты. Главное отличие между ними, это то что `Interrupter` 
 вычисляются параллельно и сразу же передают управление. `Callback` - это invokable объекты, которые вносят с помощью 
 композиции дополнительные возможности.
+### Service as callback
 
+Чтобы добавить сервис как вебхук достаточно добавить alias
+
+```php
+    SerializedCallbackAbstractFactory::class => [
+        'Callback' => Callback::class,
+    ],
+    CallablePluginManagerFactory::KEY_INTERRUPTERS => [
+        'dependencies' => [
+            'aliases' => [
+                'Callback' => Callback::class,
+            ],
+        ],
+    ],
+
+```
 
 #### SerializedCallback
  
