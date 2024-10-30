@@ -56,7 +56,7 @@ $tracer = $container->get(Tracer::class);
 /** @var LoggerInterface $logger */
 $logger = $container->get(LoggerInterface::class);
 
-set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger) : void {
+set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger, $callableServiceName) : void {
     if (! (error_reporting() & $errno)) {
         // error_reporting does not include this error
         return;
@@ -66,7 +66,8 @@ set_error_handler(function (int $errno, string $errstr, string $errfile, int $er
 
     // Maybe in next releases we will throw this exceptions
     $logger->error('When execute process, catch PHP error. But not throwing it.', [
-        'exception' => $exception
+        'exception' => $exception,
+        'name' => $callableServiceName,
     ]);
 });
 
