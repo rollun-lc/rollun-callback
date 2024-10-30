@@ -54,7 +54,22 @@ $container->setService(LifeCycleToken::class, $lifeCycleToken);
 /** @var Tracer $tracer */
 $tracer = $container->get(Tracer::class);
 
+/** @var LoggerInterface $logger */
 $logger = $container->get(LoggerInterface::class);
+
+set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger) : void {
+    if (! (error_reporting() & $errno)) {
+        // error_reporting does not include this error
+        return;
+    }
+
+    $exception = new ErrorException($errstr, 0, $errno, $errfile, $errline);
+
+    // Maybe in next releases we will throw this exceptions
+    $logger->error('When execute process, catch PHP error. But not throwing it.', [
+        'exception' => $exception
+    ]);
+});
 
 try {
     $span = $tracer->start('process.php', [], $spanContext);
