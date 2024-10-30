@@ -25,7 +25,7 @@
     "reputation-vip/queue-client": "^2.0",
     "opis/closure": "^3.6.3",
     "rollun-com/rollun-utils": "^7.0|^8.0",
-    "rollun-com/rollun-logger": "^7.0.0",
+    "rollun-com/rollun-logger": "dev-test-guzzle-7as v7.2.1",
     "laminas/laminas-json": "^3.3.0",
     "laminas/laminas-stratigility": "^3.5.0",
     "laminas/laminas-diactoros": "^2.8.0",
