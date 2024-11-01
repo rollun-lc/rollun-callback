@@ -66,7 +66,7 @@ set_error_handler(function (int $errno, string $errstr, string $errfile, int $er
     $exception = new ErrorException($errstr, 0, $errno, $errfile, $errline);
 
     // Maybe in next releases we will throw this exceptions
-    $logger->error('When execute process, catch PHP error. But not throwing it.', [
+    $logger->warning('When execute process, catch PHP error. But not throwing it.', [
         'exception' => $exception
     ]);
 });
