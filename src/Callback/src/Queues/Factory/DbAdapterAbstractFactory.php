@@ -8,7 +8,7 @@ declare(strict_types = 1);
 
 namespace rollun\callback\Queues\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 use rollun\callback\Queues\Adapter\DbAdapter;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;

@@ -6,7 +6,7 @@
 
 namespace rollun\callback\Callback\Interrupter\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\Interrupter\ProcessByName;
 use rollun\callback\ConfigProvider;
 

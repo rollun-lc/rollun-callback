@@ -6,7 +6,7 @@
 
 namespace rollun\test\unit\Callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Interrupter\Process;

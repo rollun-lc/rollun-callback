@@ -6,7 +6,7 @@
 
 namespace rollun\callback\Callback\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Http;
 

@@ -4,21 +4,18 @@
 namespace rollun\callback\PidKiller\Factory;
 
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WorkerManager;
-use rollun\callback\PidKiller\WorkerProducer;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
 use rollun\callback\Queues\QueueClient;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
-use Laminas\ServiceManager\ServiceManager;
 
 class WorkerSystemAbstractFactory implements AbstractFactoryInterface
 {
@@ -78,7 +75,6 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
-     * @throws ContainerException if any other error occurs
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
@@ -91,7 +87,6 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
      * @param $requestedName
      * @param array|null $options
      * @return WorkerManager
-     * @throws ContainerException
      */
     protected static function buildWorkerManager(ContainerInterface $container, $requestedName, array $options = null): WorkerManager
     {

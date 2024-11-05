@@ -6,13 +6,12 @@
 
 namespace rollun\callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\PidKiller\Worker;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
-use Interop\Container\Exception\ContainerException;
 
 /**
  * Config example:

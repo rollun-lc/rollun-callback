@@ -6,7 +6,7 @@
 
 namespace rollun\callback\Callback\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\CronExpression;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
 use rollun\callback\Callback\CallbackException;

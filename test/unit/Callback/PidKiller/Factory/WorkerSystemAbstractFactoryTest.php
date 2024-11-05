@@ -2,11 +2,10 @@
 
 namespace rollun\test\unit\Callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
 use rollun\callback\PidKiller\Factory\WorkerSystemAbstractFactory;
-use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WorkerManager;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use Laminas\Db\TableGateway\TableGateway;

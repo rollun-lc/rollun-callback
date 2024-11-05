@@ -7,7 +7,7 @@
 namespace rollun\callback\Callback\Factory;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterface
 {

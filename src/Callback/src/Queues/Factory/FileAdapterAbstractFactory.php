@@ -8,7 +8,7 @@ declare(strict_types = 1);
 
 namespace rollun\callback\Queues\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Queues\Adapter\FileAdapter;

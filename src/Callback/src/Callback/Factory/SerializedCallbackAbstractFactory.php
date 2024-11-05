@@ -6,7 +6,7 @@
 
 namespace rollun\callback\Callback\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 use rollun\callback\Callback\SerializedCallback;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;

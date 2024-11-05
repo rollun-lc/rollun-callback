@@ -6,7 +6,7 @@
 
 namespace rollun\callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WorkerManager;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
