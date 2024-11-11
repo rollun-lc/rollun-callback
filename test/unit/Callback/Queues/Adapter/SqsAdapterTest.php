@@ -6,9 +6,6 @@
 
 namespace rollun\test\unit\Callback\Queues\Adapter;
 
-use Aws\Sqs\SqsClient;
-use Guzzle\Common\Collection;
-use Guzzle\Service\Resource\Model;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 

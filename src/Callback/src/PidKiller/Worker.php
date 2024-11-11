@@ -6,7 +6,6 @@
 
 namespace rollun\callback\PidKiller;
 
-use GuzzleHttp\Tests\Stream\Str;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;

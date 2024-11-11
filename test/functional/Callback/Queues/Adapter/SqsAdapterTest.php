@@ -6,11 +6,9 @@
 
 namespace rollun\test\functional\Callback\Queues\Adapter;
 
-use Aws\Sqs\SqsClient;
 use Psr\Container\ContainerInterface;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use rollun\callback\Queues\Adapter\SqsAdapter;
-use rollun\callback\Queues\DeadLetterQueue;
 
 class SqsAdapterTest extends AbstractAdapterTest
 {

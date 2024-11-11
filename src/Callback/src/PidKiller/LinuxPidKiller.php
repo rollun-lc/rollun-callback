@@ -6,14 +6,11 @@
 
 namespace rollun\callback\PidKiller;
 
-use DateTime;
-use GuzzleHttp\Tests\Stream\Str;
 use InvalidArgumentException;
 use Jaeger\Tag\ErrorTag;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
-use rollun\callback\ConfigProvider;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
