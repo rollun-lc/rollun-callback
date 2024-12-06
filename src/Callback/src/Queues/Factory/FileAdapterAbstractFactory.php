@@ -10,7 +10,6 @@ namespace rollun\callback\Queues\Factory;
 
 use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
-use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use rollun\callback\Queues\Adapter\FileAdapter;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 

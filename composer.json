@@ -18,11 +18,9 @@
     "php": "^8.0",
     "ext-json": "*",
     "ext-openssl": "*",
-    "aws/aws-sdk-php": "^2.8.31",
     "laminas/laminas-stdlib": "^3.7.0",
     "laminas/laminas-servicemanager": "^3.10",
     "laminas/laminas-http": "^2.15",
-    "reputation-vip/queue-client": "^2.0",
     "opis/closure": "^3.6.3",
     "rollun-com/rollun-utils": "^7.0|^8.0",
     "rollun-com/rollun-logger": "^7.0.0",
@@ -32,7 +30,10 @@
     "laminas/laminas-db": "^2.13.4",
     "mtdowling/cron-expression": "^1.2",
     "symfony/event-dispatcher": "4.4.*",
-    "guzzle/guzzle": "dev-php-8.0 as v3.9.0"
+    "aws/aws-sdk-php": "^3.334",
+    "symfony/filesystem": "^6.0",
+    "symfony/finder": "^6.0",
+    "symfony/lock": "^6.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5.10",
@@ -44,7 +45,8 @@
   },
   "autoload": {
     "psr-4": {
-      "rollun\\callback\\": "src/Callback/src"
+      "rollun\\callback\\": "src/Callback/src",
+      "ReputationVIP\\QueueClient\\": "src/ReputationVip/src"
     }
   },
   "autoload-dev": {
@@ -61,28 +63,6 @@
     "code-beautiful": "phpcbf .",
     "server": "php -S 0.0.0.0:8000 -t public public/index.php"
   },
-  "repositories": [
-    {
-      "type": "github",
-      "url": "git@github.com:rollun-com/rollun-utils.git"
-    },
-    {
-      "type": "github",
-      "url": "git@github.com:rollun-com/rollun-installer.git"
-    },
-    {
-      "type": "github",
-      "url": "git@github.com:rollun-com/rollun-dic.git"
-    },
-    {
-      "type": "github",
-      "url": "git@github.com:rollun-com/rollun-logger.git"
-    },
-    {
-      "type": "github",
-      "url": "git@github.com:orlyk-rollun/guzzle3.git"
-    }
-  ],
   "config": {
     "allow-plugins": {
       "rollun-com/rollun-installer": true

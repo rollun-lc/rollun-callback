@@ -12,11 +12,9 @@ use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
-use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use rollun\callback\Queues\Adapter\DbAdapter;
 use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Adapter\SqsAdapter;
-use rollun\callback\Queues\DeadLetterQueue;
 use rollun\callback\Queues\QueueClient;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 

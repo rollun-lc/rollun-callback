@@ -8,10 +8,8 @@ declare(strict_types=1);
 
 namespace rollun\callback\Queues;
 
-use Jaeger\Tracer\Tracer;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\QueueClient as ExternalQueueClient;
-use rollun\dic\InsideConstruct;
 use Throwable;
 
 class QueueClient implements QueueInterface
