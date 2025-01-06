@@ -75,13 +75,6 @@ return [
             ProcessAbstractFactory::KEY_CALLBACK_SERVICE => 'cronMultiplexer',
         ],
     ],
-    SqsAdapterAbstractFactory::class => [
-        'testSqsQueue' => [
-            'sqsClientConfig' => [
-
-            ],
-        ],
-    ],
     FileAdapterAbstractFactory::class => [
         'testFileQueue' => [
             'storageDirPath' => 'data',
@@ -99,7 +92,12 @@ return [
             'sqsAttributes' => [
                 'VisibilityTimeout' => 1
             ],
-        ]
+        ],
+        'testSqsQueue' => [
+            'sqsClientConfig' => [
+
+            ],
+        ],
     ],
     DbAdapterAbstractFactory::class => [
         'testDbQueue' => [

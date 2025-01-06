@@ -39,7 +39,7 @@ use rollun\callback\Queues\Factory\FileAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\QueueClientAbstractFactory;
 use rollun\callback\Queues\Factory\SqsAdapterAbstractFactory;
 use rollun\callback\Queues\Factory\DbAdapterAbstractFactory;
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Class ConfigProvider

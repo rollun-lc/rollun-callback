@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
-use Zend\Expressive\Application;
-use Zend\Expressive\MiddlewareFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mezzio\Application;
+use Mezzio\MiddlewareFactory;
+use Laminas\ServiceManager\ServiceManager;
 
 error_reporting(E_ALL ^ E_USER_DEPRECATED);
 

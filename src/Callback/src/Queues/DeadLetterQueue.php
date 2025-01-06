@@ -6,7 +6,6 @@
 
 namespace rollun\callback\Queues;
 
-use Aws\Sqs\SqsClient;
 use rollun\callback\Queues\Adapter\SqsAdapter;
 
 class DeadLetterQueue extends QueueClient

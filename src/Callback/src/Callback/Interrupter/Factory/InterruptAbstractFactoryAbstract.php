@@ -7,8 +7,8 @@
 namespace rollun\callback\Callback\Interrupter\Factory;
 
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Psr\Container\ContainerInterface;
 
 abstract class InterruptAbstractFactoryAbstract implements AbstractFactoryInterface
 {

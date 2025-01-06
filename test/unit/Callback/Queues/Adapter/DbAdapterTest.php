@@ -6,14 +6,14 @@ namespace QueueClientTest\Adapter;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 use rollun\callback\Queues\Adapter\DbAdapter;
 use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
 use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
 use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
-use Zend\Db\Metadata\Source\Factory;
-use Zend\Db\Sql\Ddl\DropTable;
-use Zend\Db\Sql\Sql;
+use Laminas\Db\Metadata\Source\Factory;
+use Laminas\Db\Sql\Ddl\DropTable;
+use Laminas\Db\Sql\Sql;
 
 class DbAdapterTest extends TestCase
 {
@@ -59,7 +59,7 @@ class DbAdapterTest extends TestCase
     /**
      * @return void
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dropAllTables();
     }
@@ -67,7 +67,7 @@ class DbAdapterTest extends TestCase
     /**
      * @return void
      */
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->dropAllTables();
     }

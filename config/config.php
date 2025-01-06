@@ -5,26 +5,26 @@
  */
 
 use Symfony\Component\Dotenv\Dotenv;
-use Zend\ConfigAggregator\ConfigAggregator;
-use Zend\ConfigAggregator\PhpFileProvider;
+use Laminas\ConfigAggregator\ConfigAggregator;
+use Laminas\ConfigAggregator\PhpFileProvider;
 
 // Make environment variables stored in .env accessible via getenv(), $_ENV or $_SERVER.
 if (file_exists('.env')) {
-    (new Dotenv())->load('.env');
+    (new Dotenv())->usePutenv(true)->load('.env');
 }
 // Determine application environment ('dev' or 'prod').
 $appEnv = getenv('APP_ENV');
 
 $aggregator = new ConfigAggregator([
-    \Zend\Expressive\ConfigProvider::class,
-    \Zend\HttpHandlerRunner\ConfigProvider::class,
-    \Zend\Db\ConfigProvider::class,
-    \Zend\Expressive\Router\ConfigProvider::class,
-    \Zend\Expressive\Helper\ConfigProvider::class,
-    \Zend\Cache\ConfigProvider::class,
-    \Zend\Mail\ConfigProvider::class,
-    \Zend\Validator\ConfigProvider::class,
-    \Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class,
+    \Mezzio\ConfigProvider::class,
+    \Laminas\HttpHandlerRunner\ConfigProvider::class,
+    \Laminas\Db\ConfigProvider::class,
+    \Mezzio\Router\ConfigProvider::class,
+    \Mezzio\Helper\ConfigProvider::class,
+    \Laminas\Cache\ConfigProvider::class,
+    \Laminas\Mail\ConfigProvider::class,
+    \Laminas\Validator\ConfigProvider::class,
+    \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
 
     // Rollun providers
     \rollun\callback\ConfigProvider::class,

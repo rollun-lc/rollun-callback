@@ -6,14 +6,14 @@
 
 namespace rollun\test\unit\Callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\PidKiller\Factory\WorkerManagerAbstractFactory;
 use rollun\callback\PidKiller\WorkerManager;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\TableGateway\TableGateway;
 
 class WorkerManagerAbstractFactoryTest extends TestCase
 {

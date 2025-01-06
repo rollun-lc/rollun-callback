@@ -4,11 +4,11 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\unit\Queues;
+namespace rollun\test\unit\Callback\Interruptor;
 
 use PHPUnit\Framework\TestCase;
-use Zend\Http\Client;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Http\Client;
+use Laminas\ServiceManager\ServiceManager;
 
 class CronTest extends TestCase
 {
@@ -28,13 +28,13 @@ class CronTest extends TestCase
         return $this->container;
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->url = getenv("HOST") . '/api/webhook/cron';
         $this->deleteJob();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->deleteJob();
     }
@@ -47,6 +47,24 @@ class CronTest extends TestCase
     }
 
     public function testCron()
+    {
+        $httpClient = new Client($this->url, ["timeout" => 65]);
+        $headers['Content-Type'] = 'text/text';
+        $headers['Accept'] = 'application/json';
+        $httpClient->setHeaders($headers);
+        $httpClient->setMethod('POST');
+        $req = $httpClient->send();
+
+        $this->assertTrue($req->getStatusCode() >= 200 && $req->getStatusCode() < 300);
+
+        sleep(5);
+
+        $minFileData = file_get_contents('data' . DIRECTORY_SEPARATOR . 'interrupt_min');
+        $data = explode("\n", $minFileData);
+        $this->assertEquals(4, count(array_diff($data, [''])));
+    }
+
+    public function testCronError()
     {
         $httpClient = new Client($this->url, ["timeout" => 65]);
         $headers['Content-Type'] = 'text/text';

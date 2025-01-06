@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class MultiplexerTest extends TestCase
 {

@@ -1,0 +1,7 @@
+services:
+  php-fpm:
+    image: maxrollundev/php-fpm-dev-8.0
+    volumes:
+      - ./:/var/www/app
+    environment:
+      APP_ENV: dev

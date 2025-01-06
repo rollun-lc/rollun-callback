@@ -6,10 +6,10 @@
 
 namespace rollun\callback\Callback\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\Ticker;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
 {

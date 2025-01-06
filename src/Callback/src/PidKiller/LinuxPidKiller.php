@@ -6,14 +6,11 @@
 
 namespace rollun\callback\PidKiller;
 
-use DateTime;
-use GuzzleHttp\Tests\Stream\Str;
 use InvalidArgumentException;
 use Jaeger\Tag\ErrorTag;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
-use rollun\callback\ConfigProvider;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueInterface;
 use rollun\dic\InsideConstruct;
@@ -142,7 +139,7 @@ class LinuxPidKiller implements PidKillerInterface
         $pids = $this->processManager->ps();
         while ($messageCount < $this->maxMessageCount && $queueMessage = $this->pidKillerQueue->getMessage()) {
             $messageCount++;
-            $message = $queueMessage->getData();
+            $message['id'] = $queueMessage->getId();
 
             $this->logger->debug('PID-KILLER get message from queue', [
                 'message' => $message,

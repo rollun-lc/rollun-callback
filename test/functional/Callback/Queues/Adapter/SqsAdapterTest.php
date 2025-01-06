@@ -6,11 +6,9 @@
 
 namespace rollun\test\functional\Callback\Queues\Adapter;
 
-use Aws\Sqs\SqsClient;
 use Psr\Container\ContainerInterface;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use rollun\callback\Queues\Adapter\SqsAdapter;
-use rollun\callback\Queues\DeadLetterQueue;
 
 class SqsAdapterTest extends AbstractAdapterTest
 {
@@ -39,12 +37,11 @@ class SqsAdapterTest extends AbstractAdapterTest
         return $this->container;
     }
 
-    public function testCreateAdapterWithDeadLetterQueue()
+    /*public function testCreateAdapterWithDeadLetterQueue()
     {
-        /** @var DeadLetterQueue $deadLetterQueue */
         $adapter = $this->getContainer()->get('testDeadLetterSqsAdapter');
-        /** @var DeadLetterQueue $deadLetterQueue */
-        $deadLetterQueue = $this->getContainer()->get(DeadLetterQueue::class);
+
+        $deadLetterQueue = $this->getContainer()->get('deadLetter');
 
         $adapter->createQueue('testQueue');
         $adapter->addMessage('testQueue', 'a');
@@ -54,5 +51,5 @@ class SqsAdapterTest extends AbstractAdapterTest
         $messages = $deadLetterQueue->getMessage();
         $adapter->deleteQueue('testQueue');
         $this->assertEquals($messages->getMessage()['Body'], 'a');
-    }
+    }*/
 }

@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 
+/**
+ * @todo test rename to AbstractAdapterTest
+ */
 abstract class AbstractAdapterTest extends TestCase
 {
     protected $queueName;

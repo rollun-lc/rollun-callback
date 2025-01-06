@@ -44,7 +44,7 @@ ProcessTracker::storeProcessData(
     $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
 );
 
-/** @var Zend\ServiceManager\ServiceManager $container */
+/** @var Laminas\ServiceManager\ServiceManager $container */
 $container = include 'config/container.php';
 InsideConstruct::setContainer($container);
 
@@ -76,14 +76,14 @@ try {
     if ($callableServiceName === null) {
         throw new CallbackException('There is not callable service name');
     }
-    $logger->info("Interrupter 'Process' start.", [
+    $logger->info("Interrupter '{name}' start.", [
         'name' => $callableServiceName,
         'memory' => memory_get_peak_usage(true),
     ]);
     $callable = $container->get($callableServiceName);
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callable, null);
-    $logger->info("Interrupter 'Process' finish.", [
+    $logger->info("Interrupter '{name}' finish.", [
         'name' => $callableServiceName,
         'memory' => memory_get_peak_usage(true),
     ]);

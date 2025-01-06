@@ -8,10 +8,10 @@ declare(strict_types = 1);
 
 namespace rollun\callback\Queues\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 use rollun\callback\Queues\Adapter\DbAdapter;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Create instance of DbAdapter

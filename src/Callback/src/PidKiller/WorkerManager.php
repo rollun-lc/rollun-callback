@@ -13,8 +13,8 @@ use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\dic\InsideConstruct;
-use Zend\Db\ResultSet\ResultSetInterface;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\ResultSet\ResultSetInterface;
+use Laminas\Db\TableGateway\TableGateway;
 
 
 class WorkerManager

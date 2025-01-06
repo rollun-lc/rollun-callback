@@ -45,7 +45,7 @@ ProcessTracker::storeProcessData(
     $lifeCycleToken->hasParentToken() ? $lifeCycleToken->getParentToken()->toString() : null
 );
 
-/** @var Zend\ServiceManager\ServiceManager $container */
+/** @var Laminas\ServiceManager\ServiceManager $container */
 $container = include 'config/container.php';
 InsideConstruct::setContainer($container);
 

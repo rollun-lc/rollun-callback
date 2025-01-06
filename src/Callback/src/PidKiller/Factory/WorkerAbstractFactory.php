@@ -6,13 +6,12 @@
 
 namespace rollun\callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\PidKiller\Worker;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Config example:

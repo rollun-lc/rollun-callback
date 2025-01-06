@@ -5,8 +5,8 @@ namespace rollun\test\unit\Callback\Interruptor;
 
 
 use PHPUnit\Framework\TestCase;
-use Zend\Http\Client;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Http\Client;
+use Laminas\ServiceManager\ServiceManager;
 
 class WebhookTest extends TestCase
 {
@@ -19,7 +19,7 @@ class WebhookTest extends TestCase
      */
     protected $container;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->url = getenv("HOST") . '/api/webhook/webhookCallback';
         $this->client = new Client($this->url, ["timeout" => 65]);

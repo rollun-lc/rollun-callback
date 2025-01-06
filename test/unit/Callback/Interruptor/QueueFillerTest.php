@@ -4,7 +4,7 @@
  * @license LICENSE.md New BSD License
  */
 
-namespace rollun\test\unit\Queues;
+namespace rollun\test\unit\Callback\Interruptor;
 
 use PHPUnit\Framework\TestCase;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
@@ -19,7 +19,7 @@ class QueueFillerTest extends TestCase
      */
     protected $object;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->object = new QueueClient(new MemoryAdapter(), 'test_queue');
         $this->object->purgeQueue();

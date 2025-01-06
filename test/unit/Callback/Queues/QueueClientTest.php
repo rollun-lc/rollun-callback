@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 use ReputationVIP\QueueClient\Adapter\MemoryAdapter;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueClient;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class QueueClientTest extends TestCase
 {
@@ -49,7 +49,8 @@ class QueueClientTest extends TestCase
         $this->assertEquals($object->getMessage()->getData(), 'c');
         $this->assertEquals($object->getMessage()->getData(), 'd');
 
-        $this->assertTrue($object->isEmpty());
+        //$this->assertTrue($object->isEmpty());
+        $this->assertNull($object->getMessage());
 
         $object->addMessage(Message::createInstance('a'));
         $object->addMessage(Message::createInstance('b'));

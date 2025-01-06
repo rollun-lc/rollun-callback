@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -15,7 +14,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\utils\Json\Exception;
-use Zend\Diactoros\Response\EmptyResponse;
+use rollun\utils\Json\Serializer;
+use Laminas\Diactoros\Response\EmptyResponse;
 
 class InterrupterMiddleware implements MiddlewareInterface
 {

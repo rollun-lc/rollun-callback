@@ -8,10 +8,8 @@ declare(strict_types=1);
 
 namespace rollun\callback\Queues;
 
-use Jaeger\Tracer\Tracer;
 use ReputationVIP\QueueClient\Adapter\AdapterInterface;
 use ReputationVIP\QueueClient\QueueClient as ExternalQueueClient;
-use rollun\dic\InsideConstruct;
 use Throwable;
 
 class QueueClient implements QueueInterface
@@ -97,7 +95,12 @@ class QueueClient implements QueueInterface
 
         if (isset($messages[0])) {
             //Fixed double Body
-            $message = new Message(array_merge($messages[0], $messages[0]['Body']));
+            // TODO Check
+            $message = new Message(
+                is_array($messages[0]['Body'])
+                    ? array_merge($messages[0], $messages[0]['Body'])
+                    : $messages[0]
+            );
         } else {
             $message = null;
         }

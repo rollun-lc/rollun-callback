@@ -15,20 +15,20 @@ use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 use rollun\dic\InsideConstruct;
 use Throwable;
 use UnexpectedValueException;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\Adapter\AdapterInterface as DbAdapterInterface;
-use Zend\Db\Adapter\Driver\ResultInterface;
-use Zend\Db\Metadata\Source\Factory;
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\Sql\Ddl;
-use Zend\Db\Sql\Ddl\Column;
-use Zend\Db\Sql\Ddl\Constraint;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Expression as PredicateExpression;
-use Zend\Db\Sql\Predicate\IsNull;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Predicate\PredicateSet;
-use Zend\Db\Sql\Sql;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\AdapterInterface as DbAdapterInterface;
+use Laminas\Db\Adapter\Driver\ResultInterface;
+use Laminas\Db\Metadata\Source\Factory;
+use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Db\Sql\Ddl;
+use Laminas\Db\Sql\Ddl\Column;
+use Laminas\Db\Sql\Ddl\Constraint;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate\Expression as PredicateExpression;
+use Laminas\Db\Sql\Predicate\IsNull;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Predicate\PredicateSet;
+use Laminas\Db\Sql\Sql;
 
 
 class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessagesInterface

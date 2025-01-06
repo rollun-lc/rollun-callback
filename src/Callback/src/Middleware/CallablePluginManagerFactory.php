@@ -7,7 +7,7 @@
 namespace rollun\callback\Middleware;
 
 use Psr\Container\ContainerInterface;
-use Zend\ServiceManager\Config;
+use Laminas\ServiceManager\Config;
 
 class CallablePluginManagerFactory
 {

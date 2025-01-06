@@ -6,10 +6,10 @@
 
 namespace rollun\callback\PidKiller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use rollun\callback\PidKiller\Worker;
 use rollun\callback\PidKiller\WorkerManager;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Config example:

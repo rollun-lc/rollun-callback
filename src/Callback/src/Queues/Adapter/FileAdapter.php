@@ -17,7 +17,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 
 class FileAdapter extends AbstractAdapter implements AdapterInterface
@@ -63,7 +63,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         PriorityHandlerInterface $priorityHandler = null,
         Filesystem $fs = null,
         Finder $finder = null,
-        Factory $lockHandlerFactory = null
+        LockFactory $lockHandlerFactory = null
     ) {
         if (empty($repository)) {
             throw new \InvalidArgumentException('Argument repository empty or not defined.');
@@ -93,7 +93,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (null === $lockHandlerFactory) {
-            $lockHandlerFactory = new Factory(new FlockStore($repository));
+            $lockHandlerFactory = new LockFactory(new FlockStore($repository));
         }
 
         $this->priorityHandler = $priorityHandler;
