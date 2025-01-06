@@ -2,8 +2,12 @@
 
 namespace rollun\test\unit\Callback\PidKiller\Factory;
 
+use Jaeger\Tracer\Tracer;
+use Jaeger\Tracer\TracerInterface;
 use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use rollun\callback\PidKiller\Factory\WorkerAbstractFactory;
 use rollun\callback\PidKiller\Factory\WorkerSystemAbstractFactory;
 use rollun\callback\PidKiller\WorkerManager;
@@ -15,41 +19,45 @@ class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testInvoke()
     {
-        $factory = new WorkerSystemAbstractFactory();
+        /** @var TableGateway|MockObject $container */
+        $tableGateway = $this->getMockBuilder(TableGateway::class)->disableOriginalConstructor()->getMock();
 
         $testWorkerSystem = 'testSystem';
         $callable = 'testCallable';
         $queue = 'testQueue';
 
-        /** @var ContainerInterface|MockObject $container */
-        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
 
-        //Add config
-        $container->expects($this->at(0))->method('get')->with('config')->willReturn([
-            WorkerSystemAbstractFactory::class => [
-                $testWorkerSystem => [
-                    WorkerAbstractFactory::KEY_QUEUE => $queue,
-                    WorkerAbstractFactory::KEY_CALLABLE => $callable,
-                ]
-            ]
-        ]);
+        $containerConfig = [
+            LoggerInterface::class => new NullLogger(),
+            Tracer::class => $this->getMockBuilder(Tracer::class)->disableOriginalConstructor()->getMock(),
+            'config' => [
+                WorkerSystemAbstractFactory::class => [
+                    $testWorkerSystem => [
+                        WorkerAbstractFactory::KEY_QUEUE => $queue,
+                        WorkerAbstractFactory::KEY_CALLABLE => $callable,
+                    ]
+                ],
+            ],
+            $queue => QueueClientAbstractFactory::createSimpleQueueClient(),
+            $callable => static function () {},
+            WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY => $tableGateway
+        ];
 
-        // queue
-        $container->expects($this->at(1))->method('get')->with($queue)->willReturn(
-            QueueClientAbstractFactory::createSimpleQueueClient()
-        );
-        // callback
-        $container->expects($this->at(2))->method('get')->with($callable)->willReturn(function () {
-        });
+        $container = new class ($containerConfig) implements ContainerInterface {
+            public function __construct(private array $config) {}
 
-        /** @var TableGateway|MockObject $container */
-        $tableGateway = $this->getMockBuilder(TableGateway::class)->disableOriginalConstructor()->getMock();
+            public function get(string $id): mixed
+            {
+                return $this->config[$id];
+            }
 
-        //need be 5.
-        $container->expects($this->at(5))->method('get')
-            ->with(WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY)->willReturn($tableGateway);
+            public function has(string $id): bool
+            {
+                return array_key_exists($id, $this->config[]);
+            }
+        };
 
-        $worker = $factory($container, $testWorkerSystem);
+        $worker = (new WorkerSystemAbstractFactory())($container, $testWorkerSystem);
         $this->assertInstanceOf(WorkerManager::class, $worker);
     }
 }
