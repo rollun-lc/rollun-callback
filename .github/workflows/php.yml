@@ -30,7 +30,7 @@ jobs:
 
     - name: Run test suite
       env:
-        APP_ENV: dev
+        APP_ENV: test
       run: |
         # cp .env.dist .env
         composer run-script test

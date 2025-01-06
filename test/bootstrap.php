@@ -20,7 +20,7 @@ if(file_exists('.env')) {
     (new Dotenv())->usePutenv(true)->load('.env');
 }
 
-if (getenv("APP_ENV") != 'dev') {
+if (getenv("APP_ENV") != 'test') {
     echo "You cannot start test if environment var APP_ENV not set in dev!";
     exit(1);
 }
