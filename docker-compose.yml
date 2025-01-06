@@ -1,4 +1,15 @@
 services:
+  nginx:
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 8080:80
+    depends_on:
+      - php-fpm
+
   php-fpm:
     image: maxrollundev/php-fpm-dev-8.0
     volumes:
@@ -11,6 +22,7 @@ services:
       DB_HOST: mysql
       DB_PASS: secret
       DB_PORT: 3306
+      HOST: http://nginx
 
   mysql:
     image: mysql:8.2
