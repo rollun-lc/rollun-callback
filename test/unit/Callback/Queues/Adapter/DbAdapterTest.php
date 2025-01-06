@@ -29,6 +29,9 @@ class DbAdapterTest extends TestCase
 
     protected function getDb(): Adapter
     {
+        if (getenv("DB_USER") === false) {
+            $this->markTestIncomplete('Needs DB for running');
+        }
         if ($this->db === null) {
             $container = require 'config/container.php';
             $this->db = $container->get('db');

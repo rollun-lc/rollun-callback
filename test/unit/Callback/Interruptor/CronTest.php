@@ -30,6 +30,9 @@ class CronTest extends TestCase
 
     protected function setUp(): void
     {
+        if (getenv("HOST") === false) {
+            $this->markTestSkipped('No HOST environment variable');
+        }
         $this->url = getenv("HOST") . '/api/webhook/cron';
         $this->deleteJob();
     }

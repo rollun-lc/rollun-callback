@@ -7,30 +7,16 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  tests:
     runs-on: ubuntu-latest
-
+    env:
+      # https://github.com/docker/compose/issues/7306
+      COMPOSE_INTERACTIVE_NO_CLI: 1
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Setup PHP with PECL extension
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-        extensions: json, zip, mysqli, pdo_mysql
-        tools: composer:v2
-  
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-      
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: actions/checkout@v2
 
-    - name: Run test suite
-      env:
-        APP_ENV: test
-      run: |
-        # cp .env.dist .env
-        composer run-script test
+      - name: Init project
+        run: make init
+
+      - name: Run tests
+        run: make test

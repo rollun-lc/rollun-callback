@@ -9,6 +9,7 @@ namespace rollun\test\functional\Callback\PidKiller;
 use PHPUnit\Framework\TestCase;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\PidKiller\LinuxPidKiller;
+use rollun\callback\PidKiller\ProcessManager;
 use rollun\callback\PidKiller\QueueClient;
 use rollun\callback\PidKiller\WorkerManager;
 use rollun\callback\Queues\Adapter\FileAdapter;
@@ -36,6 +37,10 @@ class WorkerManagerTest extends TestCase
 
     protected function setUp(): void
     {
+        if (getenv("DB_DRIVER") === false) {
+            $this->markTestIncomplete('Needs DB for running');
+        }
+
         $this->adapter = new Adapter([
             'driver' => getenv('DB_DRIVER'),
             'database' => getenv('DB_NAME'),
@@ -171,7 +176,7 @@ class WorkerManagerTest extends TestCase
 
     protected function isProcessRunning(int $pid): bool
     {
-        $pids = LinuxPidKiller::ps();
+        $pids = (new ProcessManager())->ps();
 
         foreach ($pids as $pidInfo) {
             if ($pid == $pidInfo['pid']) {

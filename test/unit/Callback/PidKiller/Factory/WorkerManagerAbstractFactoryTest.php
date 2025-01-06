@@ -19,6 +19,10 @@ class WorkerManagerAbstractFactoryTest extends TestCase
 {
     public function testInvoke()
     {
+        if (getenv("DB_DRIVER") === false) {
+            $this->markTestIncomplete('Needs DB for running');
+        }
+
         $factory = new WorkerManagerAbstractFactory();
         $requestedName = 'requestedName';
         $tableGateway = 'tableGateway';

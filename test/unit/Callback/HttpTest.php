@@ -12,18 +12,14 @@ use Laminas\ServiceManager\ServiceManager;
 
 class HttpTest extends TestCase
 {
-    /**
-     * @var ServiceManager
-     */
-    protected $container;
+    protected ServiceManager $container;
 
-    protected function getContainer(): ServiceManager
+    protected function setUp(): void
     {
-        if ($this->container === null) {
-            $this->container = require 'config/container.php';
+        parent::setUp();
+        if (getenv("HOST") === false) {
+            $this->markTestSkipped('No HOST environment variable');
         }
-
-        return $this->container;
     }
 
     public function testInvokeRemoteInterrupter()
@@ -44,5 +40,14 @@ class HttpTest extends TestCase
         $payload = $object('Word');
 
         $this->assertEquals('Hello Word', $payload);
+    }
+
+    protected function getContainer(): ServiceManager
+    {
+        if ($this->container === null) {
+            $this->container = require 'config/container.php';
+        }
+
+        return $this->container;
     }
 }

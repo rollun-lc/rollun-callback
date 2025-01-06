@@ -21,6 +21,9 @@ class WebhookTest extends TestCase
 
     protected function setUp(): void
     {
+        if (getenv("HOST") === false) {
+            $this->markTestSkipped('No HOST environment variable');
+        }
         $this->url = getenv("HOST") . '/api/webhook/webhookCallback';
         $this->client = new Client($this->url, ["timeout" => 65]);
         $headers['Content-Type'] = 'text/text';

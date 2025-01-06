@@ -19,6 +19,9 @@ class SqsAdapterTest extends AbstractAdapterTest
 
     protected function createObject($timeInFlight = 0): AdapterInterface
     {
+        if (getenv('AWS_KEY') === false) {
+            $this->markTestSkipped('No aws key set');
+        }
         return new SqsAdapter([
             'key' => getenv('AWS_KEY'),
             'secret'  => getenv('AWS_SECRET'),
