@@ -23,92 +23,95 @@ class WorkerManagerAbstractFactoryTest extends TestCase
             $this->markTestIncomplete('Needs DB for running');
         }
 
-        $factory = new WorkerManagerAbstractFactory();
         $requestedName = 'requestedName';
         $tableGateway = 'tableGateway';
         $process = 'process';
-        $workerManagerName = 'testName';
-        $processCount = 4;
 
-        /** @var ContainerInterface|MockObject $container */
-        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $container->expects($this->at(0))->method('get')->with('config')->willReturn([
-            WorkerManagerAbstractFactory::class => [
-                $requestedName => [
-                    WorkerManagerAbstractFactory::KEY_CLASS => WorkerManager::class,
-                    WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => $tableGateway,
-                    WorkerManagerAbstractFactory::KEY_PROCESS => $process,
-                    WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => $workerManagerName,
-                    WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => $processCount,
+        $container = self::createContainer([
+            'config' => [
+                WorkerManagerAbstractFactory::class => [
+                    $requestedName => [
+                        WorkerManagerAbstractFactory::KEY_CLASS => WorkerManager::class,
+                        WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => $tableGateway,
+                        WorkerManagerAbstractFactory::KEY_PROCESS => $process,
+                        WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => 'testName',
+                        WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => 4,
+                    ],
                 ],
             ],
-        ]);
-
-        $container->expects($this->at(1))->method('get')->with($tableGateway)->willReturn(new TableGateway('test',
-            new Adapter([
+            $tableGateway => new TableGateway('test', new Adapter([
                 'driver' => getenv('DB_DRIVER'),
                 'database' => getenv('DB_NAME'),
                 'username' => getenv('DB_USER'),
                 'password' => getenv('DB_PASS'),
                 'hostname' => getenv('DB_HOST'),
                 'port' => getenv('DB_PORT'),
-            ])));
-        $container->expects($this->at(2))->method('get')->with($process)->willReturn(new Process(function () {
-        }, null));
+            ])),
+            $process => new Process(function () {}, null),
+        ]);
 
-        $worker = $factory($container, $requestedName);
+        $worker = (new WorkerManagerAbstractFactory())($container, $requestedName);
         $this->assertTrue($worker instanceof WorkerManager);
     }
 
     public function testCanCreateSuccess()
     {
-        $factory = new WorkerManagerAbstractFactory();
         $requestedName = 'requestedName';
-        $tableGateway = 'tableGateway';
-        $process = 'process';
-        $workerManagerName = 'testName';
-        $processCount = 4;
 
-        /** @var ContainerInterface|MockObject $container */
-        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $container->expects($this->at(0))->method('get')->with('config')->willReturn([
-            WorkerManagerAbstractFactory::class => [
-                $requestedName => [
-                    WorkerManagerAbstractFactory::KEY_CLASS => WorkerManager::class,
-                    WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => $tableGateway,
-                    WorkerManagerAbstractFactory::KEY_PROCESS => $process,
-                    WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => $workerManagerName,
-                    WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => $processCount,
+        $container = self::createContainer([
+            'config' => [
+                WorkerManagerAbstractFactory::class => [
+                    $requestedName => [
+                        WorkerManagerAbstractFactory::KEY_CLASS => WorkerManager::class,
+                        WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => 'tableGateway',
+                        WorkerManagerAbstractFactory::KEY_PROCESS => 'process',
+                        WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => 'testName',
+                        WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => 4,
+                    ],
                 ],
             ],
         ]);
 
-        $this->assertTrue($factory->canCreate($container, $requestedName));
+        $this->assertTrue((new WorkerManagerAbstractFactory())->canCreate($container, $requestedName));
     }
 
     public function testCanCreateFalse()
     {
-        $factory = new WorkerManagerAbstractFactory();
         $requestedName = 'requestedName';
-        $tableGateway = 'tableGateway';
-        $process = 'process';
-        $workerManagerName = 'testName';
-        $processCount = 4;
 
-        /** @var ContainerInterface|MockObject $container */
-        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $container->expects($this->at(0))->method('get')->with('config')->willReturn([
-            WorkerManagerAbstractFactory::class => [
-                $requestedName => [
-                    WorkerManagerAbstractFactory::KEY_CLASS => self::class,
-                    WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => $tableGateway,
-                    WorkerManagerAbstractFactory::KEY_PROCESS => $process,
-                    WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => $workerManagerName,
-                    WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => $processCount,
+        $container = self::createContainer([
+            'config' => [
+                WorkerManagerAbstractFactory::class => [
+                    $requestedName => [
+                        WorkerManagerAbstractFactory::KEY_CLASS => self::class, // wrong class (not WorkerManager)
+                        WorkerManagerAbstractFactory::KEY_TABLE_GATEWAY => 'tableGateway',
+                        WorkerManagerAbstractFactory::KEY_PROCESS => 'process',
+                        WorkerManagerAbstractFactory::KEY_WORKER_MANAGER_NAME => 'testName',
+                        WorkerManagerAbstractFactory::KEY_PROCESS_COUNT => 4,
+                    ],
                 ],
             ],
         ]);
 
-        $this->assertFalse($factory->canCreate($container, $requestedName));
+        $this->assertFalse((new WorkerManagerAbstractFactory())->canCreate($container, $requestedName));
+    }
+
+    private static function createContainer(array $config): ContainerInterface
+    {
+        return new class ($config) implements ContainerInterface {
+            public function __construct(private array $config)
+            {
+            }
+
+            public function get(string $id): mixed
+            {
+                return $this->config[$id];
+            }
+
+            public function has(string $id): bool
+            {
+                return array_key_exists($id, $this->config[]);
+            }
+        };
     }
 }
