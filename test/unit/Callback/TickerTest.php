@@ -13,96 +13,93 @@ use rollun\callback\Promise\Interfaces\PayloadInterface;
 
 class TickerTest extends TestCase
 {
-    const FILE_WITH_RESULT = 'ticker_results';
-
-    public function provider()
+    public function provider(): array
     {
         return [
             [
-                function ($val) {
+                'tickerCallback' => function ($val) {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
-                10,
-                1,
-                0
+                'ticksCount' => 10,
+                'tickDuration' => 1,
+                'delayMicroSecond' => 0,
+                'resultFilePath' => 'data/ticker_result_0.txt',
             ],
             [
-                function ($val) {
+                'tickerCallback' => function ($val) {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
-                5,
-                2,
-                0
+                'ticksCount' => 5,
+                'tickDuration' => 2,
+                'delayMicroSecond' => 0,
+                'resultFilePath' => 'data/ticker_result_1.txt',
             ],
             [
-                function ($val) {
+                'tickerCallback' => function ($val) {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
-                2,
-                1,
-                3
+                'ticksCount' => 2,
+                'tickDuration' => 1,
+                'delayMicroSecond' => 3,
+                'resultFilePath' => 'data/ticker_result_2.txt',
             ],
             [
-                function ($val) {
+                'tickerCallback' => function ($val) {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
-                2,
-                3,
-                2
+                'ticksCount' => 2,
+                'tickDuration' => 3,
+                'delayMicroSecond' => 2,
+                'resultFilePath' => 'data/ticker_result_3.txt',
             ],
             [
-                new Process(
+                'tickerCallback' => new Process(
                     function ($val) {
                         file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                     }
                 ),
-                2,
-                3,
-                2
+                'ticksCount' => 2,
+                'tickDuration' => 3,
+                'delayMicroSecond' => 2,
+                'resultFilePath' => 'data/ticker_result_4.txt',
             ]
         ];
     }
 
     /**
      * @dataProvider provider
-     * @param $tickerCallback
-     * @param $ticksCount
-     * @param $tickDuration
-     * @param $delayMicroSecond
      */
-    public function testInvokable($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond)
+    public function testInvokable(
+        callable $tickerCallback, int $ticksCount, int $tickDuration, int $delayMicroSecond, string $resultFilePath
+    )
     {
-        $this->markTestSkipped('file_get_contents(data/ticker_results): Failed to open stream: No such file or directory');
-        $file = 'data/' . static::FILE_WITH_RESULT;
-
-        if (file_exists($file)) {
-            unlink($file);
+        if (file_exists($resultFilePath)) {
+            unlink($resultFilePath);
         }
 
         $sleepTime = ($ticksCount * $tickDuration) + ($delayMicroSecond / 1000000);
         $object = new Ticker($tickerCallback, $ticksCount, $tickDuration, $delayMicroSecond);
 
         $startTime = microtime(true);
-        $object($file);
+        $object($resultFilePath);
         $finishTime = microtime(true);
 
         $workTimeDiff = abs(($finishTime - $startTime) - $sleepTime);
         $this->assertTrue($workTimeDiff >= 0 && $workTimeDiff <= 0.03);
 
-        $data = array_diff(explode("\n", file_get_contents($file)), [""]);
+        $data = array_diff(explode("\n", file_get_contents($resultFilePath)), [""]);
         $this->assertTrue(count($data) == $ticksCount);
 
         for ($i = 1; $i < count($data); $i++) {
-            $prevTime = $data[$i - 1];
-            $currTime = $data[$i];
-            $diff = ((float)$currTime - (float)$prevTime) - $tickDuration;
-            $this->assertTrue($diff >= 0);
+            $prevTime = (float)$data[$i - 1];
+            $currTime = (float)$data[$i];
+            $diff = abs(($currTime - $prevTime) - $tickDuration);
             $this->assertGreaterThanOrEqual(0, $diff);
             $this->assertLessThanOrEqual(0.05, $diff);
         }
 
-        if (file_exists($file)) {
-            unlink($file);
+        if (file_exists($resultFilePath)) {
+            unlink($resultFilePath);
         }
     }
 
@@ -119,7 +116,6 @@ class TickerTest extends TestCase
 
     public function testInvokableWithInterrupter()
     {
-        $this->markTestSkipped('Failed asserting that false is true.');
         $ticker = new Ticker(new Process(function ($value) {
             return $value;
         }), 4, 1);
