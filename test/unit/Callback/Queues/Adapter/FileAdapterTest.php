@@ -20,8 +20,8 @@ class FileAdapterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->markTestSkipped('BUG: unlink(//dev/console): Device or resource busy');
-        $dir = getenv('FILE_ADAPTER_REPOSITORY') ?? sys_get_temp_dir();
+        $dir = getenv('FILE_ADAPTER_REPOSITORY') === false ?
+            (sys_get_temp_dir() . '/file-adapter-test/') : getenv('FILE_ADAPTER_REPOSITORY');
         $this->repository = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
 
