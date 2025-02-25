@@ -41,7 +41,9 @@
     "laminas/laminas-config-aggregator": "^1.7",
     "mezzio/mezzio-helpers": "^5.8",
     "mezzio/mezzio": "^3.9",
-    "mezzio/mezzio-fastroute": "^3.4"
+    "mezzio/mezzio-fastroute": "^3.4",
+    "laminas/laminas-development-mode": "^3.10",
+    "filp/whoops": "^2.16"
   },
   "autoload": {
     "psr-4": {
@@ -56,11 +58,11 @@
     }
   },
   "scripts": {
+    "development-disable": "./vendor/bin/laminas-development-mode disable",
+    "development-enable": "./vendor/bin/laminas-development-mode enable",
+    "development-status": "./vendor/bin/laminas-development-mode status",
     "test": "phpunit --colors=always",
     "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
-    "upload-coverage": "coveralls -v",
-    "code-sniffer": "phpcs .",
-    "code-beautiful": "phpcbf .",
     "server": "php -S 0.0.0.0:8000 -t public public/index.php"
   },
   "config": {

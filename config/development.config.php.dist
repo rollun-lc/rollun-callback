@@ -1,0 +1,45 @@
+<?php
+/**
+ * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
+ * @license LICENSE.md New BSD License
+ */
+
+/**
+ * File required to allow enablement of development mode.
+ *
+ * For use with the zf-development-mode tool.
+ *
+ * Usage:
+ *  $ composer development-disable
+ *  $ composer development-enable
+ *  $ composer development-status
+ *
+ * DO NOT MODIFY THIS FILE.
+ *
+ * Provide your own development-mode settings by editing the file
+ * `config/autoload/development.local.php.dist`.
+ *
+ * Because this file is aggregated last, it simply ensures:
+ *
+ * - The `debug` flag is _enabled_.
+ * - Configuration caching is _disabled_.
+ */
+
+declare(strict_types = 1);
+
+use Laminas\ConfigAggregator\ConfigAggregator;
+use Psr\Log\LoggerInterface;
+use rollun\logger\Writer\Noop;
+
+return [
+    ConfigAggregator::ENABLE_CACHE => false,
+    'log' => [
+        LoggerInterface::class => [
+            'writers' => [
+                'udp_logstash' => [
+                    'name' => Noop::class,
+                ],
+            ],
+        ],
+    ],
+];
