@@ -47,6 +47,6 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
             $maxExecuteTime = null;
         }
 
-        return new $class(new SerializedCallback($callback), $pidKiller, $maxExecuteTime);
+        return new $class($callback, $pidKiller, $maxExecuteTime);
     }
 }

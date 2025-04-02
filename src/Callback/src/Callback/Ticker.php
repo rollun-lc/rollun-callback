@@ -56,9 +56,9 @@ class Ticker
 
     /**
      * @param $value
-     * @return array|PayloadInterface
+     * @return array<int,mixed>|PayloadInterface
      */
-    public function __invoke($value = null)
+    public function __invoke($value = null): array|PayloadInterface
     {
         usleep($this->delayMicroSecond);
         $result = [];
@@ -66,6 +66,7 @@ class Ticker
 
         for ($index = 0; $index < $this->ticksCount; $index++) {
             $startTime = UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
+            $startTimeKey = intval($startTime);
 
             try {
                 $payload = call_user_func($this->tickerCallback, $value);
@@ -75,14 +76,14 @@ class Ticker
                     $payload = $payload->getPayload();
                 }
 
-                $result[$startTime] = $payload;
+                $result[$startTimeKey] = $payload;
             } catch (RuntimeException $exception) {
-                $result[$startTime] = $exception->getMessage();
+                $result[$startTimeKey] = $exception->getMessage();
             }
 
             $sleepTime = $startTime + $this->tickDuration - UtcTime::getUtcTimestamp(UtcTime::WITH_HUNDREDTHS);
             $sleepTime = $sleepTime <= 0 ? 0 : $sleepTime;
-            usleep($sleepTime * 1000000);
+            usleep(intval($sleepTime * 1000000));
         }
 
         if ($interrupterWasCalled) {

@@ -11,11 +11,17 @@ services:
       - php-fpm
 
   php-fpm:
-    image: maxrollundev/php-fpm-dev-8.0
+    build:
+      context: docker/php-fpm
+      dockerfile: Dockerfile
+      args:
+        WWW_DATA_UID: ${UID}
+        WWW_DATA_GID: ${GID}
     volumes:
       - ./:/var/www/app
     environment:
       APP_ENV: dev
+      PHP_IDE_CONFIG: serverName=rollun-callback
       DB_DRIVER: Pdo_Mysql
       DB_USER: skeleton_db
       DB_NAME: skeleton_db

@@ -21,7 +21,7 @@
     "laminas/laminas-stdlib": "^3.7.0",
     "laminas/laminas-servicemanager": "^3.10",
     "laminas/laminas-http": "^2.15",
-    "opis/closure": "^3.6.3",
+    "opis/closure": "4.3.1 as 3.6.3",
     "rollun-com/rollun-utils": "^7.0|^8.0",
     "rollun-com/rollun-logger": "^7.0.0",
     "laminas/laminas-json": "^3.3.0",

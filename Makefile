@@ -16,8 +16,15 @@ docker-down-clear:
 docker-pull:
 	docker compose pull
 
+# Set UID and GID dynamically but allow overrides
+UID ?= $(shell id -u)
+GID ?= $(shell id -g)
+
+export UID
+export GID
+
 docker-build:
-	docker compose build
+	docker compose build --build-arg WWW_DATA_UID=$(UID) --build-arg WWW_DATA_GID=$(GID)
 
 composer-install:
 	docker compose exec php-fpm composer install
