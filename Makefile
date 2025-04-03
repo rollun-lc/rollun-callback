@@ -31,3 +31,9 @@ composer-install:
 
 composer-test:
 	docker compose run --rm php-fpm composer test
+
+php:
+	docker compose exec -it php-fpm /bin/bash
+
+php-root:
+	docker compose exec -u root -it php-fpm /bin/bash
