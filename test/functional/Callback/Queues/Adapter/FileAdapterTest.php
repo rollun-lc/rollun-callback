@@ -13,7 +13,7 @@ class FileAdapterTest extends AbstractAdapterTest
 {
     protected function createObject($timeInFlight = null): AdapterInterface
     {
-        $dir = getenv('FILE_ADAPTER_REPOSITORY') ?? sys_get_temp_dir();
+        $dir = getenv('FILE_ADAPTER_REPOSITORY') === false ? sys_get_temp_dir() : getenv('FILE_ADAPTER_REPOSITORY');
 
         $repository = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         return new FileAdapter($repository, $timeInFlight);
