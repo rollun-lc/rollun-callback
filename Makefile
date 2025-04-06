@@ -16,6 +16,10 @@ docker-down-clear:
 docker-pull:
 	docker compose pull
 
+# Set UID and GID dynamically but allow overrides
+DOCKER_USER_UID ?= $(shell id -u)
+DOCKER_USER_GID ?= $(shell id -g)
+
 docker-build:
 	docker compose build
 

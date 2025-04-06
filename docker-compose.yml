@@ -11,7 +11,12 @@ services:
       - php-fpm
 
   php-fpm:
-    image: maxrollundev/php-fpm-dev-8.0
+    build:
+      context: docker/php-fpm
+      dockerfile: Dockerfile
+      args:
+        WWW_DATA_UID: ${DOCKER_USER_UID}
+        WWW_DATA_GID: ${DOCKER_USER_GID}
     volumes:
       - ./:/var/www/app
     environment:
