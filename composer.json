@@ -24,7 +24,6 @@
     "opis/closure": "^3.6.3",
     "rollun-com/rollun-utils": "^7.0|^8.0",
     "rollun-com/rollun-logger": "^7.0.0",
-    "laminas/laminas-json": "^3.3.0",
     "laminas/laminas-stratigility": "^3.5.0",
     "laminas/laminas-diactoros": "^2.8.0",
     "laminas/laminas-db": "^2.13.4",
