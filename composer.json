@@ -18,7 +18,6 @@
     "php": "^8.0",
     "ext-json": "*",
     "ext-openssl": "*",
-    "laminas/laminas-stdlib": "^3.7.0",
     "laminas/laminas-servicemanager": "^3.10",
     "laminas/laminas-http": "^2.15",
     "opis/closure": "^3.6.3",
@@ -41,7 +40,8 @@
     "mezzio/mezzio": "^3.9",
     "mezzio/mezzio-fastroute": "^3.4",
     "laminas/laminas-development-mode": "^3.10",
-    "filp/whoops": "^2.16"
+    "filp/whoops": "^2.16",
+    "laminas/laminas-stdlib": "^3.16"
   },
   "autoload": {
     "psr-4": {
