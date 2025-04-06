@@ -9,7 +9,6 @@ namespace rollun\callback\Callback\Interrupter\Factory;
 use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\Interrupter\Process;
-use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\ConfigProvider;
 
 class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
@@ -47,6 +46,6 @@ class ProcessAbstractFactory extends InterruptAbstractFactoryAbstract
             $maxExecuteTime = null;
         }
 
-        return new $class(new SerializedCallback($callback), $pidKiller, $maxExecuteTime);
+        return new $class($callback, $pidKiller, $maxExecuteTime);
     }
 }
