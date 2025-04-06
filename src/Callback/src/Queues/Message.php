@@ -14,22 +14,24 @@ use Jaeger\Span\Context\SpanContext;
 class Message
 {
     /**
-     * @var array
-     *
-     * Example SqsQueue message response
-     *  [
-     *      'id' => test_queue100586ba95da73a60.15840006,
-     *      'time-in-flight' => 1483450832,
-     *      'delayed-until' => 1483450717,
-     *      'Body' => test1,
-     *      'priority' => 100,
-     *  ]
+     * @param mixed[] $message
      */
-    protected $message;
-
-    public function __construct($message)
+    public function __construct(
+        /**
+         * @var array
+         *
+         * Example SqsQueue message response
+         *  [
+         *      'id' => test_queue100586ba95da73a60.15840006,
+         *      'time-in-flight' => 1483450832,
+         *      'delayed-until' => 1483450717,
+         *      'Body' => test1,
+         *      'priority' => 100,
+         *  ]
+         */
+        protected $message
+    )
     {
-        $this->message = $message;
     }
 
     /**
@@ -68,11 +70,7 @@ class Message
      */
     public function getId()
     {
-        if (isset($this->message['id'])) {
-            return $this->message['id'];
-        }
-
-        return null;
+        return $this->message['id'] ?? null;
     }
 
     /**

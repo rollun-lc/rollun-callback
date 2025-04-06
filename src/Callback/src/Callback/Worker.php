@@ -7,6 +7,7 @@
 namespace rollun\callback\Callback;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use rollun\callback\Callback\Interrupter\QueueFiller;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
 use rollun\callback\Promise\SimplePayload;
@@ -21,11 +22,6 @@ use rollun\dic\InsideConstruct;
 class Worker
 {
     const WORK_SECOND = 59;
-
-    /**
-     * @var QueueInterface
-     */
-    private $queue;
 
     /**
      * @var SerializedCallback
@@ -44,15 +40,14 @@ class Worker
      * @param LoggerInterface|null $logger
      * @throws \ReflectionException
      */
-    public function __construct(QueueInterface $queue, callable $callback, LoggerInterface $logger = null)
+    public function __construct(private QueueInterface $queue, callable $callback, LoggerInterface $logger = null)
     {
-        $this->queue = $queue;
-
         if (!$callback instanceof SerializedCallback) {
             $callback = new SerializedCallback($callback);
         }
 
         $this->callback = $callback;
+        $this->logger = $logger ?? new NullLogger();
         InsideConstruct::setConstructParams(["logger" => LoggerInterface::class]);
     }
 

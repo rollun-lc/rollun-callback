@@ -47,10 +47,6 @@ class ProcessByName implements InterrupterInterface
      * @var LoggerInterface
      */
     protected $logger;
-    /**
-     * @var string
-     */
-    private $callableServiceName;
 
     /**
      * Process constructor.
@@ -63,7 +59,7 @@ class ProcessByName implements InterrupterInterface
      * @throws ReflectionException
      */
     public function __construct(
-        string $callableServiceName,
+        private string $callableServiceName,
         $pidKiller = null,
         int $maxExecuteTime = null,
         LoggerInterface $logger = null,
@@ -77,7 +73,6 @@ class ProcessByName implements InterrupterInterface
         ]);
         $this->pidKiller = $pidKiller;
         $this->maxExecuteTime = $maxExecuteTime;
-        $this->callableServiceName = $callableServiceName;
     }
 
     public function __sleep()
@@ -130,7 +125,7 @@ class ProcessByName implements InterrupterInterface
 
         $cmd .= "  1>{$payload[self::STDOUT_KEY]} 2>{$payload[self::STDERR_KEY]}";
 
-        if (substr(php_uname(), 0, 7) !== "Windows") {
+        if (!str_starts_with(php_uname(), "Windows")) {
             $cmd .= " & echo $!";
         }
 

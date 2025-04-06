@@ -25,9 +25,7 @@ class WorkerTest extends TestCase
             $queueFiller($val);
         }
 
-        $worker = new Worker($queue, function ($val) {
-            return $val;
-        });
+        $worker = new Worker($queue, fn($val) => $val);
 
         $this->assertEquals($worker(), $range);
     }
@@ -43,9 +41,7 @@ class WorkerTest extends TestCase
             $queueFiller($val);
         }
 
-        $worker = new Worker($queue, new Process(function ($val) {
-            return $val;
-        }));
+        $worker = new Worker($queue, new Process(fn($val) => $val));
 
         $this->assertTrue($worker() instanceof PayloadInterface);
     }

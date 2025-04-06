@@ -25,9 +25,6 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
      */
     private $sqsClientConfig;
 
-    /** @var array */
-    private $attributes;
-
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
@@ -65,9 +62,8 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
     public function __construct(
         array $sqsClientConfig,
         PriorityHandlerInterface $priorityHandler = null,
-        array $attributes = []
+        private array $attributes = []
     ) {
-        $this->attributes = $attributes;
         $this->sqsClient = SqsClient::factory($sqsClientConfig);
         $this->sqsClientConfig = $sqsClientConfig;
 
@@ -251,7 +247,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
 
                     throw new MalformedMessageException($message, 'Message seems to be malformed.');
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $message['priority'] = $priority->getLevel();
 
                 throw new MalformedMessageException($message, 'Message seems to be malformed.');
@@ -476,7 +472,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         foreach ($priorities as $priority) {
             while (count($messages = $this->getMessages($sourceQueueName, 1, $priority)) > 0) {
                 $this->deleteMessage($sourceQueueName, $messages[0]);
-                array_walk($messages, function (&$item) {
+                array_walk($messages, function (&$item): void {
                     $item = $item['Body'];
                 });
                 $this->addMessage($targetQueueName, $messages[0], $priority);

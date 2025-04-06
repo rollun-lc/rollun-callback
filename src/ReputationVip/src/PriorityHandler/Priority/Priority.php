@@ -6,20 +6,12 @@ use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 
 class Priority
 {
-    /** @var string $name */
-    private $name;
-
-    /** @var integer $level */
-    private $level;
-
-    /** @var PriorityHandlerInterface $priorityHandler */
-    private $priorityHandler;
-
-    public function __construct($name, $level, PriorityHandlerInterface $priorityHandler = null)
+    /**
+     * @param string $name
+     * @param int $level
+     */
+    public function __construct(private $name, private $level, private ?\ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface $priorityHandler = null)
     {
-        $this->name = $name;
-        $this->level = $level;
-        $this->priorityHandler = $priorityHandler;
     }
 
     /**

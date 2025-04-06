@@ -27,7 +27,7 @@ class ProcessTest extends TestCase
 
     public function testParallelProcess()
     {
-        $callback = new SerializedCallback(function ($file) {
+        $callback = new SerializedCallback(function ($file): void {
             sleep(1);
             $time = microtime(true);
             file_put_contents($file, "$time\n", FILE_APPEND);
@@ -37,13 +37,13 @@ class ProcessTest extends TestCase
         (new Process($callback))(self::TEST_OUTPUT_TILE);
         sleep(3);
         $timeData = file_get_contents(self::TEST_OUTPUT_TILE);
-        list($firstTime, $secondTime) = explode("\n", $timeData);
+        [$firstTime, $secondTime] = explode("\n", $timeData);
         if (abs((float) $firstTime - (float) $secondTime) < 0.5) {
             $result = 'parallel';
         } else {
             $result = 'in series';
         }
-        if (substr(php_uname(), 0, 7) === "Windows") {
+        if (str_starts_with(php_uname(), "Windows")) {
             $this->assertEquals('in series', $result);
         } else {
             $this->assertEquals('parallel', $result);
@@ -59,7 +59,7 @@ class ProcessTest extends TestCase
         });
 
         $logger = $container->get(LoggerInterface::class);
-        foreach ($logger->getWriters() as $key => $writer) {
+        foreach ($logger->getWriters() as $writer) {
             $writer->shutdown();
         }
         $logger->addWriter(new Stream(self::TEST_OUTPUT_TILE));
@@ -80,7 +80,7 @@ class ProcessTest extends TestCase
         });
 
         $logger = $container->get(LoggerInterface::class);
-        foreach ($logger->getWriters() as $key => $writer) {
+        foreach ($logger->getWriters() as $writer) {
             $writer->shutdown();
         }
         $logger->addWriter(new Stream(self::TEST_OUTPUT_TILE));
@@ -89,7 +89,7 @@ class ProcessTest extends TestCase
 
         try {
             $process();
-        } catch (\Throwable $exception) {
+        } catch (\Throwable) {
 
         }
 

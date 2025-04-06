@@ -546,7 +546,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         if (!(isset($queue['queue']))) {
             throw new \UnexpectedValueException('Queue content bad format.');
         }
-        foreach ($queue['queue'] as $key => $message) {
+        foreach ($queue['queue'] as $message) {
             $timeDiff = time() - $message['time-in-flight'];
             if (null === $message['time-in-flight'] || $timeDiff > static::MAX_TIME_IN_FLIGHT) {
                 ++$nbrMsg;
@@ -612,7 +612,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
      */
     private function createQueueLock($queueName, Priority $priority)
     {
-        if (strpos($queueName, ' ') !== false) {
+        if (str_contains($queueName, ' ')) {
             throw new \InvalidArgumentException('Queue name must not contain white spaces.');
         }
 

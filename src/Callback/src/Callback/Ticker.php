@@ -23,35 +23,19 @@ class Ticker
     protected $tickerCallback;
 
     /**
-     * @var int
-     */
-    protected $ticksCount;
-
-    /**
-     * @var int in seconds
-     */
-    protected $tickDuration;
-
-    /** @var  int */
-    protected $delayMicroSecond;
-
-    /**
      * Ticker constructor.
      * @param callable $tickerCallback
      * @param int $ticksCount
      * @param int $tickDuration
      * @param int $delayMicroSecond
      */
-    public function __construct(callable $tickerCallback, $ticksCount = 60, $tickDuration = 1, $delayMicroSecond = 0)
+    public function __construct(callable $tickerCallback, protected $ticksCount = 60, protected $tickDuration = 1, protected $delayMicroSecond = 0)
     {
         if (!$tickerCallback instanceof SerializedCallback) {
             $tickerCallback = new SerializedCallback($tickerCallback);
         }
 
         $this->tickerCallback = $tickerCallback;
-        $this->ticksCount = $ticksCount;
-        $this->tickDuration = $tickDuration;
-        $this->delayMicroSecond = $delayMicroSecond;
     }
 
     /**

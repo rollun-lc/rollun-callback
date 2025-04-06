@@ -38,14 +38,10 @@ class MultiplexerTest extends TestCase
             [
                 [
                     new Process(
-                        function ($val) {
-                            return 'Hello ' . $val;
-                        }
+                        fn($val) => 'Hello ' . $val
                     ),
                     new Process(
-                        function ($val) use ($stdObject) {
-                            return $stdObject->prop . $val;
-                        }
+                        fn($val) => $stdObject->prop . $val
                     ),
                     new Process($this->getContainer()->get('testCallback')),
                 ],
@@ -54,12 +50,10 @@ class MultiplexerTest extends TestCase
             [
                 [
                     new Process(
-                        function ($val) {
-                            return 'Hello ' . $val;
-                        }
+                        fn($val) => 'Hello ' . $val
                     ),
                     new Process(
-                        function ($val) use ($stdObject) {
+                        function ($val) use ($stdObject): void {
                             throw new \Exception("some error");
                         }
                     ),
@@ -88,12 +82,8 @@ class MultiplexerTest extends TestCase
     {
         $multiplexer = new Multiplexer(
             $this->getContainer()->get(LoggerInterface::class), [
-                function ($value) {
-                    return $value + 1;
-                },
-                function ($value) {
-                    return $value + 2;
-                },
+                fn($value) => $value + 1,
+                fn($value) => $value + 2,
             ]
         );
 
@@ -104,12 +94,8 @@ class MultiplexerTest extends TestCase
     {
         $multiplexer = new Multiplexer(
             $this->getContainer()->get(LoggerInterface::class), [
-                new Process(function ($value) {
-                    return $value + 1;
-                }),
-                new Process(function ($value) {
-                    return $value + 2;
-                }),
+                new Process(fn($value) => $value + 1),
+                new Process(fn($value) => $value + 2),
             ]
         );
 

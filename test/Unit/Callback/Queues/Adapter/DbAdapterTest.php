@@ -7,6 +7,7 @@ namespace Rollun\Test\Unit\Callback\Queues\Adapter;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Laminas\Db\Adapter\Adapter;
+use ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface;
 use rollun\callback\Queues\Adapter\DbAdapter;
 use ReputationVIP\QueueClient\Adapter\Exception\InvalidMessageException;
 use ReputationVIP\QueueClient\Adapter\Exception\QueueAccessException;
@@ -467,6 +468,6 @@ class DbAdapterTest extends TestCase
     public function testGetPriorityHandler()
     {
         $object = $this->createObject(10);
-        $this->assertInstanceOf('ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface', $object->getPriorityHandler());
+        $this->assertInstanceOf(PriorityHandlerInterface::class, $object->getPriorityHandler());
     }
 }

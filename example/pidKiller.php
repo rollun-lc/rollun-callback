@@ -10,13 +10,13 @@ use rollun\callback\Queues\Adapter\FileAdapter;
 use rollun\callback\Queues\Message;
 use rollun\callback\Queues\QueueClient;
 use rollun\dic\InsideConstruct;
-use Zend\Log\Writer\Stream;
+use rollun\logger\Writer\Stream;
 
 include 'vendor/autoload.php';
 $container = include 'config/container.php';
 InsideConstruct::setContainer($container);
 
-$callable = function ($name) {
+$callable = function ($name): void {
     echo "Hello $name";
 };
 

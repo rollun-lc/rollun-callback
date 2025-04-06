@@ -21,9 +21,7 @@ class SerializedCallbackTest extends TestCase
             ['Rollun\Test\Unit\Callback\A::staticInvoke'],
             ['Rollun\Test\Unit\Callback\invoke'],
             [
-                function ($value) {
-                    return $value;
-                },
+                fn($value) => $value,
             ],
         ];
     }

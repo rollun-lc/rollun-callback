@@ -48,17 +48,11 @@ class ProcessManager
             "pid",
             "lstart"
         ];
-        switch (php_uname('s')) {
-            case "FreeBSD":
-            case "Darwin":
-                $options[] = 'command';
-                break;
-            case "Linux":
-                $options[] = 'cmd';
-                break;
-            default:
-                throw new RuntimeException(sprintf('Unsupported OS %s', php_uname('s')));
-        }
+        $options[] = match (php_uname('s')) {
+            "FreeBSD", "Darwin" => 'command',
+            "Linux" => 'cmd',
+            default => throw new RuntimeException(sprintf('Unsupported OS %s', php_uname('s'))),
+        };
         $cmd = sprintf('ps -eo %s | grep php', implode(',', $options));
         exec($cmd, $pidsInfo);
         array_shift($pidsInfo);
@@ -114,9 +108,7 @@ class ProcessManager
      */
     public function pidInfo(int $pid): ?array
     {
-        $pidInfo = array_filter($this->ps(), function (array $pidInfo) use ($pid) {
-            return $pidInfo['pid'] === $pid;
-        });
+        $pidInfo = array_filter($this->ps(), fn(array $pidInfo) => $pidInfo['pid'] === $pid);
         if (empty($pidInfo)) {
             return null;
         }
@@ -130,7 +122,7 @@ class ProcessManager
      */
     public function createIdFromPidAndTimestamp($pid, $timestamp = null): string
     {
-        $timestamp = $timestamp ?? time();
+        $timestamp ??= time();
 
         return "{$pid}.{$timestamp}";
     }

@@ -21,9 +21,7 @@ use rollun\tracer\TracerFactory;
 
 return [
     SerializedCallbackAbstractFactory::class => [
-        'testCallback' => function ($value) {
-            return 'Hello ' . (is_string($value) ? $value : '');
-        },
+        'testCallback' => fn($value) => 'Hello ' . (is_string($value) ? $value : ''),
         'cronCallback' => function ($value) {
             $time = microtime(true);
             file_put_contents(

@@ -252,7 +252,7 @@ class MemoryAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidPriorityException('Unknown priority: ' . $priority->getName());
         }
 
-        foreach ($this->queues[$queueName][$priority->getName()] as $key => $message) {
+        foreach ($this->queues[$queueName][$priority->getName()] as $message) {
             $timeDiff = time() - $message['time-in-flight'];
             if (null === $message['time-in-flight'] || $timeDiff > self::MAX_TIME_IN_FLIGHT) {
                 ++$nbrMsg;
@@ -295,7 +295,7 @@ class MemoryAdapter extends AbstractAdapter implements AdapterInterface
             throw new \InvalidArgumentException('Queue name empty or not defined.');
         }
 
-        if (strpos($queueName, ' ') !== false) {
+        if (str_contains($queueName, ' ')) {
             throw new \InvalidArgumentException('Queue name must not contain white spaces.');
         }
 

@@ -38,9 +38,9 @@ class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
     {
         $config = $container->get('config');
         $factoryConfig = $config[static::KEY][$requestedName];
-        $ticksCount = isset($factoryConfig[static::KEY_TICKS_COUNT]) ? $factoryConfig[static::KEY_TICKS_COUNT] : 60;
-        $tickDuration = isset($factoryConfig[static::KEY_TICK_DURATION]) ? $factoryConfig[static::KEY_TICK_DURATION] : 1;
-        $delayMC = isset($factoryConfig[static::KEY_DELAY_MC]) ? $factoryConfig[static::KEY_DELAY_MC] : 0;
+        $ticksCount = $factoryConfig[static::KEY_TICKS_COUNT] ?? 60;
+        $tickDuration = $factoryConfig[static::KEY_TICK_DURATION] ?? 1;
+        $delayMC = $factoryConfig[static::KEY_DELAY_MC] ?? 0;
         if (!isset($factoryConfig[static::KEY_CALLBACK])) {
             throw new ServiceNotCreatedException('Callback not set.');
         }

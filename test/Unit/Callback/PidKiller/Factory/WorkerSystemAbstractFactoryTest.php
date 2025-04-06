@@ -39,7 +39,7 @@ class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             $queue => QueueClientAbstractFactory::createSimpleQueueClient(),
-            $callable => static function () {},
+            $callable => static function (): void {},
             WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY => $tableGateway
         ];
 

@@ -11,15 +11,9 @@ class CompositionTest extends TestCase
     public function test__invoke()
     {
         $composition = new Composition(
-            function ($v) {
-                return $v + 1;
-            },
-            function ($v) {
-                return $v + 2;
-            },
-            function ($v) {
-                return $v + 5;
-            }
+            fn($v) => $v + 1,
+            fn($v) => $v + 2,
+            fn($v) => $v + 5
         );
 
         $this->assertEquals(8, $composition(0));

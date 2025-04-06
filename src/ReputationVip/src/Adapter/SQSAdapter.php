@@ -13,11 +13,6 @@ use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 
 class SQSAdapter extends AbstractAdapter implements AdapterInterface
 {
-    /**
-     * @var SqsClient
-     */
-    private $sqsClient;
-
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
@@ -44,10 +39,8 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
      * @param SqsClient $sqsClient
      * @param PriorityHandlerInterface $priorityHandler
      */
-    public function __construct(SqsClient $sqsClient, PriorityHandlerInterface $priorityHandler = null)
+    public function __construct(private SqsClient $sqsClient, PriorityHandlerInterface $priorityHandler = null)
     {
-        $this->sqsClient = $sqsClient;
-
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
         }
@@ -203,7 +196,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
 
                     throw new MalformedMessageException($message, 'Message seems to be malformed.');
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $message['priority'] = $priority->getLevel();
 
                 throw new MalformedMessageException($message, 'Message seems to be malformed.');
@@ -412,7 +405,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
         foreach ($priorities as $priority) {
             while (count($messages = $this->getMessages($sourceQueueName, 1, $priority)) > 0) {
                 $this->deleteMessage($sourceQueueName, $messages[0]);
-                array_walk($messages, function (&$item) {
+                array_walk($messages, function (&$item): void {
                     $item = $item['Body'];
                 });
                 $this->addMessage($targetQueueName, $messages[0], $priority);

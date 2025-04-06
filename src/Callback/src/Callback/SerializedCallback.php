@@ -78,9 +78,7 @@ final class SerializedCallback
 
         if (is_array($callback)) {
             [$context, $method] = $callback;
-            $callback = static function ($value) use ($context, $method) {
-                return $context->$method($value);
-            };
+            $callback = (static fn($value) => $context->$method($value));
         }
 
         if ($callback instanceof \Closure) {

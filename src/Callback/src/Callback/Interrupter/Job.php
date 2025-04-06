@@ -21,11 +21,6 @@ class Job
     protected $callback;
 
     /**
-     * @var mixed
-     */
-    protected $value;
-
-    /**
      * @var LifeCycleToken
      */
     protected $lifeCycleToken;
@@ -36,8 +31,9 @@ class Job
      * @param $value
      * @param null $lifeCycleToken
      * @throws ReflectionException
+     * @param mixed $value
      */
-    public function __construct(callable $callback, $value, $lifeCycleToken = null)
+    public function __construct(callable $callback, protected $value, $lifeCycleToken = null)
     {
         InsideConstruct::setConstructParams(["lifeCycleToken" => LifeCycleToken::class]);
 
@@ -46,7 +42,6 @@ class Job
         }
 
         $this->callback = $callback;
-        $this->value = $value;
     }
 
     /**

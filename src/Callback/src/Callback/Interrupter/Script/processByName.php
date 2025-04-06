@@ -27,9 +27,9 @@ $spanContext = null;
 foreach ($argv as $i => $value) {
     if ($i === 1) {
         $callableServiceName = $value;
-    } elseif (strstr($value, 'lifecycleToken') !== false) {
+    } elseif (str_contains($value, 'lifecycleToken')) {
         [1 => $parentLifecycleToken] = explode(':', $value, 2);
-    } elseif (strstr($value, 'tracerContext') !== false) {
+    } elseif (str_contains($value, 'tracerContext')) {
         [1 => $tracerJsonContext] = explode(':', $value, 2);
         $spanContext = \rollun\utils\Json\Serializer::jsonUnserialize(base64_decode($tracerJsonContext));
     }

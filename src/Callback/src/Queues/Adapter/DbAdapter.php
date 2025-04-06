@@ -36,18 +36,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
     const TABLE_NAME_PREFIX = 'queue_';
 
     const MAX_NB_MESSAGES = 10;
-    /** @var DbAdapterInterface $db */
-    private $db;
-    /** @var int */
-    private $timeInFlight;
-    /** @var int */
-    private $maxReceiveCount;
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
-    /**
-     * @var string
-     */
-    private $_dbAdapterName;
 
     /**
      * @param Adapter $db
@@ -58,20 +48,16 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
      * @throws QueueAccessException
      */
     public function __construct(
-        Adapter                  $db,
-        int                      $timeInFlight = 0,
-        int                      $maxReceiveCount = 0,
+        private Adapter $db,
+        private int $timeInFlight = 0,
+        private int $maxReceiveCount = 0,
         PriorityHandlerInterface $priorityHandler = null,
-        string $_dbAdapterName = 'db'
+        private string $_dbAdapterName = 'db'
     ) {
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
         }
-        $this->db = $db;
-        $this->timeInFlight = $timeInFlight;
-        $this->maxReceiveCount = $maxReceiveCount;
         $this->priorityHandler = $priorityHandler;
-        $this->_dbAdapterName = $_dbAdapterName;
     }
 
     /**
@@ -329,7 +315,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $select = $sql->select()
             ->columns(['total' => new Expression('COUNT(*)')])
             ->from($tableName)
-            ->where(['receive_count < ?' => (intval($this->maxReceiveCount) ? intval($this->maxReceiveCount) : PHP_INT_MAX)]);
+            ->where(['receive_count < ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)]);
         if (null !== $priority) {
             $select->where(['priority_level' => $priority->getLevel()]);
         }
@@ -411,7 +397,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         if (empty($queueName)) {
             throw new InvalidArgumentException('Queue name empty or not defined.');
         }
-        if (strpos($queueName, ' ') !== false) {
+        if (str_contains($queueName, ' ')) {
             throw new InvalidArgumentException('Queue name must not contain white spaces.');
         }
 

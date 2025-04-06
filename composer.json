@@ -41,7 +41,8 @@
     "mezzio/mezzio-fastroute": "^3.4",
     "laminas/laminas-development-mode": "^3.10",
     "filp/whoops": "^2.16",
-    "laminas/laminas-stdlib": "^3.16"
+    "laminas/laminas-stdlib": "^3.16",
+    "rector/rector": "^2.0"
   },
   "autoload": {
     "psr-4": {
@@ -60,7 +61,8 @@
     "development-status": "./vendor/bin/laminas-development-mode status",
     "test": "phpunit --colors=always",
     "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
-    "server": "php -S 0.0.0.0:8000 -t public public/index.php"
+    "server": "php -S 0.0.0.0:8000 -t public public/index.php",
+    "rector": "rector process --dry-run"
   },
   "config": {
     "allow-plugins": {

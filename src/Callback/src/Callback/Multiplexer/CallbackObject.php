@@ -60,7 +60,7 @@ class CallbackObject
     public static function createFromArray(array $array): self
     {
         self::validateArray($array);
-        $name = isset($array[self::NAME_KEY]) ? $array[self::NAME_KEY] : null;
+        $name = $array[self::NAME_KEY] ?? null;
         return new self($array[self::CALLBACK_KEY], $name);
     }
 

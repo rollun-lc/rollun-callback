@@ -61,7 +61,7 @@ class LinuxPidKiller implements PidKillerInterface
             'processManager' => ProcessManager::class,
         ]);
 
-        if (strpos(php_uname(), 'Windows') === 0) {
+        if (str_starts_with(php_uname(), 'Windows')) {
             throw new RuntimeException('Pid killer does not work on Windows');
         }
 

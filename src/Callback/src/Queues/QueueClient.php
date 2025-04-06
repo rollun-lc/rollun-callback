@@ -20,11 +20,6 @@ class QueueClient implements QueueInterface
     protected $queueClient;
 
     /**
-     * @var int
-     */
-    protected $delaySeconds;
-
-    /**
      * @var string
      */
     protected $queueName;
@@ -35,10 +30,9 @@ class QueueClient implements QueueInterface
      * @param string $queueName
      * @param int $delaySeconds
      */
-    public function __construct(AdapterInterface $adapter, string $queueName, $delaySeconds = 0)
+    public function __construct(AdapterInterface $adapter, string $queueName, protected $delaySeconds = 0)
     {
         $this->queueName = $queueName;
-        $this->delaySeconds = $delaySeconds;
         $this->queueClient = new ExternalQueueClient($adapter);
 
         // Create queue if not exist.

@@ -139,7 +139,7 @@ class Process extends InterrupterAbstract
 
         $cmd .= "  1>{$payload[self::STDOUT_KEY]} 2>{$payload[self::STDERR_KEY]}";
 
-        if (substr(php_uname(), 0, 7) !== "Windows") {
+        if (!str_starts_with(php_uname(), "Windows")) {
             $cmd .= " & echo $!";
         }
 

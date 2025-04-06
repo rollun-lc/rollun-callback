@@ -44,9 +44,7 @@ class Composition
     public function __invoke($value)
     {
         try {
-            return array_reduce($this->callables, static function ($value, $callable) {
-                return $callable($value);
-            }, $value);
+            return array_reduce($this->callables, static fn($value, $callable) => $callable($value), $value);
         } catch (\Throwable $exception) {
             throw new \RuntimeException("Has error by call callable.", $exception->getCode(), $exception);
         }

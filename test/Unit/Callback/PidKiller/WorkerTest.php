@@ -16,7 +16,7 @@ class WorkerTest extends TestCase
     public function testSerializeSuccess()
     {
         $queue = new QueueClient(new FileAdapter('/tmp/test'), 'test');
-        $callback = function () {};
+        $callback = function (): void {};
 
         $worker = new Worker($queue, $callback, null);
         $this->assertTrue(boolval(unserialize(serialize($worker))));

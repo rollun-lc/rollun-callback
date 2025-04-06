@@ -59,10 +59,10 @@ class ResourceResolver implements MiddlewareInterface
             // "resourceName" isn't set. It work in stratigility.
             $path = $request->getUri()->getPath();
             $basePath = preg_quote(rtrim($this->basePath, '/'), '/');
-            $pattern = "/{$basePath}\/([\w\~\-\_]+)([\/]([-%_A-Za-z0-9]+))?\/?$/";
+            $pattern = "/{$basePath}\/([\w~\-_]+)([\/]([-%_A-Za-z0-9]+))?\/?$/";
             preg_match($pattern, $path, $matches);
 
-            $resourceName = isset($matches[1]) ? $matches[1] : null;
+            $resourceName = $matches[1] ?? null;
             $request = $request->withAttribute(self::RESOURCE_NAME, $resourceName);
 
             $id = isset($matches[3]) ? $this->decodeString($matches[3]) : null;

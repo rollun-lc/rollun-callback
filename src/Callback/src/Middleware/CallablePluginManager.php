@@ -19,8 +19,8 @@ class CallablePluginManager extends AbstractPluginManager
 
         throw new InvalidServiceException(sprintf(
             'Plugin manager "%s" expected callable, but "%s" was received',
-            __CLASS__,
-            is_object($instance) ? get_class($instance) : gettype($instance)
+            self::class,
+            get_debug_type($instance)
         ));
     }
 }

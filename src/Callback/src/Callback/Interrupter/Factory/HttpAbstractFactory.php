@@ -7,9 +7,9 @@
 namespace rollun\callback\Callback\Interrupter\Factory;
 
 use Psr\Container\ContainerInterface;
+use rollun\callback\Callback\Http;
 use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Callback\CallbackException;
-use rollun\callback\Callback\Interrupter\HttpJob;
 
 class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
 {
@@ -17,7 +17,7 @@ class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
 
     const KEY_OPTIONS = 'options';
 
-    const DEFAULT_CLASS = HttpJob::class;
+    const DEFAULT_CLASS = Http::class;
 
     /**
      * @param ContainerInterface $container
@@ -40,7 +40,7 @@ class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
         }
         $callback = $container->get($callback);
 
-        $options = isset($factoryConfig[static::KEY_OPTIONS]) ? $factoryConfig[static::KEY_OPTIONS] : [];
+        $options = $factoryConfig[static::KEY_OPTIONS] ?? [];
 
         return new $class(new SerializedCallback($callback), $url, $options);
     }

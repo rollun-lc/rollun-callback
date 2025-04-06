@@ -42,7 +42,7 @@ class Multiplexer
         $this->name = empty($name) ? 'undefined' : $name;
 
         ksort($callbacks);
-        foreach ($callbacks as $key => $callback) {
+        foreach ($callbacks as $callback) {
             $this->addCallback($callback);
         }
     }

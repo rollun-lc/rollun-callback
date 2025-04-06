@@ -39,7 +39,7 @@ class WorkerAbstractFactoryTest extends TestCase
                 ],
             ],
             $queue => QueueClientAbstractFactory::createSimpleQueueClient(),
-            $callable => static function () {},
+            $callable => static function (): void {},
             $writer => new class implements WriterInterface
             {
                 public function write($data)

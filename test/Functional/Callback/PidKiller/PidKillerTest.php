@@ -51,11 +51,11 @@ class PidKillerTest extends TestCase
 
     public function testWorkflowWithoutDelayAndNotKill()
     {
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(120000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(120000);
         })->__invoke();
 
@@ -69,11 +69,11 @@ class PidKillerTest extends TestCase
         $this->markTestSkipped('BUG: Not working');
         $pidKiller = new LinuxPidKiller(null, $this->getProcessManager(), $this->createPidQueue());
 
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(12000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(12000);
         })->__invoke();
 
@@ -99,11 +99,11 @@ class PidKillerTest extends TestCase
     {
         $pidKiller = new LinuxPidKiller(null, $this->getProcessManager(), $this->createPidQueue());
 
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
@@ -128,11 +128,11 @@ class PidKillerTest extends TestCase
         $this->markTestSkipped('BUG: Not working');
         $pidKiller = new LinuxPidKiller(null, $this->getProcessManager(), $this->createPidQueue());
 
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
@@ -157,11 +157,11 @@ class PidKillerTest extends TestCase
     {
         $pidKiller = new LinuxPidKiller(null, $this->getProcessManager(), $this->createPidQueue());
 
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
@@ -186,15 +186,15 @@ class PidKillerTest extends TestCase
         $this->markTestSkipped('BUG: Not working');
         $pidKiller = new LinuxPidKiller(2, $this->getProcessManager(), $this->createPidQueue());
 
-        $payload1 = $this->createProcess(function () {
+        $payload1 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
-        $payload2 = $this->createProcess(function () {
+        $payload2 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 
-        $payload3 = $this->createProcess(function () {
+        $payload3 = $this->createProcess(function (): void {
             sleep(1000);
         })->__invoke();
 

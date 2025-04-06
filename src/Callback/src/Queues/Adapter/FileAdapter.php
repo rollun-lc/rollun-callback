@@ -36,14 +36,11 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
     /** @var Filesystem $fs */
     private $fs;
 
-    /** @var Factory $lockHandlerFactory */
+    /** @var LockFactory $lockHandlerFactory */
     private $lockHandlerFactory;
 
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
-
-    /** @var int */
-    private $timeInFlight;
 
     /**
      * FileAdapter constructor.
@@ -52,14 +49,14 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
      * @param PriorityHandlerInterface|null $priorityHandler
      * @param Filesystem|null $fs
      * @param Finder|null $finder
-     * @param Factory|null $lockHandlerFactory
+     * @param LockFactory|null $lockHandlerFactory
      *
      * @throws \InvalidArgumentException
      * @throws QueueAccessException
      */
     public function __construct(
         $repository,
-        int $timeInFlight = null,
+        private ?int $timeInFlight = null,
         PriorityHandlerInterface $priorityHandler = null,
         Filesystem $fs = null,
         Finder $finder = null,
@@ -80,8 +77,6 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         if (null === $priorityHandler) {
             $priorityHandler = new StandardPriorityHandler();
         }
-
-        $this->timeInFlight = $timeInFlight;
         $this->fs = $fs;
 
         if (!$this->fs->exists($repository)) {
@@ -577,7 +572,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
         if (!(isset($queue['queue']))) {
             throw new \UnexpectedValueException('Queue content bad format.');
         }
-        foreach ($queue['queue'] as $key => $message) {
+        foreach ($queue['queue'] as $message) {
             $timeDiff = time() - $message['time-in-flight'];
             if (null === $message['time-in-flight'] || $timeDiff > $this->timeInFlight) {
                 ++$nbrMsg;
@@ -645,7 +640,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
      */
     private function createQueueLock($queueName, Priority $priority)
     {
-        if (strpos($queueName, ' ') !== false) {
+        if (str_contains($queueName, ' ')) {
             throw new \InvalidArgumentException('Queue name must not contain white spaces.');
         }
 
@@ -758,7 +753,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
                 array_pop($explode);
                 $implode = implode('.', $explode);
 
-                if ($this->timeInFlight && strstr($implode, strval($this->timeInFlight)) === false) {
+                if ($this->timeInFlight && !str_contains($implode, strval($this->timeInFlight))) {
                     continue;
                 }
 

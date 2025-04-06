@@ -2,6 +2,7 @@ init: docker-down-clear docker-pull docker-build docker-up composer-install
 up: docker-up
 down: docker-down
 restart: docker-down docker-up
+check: rector test
 test: composer-test
 
 docker-up:
@@ -23,8 +24,14 @@ DOCKER_USER_GID ?= $(shell id -g)
 docker-build:
 	docker compose build
 
+php:
+	docker compose exec -it php-fpm /bin/bash
+
 composer-install:
 	docker compose exec php-fpm composer install
 
 composer-test:
 	docker compose run --rm php-fpm composer test
+
+rector:
+	docker compose exec php-fpm composer rector

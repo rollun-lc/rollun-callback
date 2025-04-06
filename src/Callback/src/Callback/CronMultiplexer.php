@@ -78,12 +78,8 @@ class CronMultiplexer extends Multiplexer
 
     private function logLongExecution(array $statistics)
     {
-        uasort($statistics, function ($a, $b) {
-            return $b > $a ? 1 : -1;
-        });
-        $statistics = array_map(function ($item) {
-            return sprintf('%f', $item);
-        }, $statistics);
+        uasort($statistics, fn($a, $b) => $b > $a ? 1 : -1);
+        $statistics = array_map(fn($item) => sprintf('%f', $item), $statistics);
         $maxTime = self::MAX_EXECUTION_TIME_IN_SEC;
         $this->logger->critical("Cron works longer than $maxTime sec", $statistics);
     }

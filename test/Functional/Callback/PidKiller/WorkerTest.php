@@ -20,9 +20,7 @@ class WorkerTest extends TestCase
     public function testInvokeSuccess()
     {
         $queue = new QueueClient(new FileAdapter('/tmp/test'), 'queue');
-        $callback = function ($value) {
-            return $value;
-        };
+        $callback = (fn($value) => $value);
         $worker = new Worker($queue, $callback, null);
 
         $queue->addMessage(Message::createInstance(QueueFiller::serializeMessage(101)));
@@ -35,7 +33,7 @@ class WorkerTest extends TestCase
     {
         $queue = new QueueClient(new FileAdapter('/tmp/test'), 'queue');
         $exception = new Exception();
-        $callback = function ($value) use ($exception) {
+        $callback = function ($value) use ($exception): void {
             throw $exception;
         };
         $worker = new Worker($queue, $callback, null);
@@ -50,7 +48,7 @@ class WorkerTest extends TestCase
     {
         $queue = new QueueClient(new FileAdapter('/tmp/test', 1), 'queue');
         $exception = new Exception();
-        $callback = function ($value) use ($exception) {
+        $callback = function ($value) use ($exception): void {
             throw $exception;
         };
         $worker = new Worker($queue, $callback, null);
@@ -66,9 +64,7 @@ class WorkerTest extends TestCase
         $writerMock = $this->getMockBuilder(WriterInterface::class)->disableOriginalConstructor()->getMock();
         $writerMock->expects($this->once())->method('write')->with((array)101);
         $queue = new QueueClient(new FileAdapter('/tmp/test', 1), 'queue');
-        $callback = function ($value) {
-            return $value;
-        };
+        $callback = (fn($value) => $value);
         $worker = new Worker($queue, $callback, $writerMock);
 
         $queue->addMessage(Message::createInstance(QueueFiller::serializeMessage(101)));

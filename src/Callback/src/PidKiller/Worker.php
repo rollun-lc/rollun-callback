@@ -43,10 +43,6 @@ class Worker implements InfoProviderInterface
      */
     protected $logger;
     /**
-     * @var string
-     */
-    private $info;
-    /**
      * @var Tracer|null
      */
     private $tracer;
@@ -67,7 +63,7 @@ class Worker implements InfoProviderInterface
         WriterInterface $writer = null,
         LoggerInterface $logger = null,
         Tracer $tracer = null,
-        string $info = ''
+        private string $info = ''
     ) {
         $this->queue = $queue;
 
@@ -79,7 +75,6 @@ class Worker implements InfoProviderInterface
         $this->writer = $writer;
         $this->callback = $callback;
         InsideConstruct::init(['logger' => LoggerInterface::class, 'tracer' => Tracer::class]);
-        $this->info = $info;
     }
 
     /**

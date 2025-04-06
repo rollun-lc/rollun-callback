@@ -47,7 +47,7 @@ class WorkerManagerAbstractFactoryTest extends TestCase
                 'hostname' => getenv('DB_HOST'),
                 'port' => getenv('DB_PORT'),
             ])),
-            $process => new Process(function () {}, null),
+            $process => new Process(function (): void {}, null),
         ]);
 
         $worker = (new WorkerManagerAbstractFactory())($container, $requestedName);

@@ -17,7 +17,7 @@ class TickerTest extends TestCase
     {
         return [
             [
-                'tickerCallback' => function ($val) {
+                'tickerCallback' => function ($val): void {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
                 'ticksCount' => 10,
@@ -26,7 +26,7 @@ class TickerTest extends TestCase
                 'resultFilePath' => 'data/ticker_result_0.txt',
             ],
             [
-                'tickerCallback' => function ($val) {
+                'tickerCallback' => function ($val): void {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
                 'ticksCount' => 5,
@@ -35,7 +35,7 @@ class TickerTest extends TestCase
                 'resultFilePath' => 'data/ticker_result_1.txt',
             ],
             [
-                'tickerCallback' => function ($val) {
+                'tickerCallback' => function ($val): void {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
                 'ticksCount' => 2,
@@ -44,7 +44,7 @@ class TickerTest extends TestCase
                 'resultFilePath' => 'data/ticker_result_2.txt',
             ],
             [
-                'tickerCallback' => function ($val) {
+                'tickerCallback' => function ($val): void {
                     file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                 },
                 'ticksCount' => 2,
@@ -54,7 +54,7 @@ class TickerTest extends TestCase
             ],
             [
                 'tickerCallback' => new Process(
-                    function ($val) {
+                    function ($val): void {
                         file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
                     }
                 ),
@@ -105,9 +105,7 @@ class TickerTest extends TestCase
 
     public function testInvokableWithCallback()
     {
-        $ticker = new Ticker(function ($value) {
-            return $value;
-        }, 4, 1);
+        $ticker = new Ticker(fn($value) => $value, 4, 1);
 
         $res = $ticker(5);
 
@@ -116,9 +114,7 @@ class TickerTest extends TestCase
 
     public function testInvokableWithInterrupter()
     {
-        $ticker = new Ticker(new Process(function ($value) {
-            return $value;
-        }), 4, 1);
+        $ticker = new Ticker(new Process(fn($value) => $value), 4, 1);
 
         $this->assertTrue($ticker(5) instanceof PayloadInterface);
     }

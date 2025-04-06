@@ -6,14 +6,12 @@
 
 namespace rollun\callback\PidKiller;
 
-use phpDocumentor\Reflection\Types\This;
 use Jaeger\Tag\StringTag;
 use Jaeger\Tracer\Tracer;
 use Psr\Log\LoggerInterface;
 use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\dic\InsideConstruct;
-use Laminas\Db\ResultSet\ResultSetInterface;
 use Laminas\Db\TableGateway\TableGateway;
 
 
@@ -28,11 +26,6 @@ class WorkerManager
      * @var Tracer
      */
     protected $tracer;
-
-    /**
-     * @var TableGateway
-     */
-    private $tableGateway;
 
     /**
      * @var Process
@@ -50,18 +43,9 @@ class WorkerManager
     private $tableName;
 
     /**
-     * @var int
-     */
-    private $processCount;
-
-    /**
      * @var ProcessManager
      */
     private $processManager;
-    /**
-     * @var int
-     */
-    private $slotTakenSecondsLimit;
 
     /**
      * WorkerManager constructor.
@@ -76,12 +60,12 @@ class WorkerManager
      * @throws \ReflectionException
      */
     public function __construct(
-        TableGateway $tableGateway,
+        private TableGateway $tableGateway,
         InterrupterInterface $interrupter,
         string $workerManagerName,
-        int $processCount,
+        private int $processCount,
         ProcessManager $processManager = null,
-        $slotTakenSecondsLimit = 1800,
+        private $slotTakenSecondsLimit = 1800,
         LoggerInterface $logger = null,
         Tracer $tracer = null
     ) {
@@ -90,13 +74,10 @@ class WorkerManager
             'logger' => LoggerInterface::class,
             'processManager' => ProcessManager::class,
         ]);
-        $this->tableGateway = $tableGateway;
         $this->interrupter = $interrupter;
         $this->setWorkerManagerName($workerManagerName);
-        $this->processCount = $processCount;
-        $this->tableName = $tableGateway->getTable();
+        $this->tableName = $this->tableGateway->getTable();
         $this->processManager = $processManager ?? new ProcessManager();
-        $this->slotTakenSecondsLimit = $slotTakenSecondsLimit;
     }
 
     private function setWorkerManagerName($workerManagerName)
