@@ -29,7 +29,6 @@
     "laminas/laminas-diactoros": "^2.8.0",
     "laminas/laminas-db": "^2.13.4",
     "mtdowling/cron-expression": "^1.2",
-    "symfony/event-dispatcher": "4.4.*",
     "aws/aws-sdk-php": "^3.334",
     "symfony/filesystem": "^6.0",
     "symfony/finder": "^6.0",
