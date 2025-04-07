@@ -12,6 +12,8 @@ jobs:
     env:
       # https://github.com/docker/compose/issues/7306
       COMPOSE_INTERACTIVE_NO_CLI: 1
+      DOCKER_USER_GID: 1000
+      DOCKER_USER_UID: 1000
     steps:
       - uses: actions/checkout@v2
 
