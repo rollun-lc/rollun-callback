@@ -24,7 +24,4 @@ jobs:
         run: make docker-build up
 
       - name: docker ls
-        run: docker compose exec php-fpm whoami && id -u && ls -la
-
-      - name: docker ls
-        run: docker compose exec php-fpm touch test.txt
+        run: docker compose exec php-fpm whoami && id -u && id -g && ls -la && touch test.txt
