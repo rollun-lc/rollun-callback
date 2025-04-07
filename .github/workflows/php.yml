@@ -28,3 +28,12 @@ jobs:
 
       - name: Run check
         run: ls -la
+
+      - name: Build
+        run: make docker-build up
+
+      - name: docker ls
+        run: docker compose exec php-fpm ls -la
+
+      - name: docker ls
+        run: docker compose exec php-fpm touch test.txt
