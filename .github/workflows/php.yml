@@ -17,8 +17,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Init project
-        run: make init
-
-      - name: Run check
-        run: make check
+      - name: Check
+        run: make init check

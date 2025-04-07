@@ -21,8 +21,11 @@ docker-pull:
 DOCKER_USER_UID ?= $(shell id -u)
 DOCKER_USER_GID ?= $(shell id -g)
 
+export DOCKER_USER_UID
+export DOCKER_USER_GID
+
 docker-build:
-	docker compose build
+	docker compose build --build-arg WWW_DATA_UID=$(DOCKER_USER_UID) --build-arg WWW_DATA_GID=$(DOCKER_USER_GID)
 
 php:
 	docker compose exec -it php-fpm /bin/bash
