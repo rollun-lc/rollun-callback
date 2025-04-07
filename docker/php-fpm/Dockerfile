@@ -1,11 +1,11 @@
 FROM maxrollundev/php-fpm-8.0
 
 # Install xdebug
-RUN pecl install xdebug-3.4.2 && docker-php-ext-enable xdebug
+RUN #pecl install xdebug-3.4.2 && docker-php-ext-enable xdebug
 
 # Script to wait a port
-COPY ./wait-for-it.sh /usr/local/bin/wait-for-it
-RUN chmod 555 /usr/local/bin/wait-for-it
+#COPY ./wait-for-it.sh /usr/local/bin/wait-for-it
+RUN #chmod 555 /usr/local/bin/wait-for-it
 
 # php configs
 COPY ./php-fpm.conf  /usr/local/etc/php-fpm.conf
