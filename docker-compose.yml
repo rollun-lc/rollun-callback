@@ -19,6 +19,8 @@ services:
         WWW_DATA_GID: ${DOCKER_USER_GID}
     volumes:
       - ./:/var/www/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       APP_ENV: dev
       DB_DRIVER: Pdo_Mysql
