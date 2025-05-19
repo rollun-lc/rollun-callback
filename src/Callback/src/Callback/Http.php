@@ -87,7 +87,6 @@ class Http
     /**
      * @param null|mixed $value
      * @return Client
-     * @throws Exception
      */
     protected function createHttpClient($value = null): Client
     {

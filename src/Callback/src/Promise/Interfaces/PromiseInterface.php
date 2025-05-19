@@ -10,9 +10,6 @@ use rollun\callback\Promise\PromiseException;
 
 /**
  * Full Interface for Promise
- *
- * @category   async
- * @package    zaboy
  */
 interface PromiseInterface extends WaitableInterface
 {
