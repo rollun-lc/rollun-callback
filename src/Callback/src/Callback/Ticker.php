@@ -42,7 +42,7 @@ class Ticker
      * @param $value
      * @return array<int,mixed>|PayloadInterface
      */
-    public function __invoke($value = null)
+    public function __invoke($value = null): array|PayloadInterface
     {
         usleep($this->delayMicroSecond);
         $result = [];
