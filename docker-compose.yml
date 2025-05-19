@@ -44,5 +44,10 @@ services:
     ports:
       - 33061:3306
 
+  csfixer:
+    image: ghcr.io/php-cs-fixer/php-cs-fixer:3.66-php8.1
+    volumes:
+      - ./:/code
+
 volumes:
   mysql:

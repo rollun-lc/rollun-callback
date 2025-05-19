@@ -86,3 +86,5 @@ Temporary Items
 
 .phpunit.result.cache
 bin/test*.php
+
+/.php-cs-fixer.php
