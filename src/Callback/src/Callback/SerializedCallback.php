@@ -6,8 +6,6 @@
 
 namespace rollun\callback\Callback;
 
-use Opis\Closure\SerializableClosure;
-
 /**
  * Class SerializedCallback
  * @package rollun\callback\Callback
@@ -15,7 +13,7 @@ use Opis\Closure\SerializableClosure;
 final class SerializedCallback
 {
     /**
-     * @var Callable
+     * @var Callable|string
      */
     protected $callback;
 
@@ -29,11 +27,9 @@ final class SerializedCallback
     }
 
     /**
-     * @param mixed $value
-     * @return mixed
      * @throws CallbackException
      */
-    public function __invoke($value)
+    public function __invoke(mixed $value): mixed
     {
         if (!is_callable($this->getCallback(), true)) {
             throw new CallbackException(
@@ -53,10 +49,7 @@ final class SerializedCallback
         }
     }
 
-    /**
-     * @return Callable
-     */
-    protected function getCallback()
+    protected function getCallback(): callable|string
     {
         return $this->callback;
     }
@@ -66,6 +59,9 @@ final class SerializedCallback
      */
     protected function setCallback(callable $callback)
     {
+        if (is_string($callback)) {
+            $callback = \Closure::fromCallable($callback);
+        }
         $this->callback = $callback;
     }
 
@@ -78,12 +74,14 @@ final class SerializedCallback
 
         if (is_array($callback)) {
             [$context, $method] = $callback;
-            $callback = (static fn($value) => $context->$method($value));
+            $callback = static function ($value) use ($context, $method) {
+                return $context->$method($value);
+            };
         }
 
         if ($callback instanceof \Closure) {
-            $callback = new SerializableClosure($callback);
-            $this->setCallback($callback);
+            $callback = \Opis\Closure\serialize($callback);
+            $this->callback = $callback;
         }
 
         return ['callback'];
@@ -91,12 +89,18 @@ final class SerializedCallback
 
     public function __wakeup()
     {
-        $callback = $this->getCallback();
+        $callback = $this->callback;
+
+        if (is_string($callback)) {
+            $callback = \Opis\Closure\unserialize($this->callback);
+        }
 
         if (!is_callable($callback, true)) {
             throw new CallbackException(
                 'There is not correct instance callable in Callback'
             );
         }
+
+        $this->callback = $callback;
     }
 }

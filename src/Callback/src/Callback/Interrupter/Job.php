@@ -7,7 +7,6 @@
 namespace rollun\callback\Callback\Interrupter;
 
 use InvalidArgumentException;
-use Opis\Closure\SerializableClosure;
 use ReflectionException;
 use rollun\callback\Callback\SerializedCallback;
 use rollun\dic\InsideConstruct;
@@ -80,7 +79,7 @@ class Job
     }
 
     /**
-     * @return SerializableClosure
+     * @return SerializedCallback
      */
     public function getCallback()
     {
