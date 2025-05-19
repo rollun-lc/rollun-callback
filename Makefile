@@ -78,3 +78,6 @@ composer-test-8.0:
 
 rector:
 	docker compose exec php-fpm composer rector
+
+rector-fix:
+	docker compose exec php-fpm php vendor/bin/rector

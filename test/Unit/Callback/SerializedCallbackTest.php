@@ -24,14 +24,10 @@ class SerializedCallbackTest extends TestCase
                 fn($value) => $value,
             ],
             'nested callback' => [
-                new SerializedCallback(function ($value) {
-                    return $value;
-                })
+                new SerializedCallback(fn($value) => $value)
             ],
             'two level nested callback' => [
-                new SerializedCallback(new SerializedCallback(function ($value) {
-                    return $value;
-                }))
+                new SerializedCallback(new SerializedCallback(fn($value) => $value))
             ]
         ];
     }
