@@ -18,7 +18,7 @@ class Ping
     public function __invoke($value)
     {
         return [
-            'ok' => true
+            'ok' => true,
         ];
     }
 }

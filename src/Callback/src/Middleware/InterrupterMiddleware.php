@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -95,8 +96,8 @@ class InterrupterMiddleware implements MiddlewareInterface
     {
         $this->logger->error('Unexpected callback exception.', [
             'exception' => $e,
-            'requestBody' => (string)$request->getBody(),
-            'requestUri' => (string)$request->getUri()
+            'requestBody' => (string) $request->getBody(),
+            'requestUri' => (string) $request->getUri(),
         ]);
     }
 }

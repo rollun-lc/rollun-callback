@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -25,7 +26,7 @@ class JsonRenderer implements MiddlewareInterface
     /**
      *  This constant specify key, which use to save response data
      */
-    const RESPONSE_DATA = "responseData";
+    public const RESPONSE_DATA = "responseData";
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

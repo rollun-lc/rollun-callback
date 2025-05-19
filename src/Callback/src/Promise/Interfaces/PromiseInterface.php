@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,10 +14,10 @@ use rollun\callback\Promise\PromiseException;
  */
 interface PromiseInterface extends WaitableInterface
 {
-    const FULFILLED = 'fulfilled';
-    const REJECTED = 'rejected';
-    const PENDING = 'pending';
-    const DEPENDENT = 'dependent';
+    public const FULFILLED = 'fulfilled';
+    public const REJECTED = 'rejected';
+    public const PENDING = 'pending';
+    public const DEPENDENT = 'dependent';
 
     /**
      * Appends fulfillment and rejection handlers to the promise, and returns

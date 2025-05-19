@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -11,11 +12,11 @@ use Psr\Container\ContainerInterface;
 
 abstract class CallbackAbstractFactoryAbstract implements AbstractFactoryInterface
 {
-    const KEY = 'callback';
+    public const KEY = 'callback';
 
-    const KEY_CLASS = 'class';
+    public const KEY_CLASS = 'class';
 
-    const DEFAULT_CLASS = null;
+    public const DEFAULT_CLASS = null;
 
     /**
      * @param ContainerInterface $container

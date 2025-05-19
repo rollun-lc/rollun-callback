@@ -14,7 +14,6 @@ use Laminas\Db\TableGateway\TableGateway;
 
 class WorkerManagerTest extends TestCase
 {
-
     /**
      * @throws \ReflectionException
      */
@@ -36,8 +35,7 @@ class WorkerManagerTest extends TestCase
         $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
         $callCount = 0;
-        $interrupter = new class() implements InterrupterInterface
-        {
+        $interrupter = new class implements InterrupterInterface {
             private static $callCount = 0;
 
             /**

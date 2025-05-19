@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Rollun\Test\Unit\Callback\Queues\Adapter;
-
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -40,10 +38,11 @@ class DbAdapterTest extends TestCase
         return $this->db;
     }
 
-    protected function dropAllTables() {
+    protected function dropAllTables()
+    {
         $metadata = Factory::createSourceFromAdapter($this->getDb());
         foreach ($metadata->getTableNames() as $tableName) {
-            if(!$this->startsWith($tableName, DbAdapter::TABLE_NAME_PREFIX)) {
+            if (!$this->startsWith($tableName, DbAdapter::TABLE_NAME_PREFIX)) {
                 continue;
             }
             $table = new DropTable($tableName);
@@ -98,7 +97,7 @@ class DbAdapterTest extends TestCase
         $this->assertCount(3, $deadMessages);
     }
 
-        public function testDeadMessages()
+    public function testDeadMessages()
     {
         $object = $this->createObject(0, 1);
         $object->createQueue('a');
@@ -193,9 +192,9 @@ class DbAdapterTest extends TestCase
         $object->createQueue('a');
 
         $object->addMessage('a', 'a');
-        $object->addMessage('a','b');
-        $object->addMessage('a','c');
-        $object->addMessage('a','d');
+        $object->addMessage('a', 'b');
+        $object->addMessage('a', 'c');
+        $object->addMessage('a', 'd');
 
         $this->assertFalse($object->isEmpty('a'));
 
@@ -312,7 +311,7 @@ class DbAdapterTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $object->createQueue('test Queue One');
     }
-    
+
     public function testRenameQueue()
     {
         $object = $this->createObject(5);
@@ -328,7 +327,7 @@ class DbAdapterTest extends TestCase
         $object->purgeQueue('testQueue');
         $this->assertEmpty($object->getMessages('testQueue'));
     }
-    
+
     public function testAddMessage()
     {
         $object = $this->createObject(10);

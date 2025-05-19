@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,11 +14,11 @@ use rollun\callback\Callback\CallbackException;
 
 class CronExpressionAbstractFactory extends CallbackAbstractFactoryAbstract
 {
-    const KEY_EXPRESSION = 'expression';
+    public const KEY_EXPRESSION = 'expression';
 
-    const KEY_CALLBACK_SERVICE = 'callback';
+    public const KEY_CALLBACK_SERVICE = 'callback';
 
-    const DEFAULT_CLASS = CronExpression::class;
+    public const DEFAULT_CLASS = CronExpression::class;
 
     /**
      * @param ContainerInterface $container

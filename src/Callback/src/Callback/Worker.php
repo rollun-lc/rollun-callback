@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -21,7 +22,7 @@ use rollun\dic\InsideConstruct;
  */
 class Worker
 {
-    const WORK_SECOND = 59;
+    public const WORK_SECOND = 59;
 
     /**
      * @var SerializedCallback
@@ -64,7 +65,7 @@ class Worker
 
         if ($this->queue->isEmpty()) {
             $this->logger->info("Queue {queue} is empty. Worker not started.", [
-                "queue" => $this->queue->getName()
+                "queue" => $this->queue->getName(),
             ]);
         }
 
@@ -87,7 +88,7 @@ class Worker
                     "data" => $message->getData(),
                     "queue" => $this->queue->getName(),
                     "exception" => $throwable->__toString(),
-                    "exception_trace" => $throwable->getTraceAsString()
+                    "exception_trace" => $throwable->getTraceAsString(),
                 ]);
             }
         }
@@ -116,7 +117,7 @@ class Worker
     {
         return [
             "queue",
-            "callback"
+            "callback",
         ];
     }
 

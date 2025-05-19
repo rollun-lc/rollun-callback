@@ -15,7 +15,7 @@ return [
                     'name' => Stream::class,
                     'options' => [
                         'stream' => 'data/logs/all.log',
-                    ]
+                    ],
                 ],
             ],
         ],

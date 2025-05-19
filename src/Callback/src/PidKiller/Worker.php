@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -112,7 +113,7 @@ class Worker implements InfoProviderInterface
 
             $payload = $this->callback->__invoke($value);
             if ($this->writer) {
-                $event = is_array($payload) ? $payload : (array)$payload;
+                $event = is_array($payload) ? $payload : (array) $payload;
                 $this->writer->write($event);
             }
             $this->queue->deleteMessage($message);

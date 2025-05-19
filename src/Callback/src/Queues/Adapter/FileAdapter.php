@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -22,10 +23,10 @@ use Symfony\Component\Lock\Store\FlockStore;
 
 class FileAdapter extends AbstractAdapter implements AdapterInterface
 {
-    const QUEUE_FILE_EXTENSION = 'queue';
-    const MAX_NB_MESSAGES = 10;
-    const MAX_LOCK_TRIES = 30;
-    const PRIORITY_SEPARATOR = '-';
+    public const QUEUE_FILE_EXTENSION = 'queue';
+    public const MAX_NB_MESSAGES = 10;
+    public const MAX_LOCK_TRIES = 30;
+    public const PRIORITY_SEPARATOR = '-';
 
     /** @var Finder $finder */
     private $finder;

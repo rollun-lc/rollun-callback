@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -42,7 +43,7 @@ class SerializedCallbackAbstractFactory implements AbstractFactoryInterface
             array_unshift($callable, $container->get(array_shift($callable)));
         }
 
-        if (is_string($callable) && $container->has($callable)){
+        if (is_string($callable) && $container->has($callable)) {
             $callable = $container->get($callable);
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -62,7 +63,7 @@ class TickerTest extends TestCase
                 'tickDuration' => 3,
                 'delayMicroSecond' => 2,
                 'resultFilePath' => 'data/ticker_result_4.txt',
-            ]
+            ],
         ];
     }
 
@@ -70,9 +71,12 @@ class TickerTest extends TestCase
      * @dataProvider provider
      */
     public function testInvokable(
-        callable $tickerCallback, int $ticksCount, int $tickDuration, int $delayMicroSecond, string $resultFilePath
-    )
-    {
+        callable $tickerCallback,
+        int $ticksCount,
+        int $tickDuration,
+        int $delayMicroSecond,
+        string $resultFilePath
+    ) {
         if (file_exists($resultFilePath)) {
             unlink($resultFilePath);
         }
@@ -91,8 +95,8 @@ class TickerTest extends TestCase
         $this->assertTrue(count($data) == $ticksCount);
 
         for ($i = 1; $i < count($data); $i++) {
-            $prevTime = (float)$data[$i - 1];
-            $currTime = (float)$data[$i];
+            $prevTime = (float) $data[$i - 1];
+            $currTime = (float) $data[$i];
             $diff = abs(($currTime - $prevTime) - $tickDuration);
             $this->assertGreaterThanOrEqual(0, $diff);
             $this->assertLessThanOrEqual(0.05, $diff);

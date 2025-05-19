@@ -4,7 +4,6 @@ namespace rollun\callback\Queues\Adapter;
 
 interface DeadMessagesInterface
 {
-
     /**
      * @param string $queueName
      *

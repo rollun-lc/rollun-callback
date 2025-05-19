@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace rollun\callback;
@@ -51,7 +52,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
  */
 class ConfigProvider
 {
-    const PID_KILLER_SERVICE = 'pidKillerService';
+    public const PID_KILLER_SERVICE = 'pidKillerService';
 
     public function __invoke()
     {
@@ -92,7 +93,7 @@ class ConfigProvider
                     StandardPriorityHandler::class   => StandardPriorityHandler::class,
                     ThreeLevelPriorityHandler::class => ThreeLevelPriorityHandler::class,
                     ProcessManager::class            => ProcessManager::class,
-                    MetricMiddleware::class          => MetricMiddleware::class
+                    MetricMiddleware::class          => MetricMiddleware::class,
                 ],
                 "factories"          => [
                     InterrupterMiddleware::class => InterrupterMiddlewareFactory::class,
@@ -122,11 +123,11 @@ class ConfigProvider
                     CronExpressionAbstractFactory::class,
                 ],
                 'invokables'         => [
-                    Ping::class => Ping::class
+                    Ping::class => Ping::class,
                 ],
                 'aliases'            => [
-                    'ping' => Ping::class
-                ]
+                    'ping' => Ping::class,
+                ],
             ],
             SqsAdapterAbstractFactory::class               => [
                 'pidQueueAdapter' => [

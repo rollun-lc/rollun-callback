@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -35,16 +36,13 @@ class WorkerAbstractFactoryTest extends TestCase
                         WorkerAbstractFactory::KEY_QUEUE => $queue,
                         WorkerAbstractFactory::KEY_CALLABLE => $callable,
                         WorkerAbstractFactory::KEY_WRITER => $writer,
-                    ]
+                    ],
                 ],
             ],
             $queue => QueueClientAbstractFactory::createSimpleQueueClient(),
             $callable => static function (): void {},
-            $writer => new class implements WriterInterface
-            {
-                public function write($data)
-                {
-                }
+            $writer => new class implements WriterInterface {
+                public function write($data) {}
             },
         ];
 
@@ -79,8 +77,8 @@ class WorkerAbstractFactoryTest extends TestCase
                         WorkerAbstractFactory::KEY_QUEUE => 'queue',
                         WorkerAbstractFactory::KEY_CALLABLE => 'callable',
                         WorkerAbstractFactory::KEY_WRITER => 'writer',
-                    ]
-                ]
+                    ],
+                ],
             ],
         ];
 

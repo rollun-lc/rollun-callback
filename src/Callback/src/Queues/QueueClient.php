@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -148,6 +149,6 @@ class QueueClient implements QueueInterface
 
     public function getNumberMessages($priority = null): int
     {
-        return (int)$this->queueClient->getNumberMessages($this->queueName, $priority);
+        return (int) $this->queueClient->getNumberMessages($this->queueName, $priority);
     }
 }

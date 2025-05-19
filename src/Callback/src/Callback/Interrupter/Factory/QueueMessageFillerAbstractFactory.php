@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -12,9 +13,9 @@ use rollun\callback\Callback\Interrupter\QueueFiller;
 
 class QueueMessageFillerAbstractFactory extends InterruptAbstractFactoryAbstract
 {
-    const KEY_QUEUE_SERVICE = 'queue';
+    public const KEY_QUEUE_SERVICE = 'queue';
 
-    const DEFAULT_CLASS = QueueFiller::class;
+    public const DEFAULT_CLASS = QueueFiller::class;
 
     /**
      * @param ContainerInterface $container

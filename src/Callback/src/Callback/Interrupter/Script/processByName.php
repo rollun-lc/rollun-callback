@@ -56,7 +56,7 @@ $tracer = $container->get(Tracer::class);
 /** @var LoggerInterface $logger */
 $logger = $container->get(LoggerInterface::class);
 
-set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger, $callableServiceName) : void {
+set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger, $callableServiceName): void {
     if (! (error_reporting() & $errno)) {
         // error_reporting does not include this error
         return;

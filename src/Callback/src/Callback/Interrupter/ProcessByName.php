@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -23,11 +24,11 @@ use rollun\utils\Json\Serializer;
  */
 class ProcessByName implements InterrupterInterface
 {
-    const STDOUT_KEY = 'stdout';
-    const STDERR_KEY = 'stderr';
-    const PID_KEY = 'pid';
+    public const STDOUT_KEY = 'stdout';
+    public const STDERR_KEY = 'stderr';
+    public const PID_KEY = 'pid';
 
-    const SCRIPT_PATH = '/Script/processByName.php';
+    public const SCRIPT_PATH = '/Script/processByName.php';
 
     /**
      * @var LifecycleToken
@@ -69,7 +70,7 @@ class ProcessByName implements InterrupterInterface
         InsideConstruct::setConstructParams([
             "lifecycleToken" => LifeCycleToken::class,
             'tracer' => Tracer::class,
-            'logger' => LoggerInterface::class
+            'logger' => LoggerInterface::class,
         ]);
         $this->pidKiller = $pidKiller;
         $this->maxExecuteTime = $maxExecuteTime;
@@ -90,7 +91,7 @@ class ProcessByName implements InterrupterInterface
         InsideConstruct::initWakeup([
             "lifecycleToken" => LifeCycleToken::class,
             'tracer' => Tracer::class,
-            'logger' => LoggerInterface::class
+            'logger' => LoggerInterface::class,
         ]);
     }
 

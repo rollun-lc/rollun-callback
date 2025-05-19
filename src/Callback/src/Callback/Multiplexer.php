@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -62,9 +63,10 @@ class Multiplexer
                 $result[$key] = $callback->runCallback($value);
             } catch (\Throwable $e) {
                 $this->logger->error(
-                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.", [
+                    "Get error '{$e->getMessage()}' by handle '{$key}' callback service.",
+                    [
                         'exception' => $e,
-                        'multiplexer' => $this->name
+                        'multiplexer' => $this->name,
                     ]
                 );
                 $result[$key] = $e;
@@ -131,7 +133,7 @@ class Multiplexer
                 $this->logger->error("Cannot resolve callback: malformed multiplexer callback array structure.", [
                     'multiplexer' => $this->name,
                     'array' => $callback,
-                    'exception' => $e
+                    'exception' => $e,
                 ]);
             }
 

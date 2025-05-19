@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -11,7 +12,7 @@ use Laminas\ServiceManager\Config;
 
 class CallablePluginManagerFactory
 {
-    const KEY_INTERRUPTERS = 'interrupters';
+    public const KEY_INTERRUPTERS = 'interrupters';
 
     public function __invoke(ContainerInterface $container)
     {

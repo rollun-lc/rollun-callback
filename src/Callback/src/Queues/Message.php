@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -30,15 +31,13 @@ class Message
          *  ]
          */
         protected $message
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param $message
      * @return Message
      */
-    static function createInstance($message)
+    public static function createInstance($message)
     {
         return new self($message);
     }

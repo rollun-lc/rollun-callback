@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -14,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GetParamsResolver extends AbstractParamsResolver
 {
-    const HANDLE_METHOD = "GET";
+    public const HANDLE_METHOD = "GET";
 
     /**
      * @param ServerRequestInterface $request

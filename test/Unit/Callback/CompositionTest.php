@@ -7,7 +7,6 @@ use rollun\callback\Callback\Composition;
 
 class CompositionTest extends TestCase
 {
-
     public function test__invoke()
     {
         $composition = new Composition(

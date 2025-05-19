@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -92,7 +93,7 @@ class LinuxPidKiller implements PidKillerInterface
     {
         $span = $this->tracer->start('LinuxPidKiller::create', [
             new StringTag('pid', $record['pid']),
-            new StringTag('delaySeconds', $record['delaySeconds'])
+            new StringTag('delaySeconds', $record['delaySeconds']),
         ]);
         if (!isset($record['pid'])) {
             throw new InvalidArgumentException("Field 'pid' is missing");
@@ -115,7 +116,7 @@ class LinuxPidKiller implements PidKillerInterface
             'id' => $id,
             QueueClient::KEY_DELAY_SECOND => $record['delaySeconds'],
             'Body' => $record['info'] ?? null,
-            'TracerContext' => base64_encode(\rollun\utils\Json\Serializer::jsonSerialize($this->tracer->getContext()))
+            'TracerContext' => base64_encode(\rollun\utils\Json\Serializer::jsonSerialize($this->tracer->getContext())),
         ]));
 
         $this->logger->debug("PID-KILLER add pid {pid} to queue at {date}", [

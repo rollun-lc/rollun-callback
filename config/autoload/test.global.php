@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -32,7 +33,7 @@ return [
 
             return [$time];
         },
-        'webhookCallback' => function($value) {
+        'webhookCallback' => function ($value) {
             switch ($value) {
                 case 'primitive':
                     return true;
@@ -88,7 +89,7 @@ return [
                 'region' => getenv('AWS_REGION'),
             ],
             'sqsAttributes' => [
-                'VisibilityTimeout' => 1
+                'VisibilityTimeout' => 1,
             ],
         ],
         'testSqsQueue' => [
@@ -101,7 +102,7 @@ return [
         'testDbQueue' => [
             'timeInflight' => 0,
             'maxReceiveCount' => 1,
-        ]
+        ],
     ],
     QueueClientAbstractFactory::class => [
         'testSqsQueueClient' => [

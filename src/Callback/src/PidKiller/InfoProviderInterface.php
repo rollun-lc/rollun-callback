@@ -1,6 +1,5 @@
 <?php
 
-
 namespace rollun\callback\PidKiller;
 
 interface InfoProviderInterface

@@ -13,7 +13,7 @@ use Throwable;
 
 class ExceptionLoggerMiddleware implements MiddlewareInterface
 {
-    public function __construct(private LoggerInterface $logger){}
+    public function __construct(private LoggerInterface $logger) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -22,8 +22,8 @@ class ExceptionLoggerMiddleware implements MiddlewareInterface
         } catch (Throwable $exception) {
             $this->logger->error('Unexpected callback exception.', [
                 'exception' => $exception,
-                'requestBody' => (string)$request->getBody(),
-                'requestUri' => (string)$request->getUri()
+                'requestBody' => (string) $request->getBody(),
+                'requestUri' => (string) $request->getUri(),
             ]);
             throw $exception;
         }

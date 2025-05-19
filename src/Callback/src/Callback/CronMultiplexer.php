@@ -45,7 +45,7 @@ class CronMultiplexer extends Multiplexer
                     "Get error '{$e->getMessage()}' by handle '{$key}' callback service.",
                     [
                         'exception' => $e,
-                        'multiplexer' => $this->name
+                        'multiplexer' => $this->name,
                     ]
                 );
                 $result[$key] = $e;

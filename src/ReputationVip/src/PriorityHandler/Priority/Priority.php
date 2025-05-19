@@ -10,9 +10,7 @@ class Priority
      * @param string $name
      * @param int $level
      */
-    public function __construct(private $name, private $level, private ?\ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface $priorityHandler = null)
-    {
-    }
+    public function __construct(private $name, private $level, private ?\ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface $priorityHandler = null) {}
 
     /**
      * @return string
@@ -34,7 +32,8 @@ class Priority
     /**
      * @return PriorityHandlerInterface
      */
-    public function getPriorityHandler() {
+    public function getPriorityHandler()
+    {
         return $this->priorityHandler;
     }
 
@@ -42,7 +41,8 @@ class Priority
      * @param PriorityHandlerInterface $priorityHandler
      * @return $this
      */
-    public function setPriorityHandler(PriorityHandlerInterface $priorityHandler) {
+    public function setPriorityHandler(PriorityHandlerInterface $priorityHandler)
+    {
         $this->priorityHandler = $priorityHandler;
 
         return $this;

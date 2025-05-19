@@ -16,7 +16,6 @@ use Laminas\Db\TableGateway\TableGateway;
 
 class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testInvoke()
     {
         /** @var TableGateway|MockObject $container */
@@ -35,12 +34,12 @@ class WorkerSystemAbstractFactoryTest extends \PHPUnit\Framework\TestCase
                     $testWorkerSystem => [
                         WorkerAbstractFactory::KEY_QUEUE => $queue,
                         WorkerAbstractFactory::KEY_CALLABLE => $callable,
-                    ]
+                    ],
                 ],
             ],
             $queue => QueueClientAbstractFactory::createSimpleQueueClient(),
             $callable => static function (): void {},
-            WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY => $tableGateway
+            WorkerSystemAbstractFactory::DEFAULT_TABLE_GATEWAY => $tableGateway,
         ];
 
         $container = new class ($containerConfig) implements ContainerInterface {

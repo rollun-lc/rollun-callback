@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -99,9 +100,7 @@ class WorkerManagerAbstractFactoryTest extends TestCase
     private static function createContainer(array $config): ContainerInterface
     {
         return new class ($config) implements ContainerInterface {
-            public function __construct(private array $config)
-            {
-            }
+            public function __construct(private array $config) {}
 
             public function get(string $id): mixed
             {

@@ -1,15 +1,12 @@
 <?php
 
-
 namespace rollun\callback\Callback;
-
 
 use Cron\CronExpression as CronExpressionFactory;
 use rollun\dic\Example\SerializedService;
 
 class CronExpression
 {
-
     /**
      * @var callable
      */
@@ -30,7 +27,7 @@ class CronExpression
      */
     public function __invoke($value = null)
     {
-        if($this->expression->isDue()) {
+        if ($this->expression->isDue()) {
             call_user_func($this->func, $value);
         }
     }

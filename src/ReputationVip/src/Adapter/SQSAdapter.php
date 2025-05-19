@@ -16,9 +16,9 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
-    const MAX_NB_MESSAGES = 10;
-    const SENT_MESSAGES_BATCH_SIZE = 10;
-    const PRIORITY_SEPARATOR = '-';
+    public const MAX_NB_MESSAGES = 10;
+    public const SENT_MESSAGES_BATCH_SIZE = 10;
+    public const PRIORITY_SEPARATOR = '-';
 
     /**
      * @param string $queueName
@@ -26,7 +26,8 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @return string
      */
-    private function getQueueNameWithPrioritySuffix($queueName, Priority $priority) {
+    private function getQueueNameWithPrioritySuffix($queueName, Priority $priority)
+    {
         $prioritySuffix = '';
         if ('' !== $priority->getName()) {
             $prioritySuffix = static::PRIORITY_SEPARATOR . $priority->getName();
@@ -76,8 +77,8 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
             }
 
             $messageData = [
-                'Id' => (string)$index,
-                'MessageBody' => serialize($message)
+                'Id' => (string) $index,
+                'MessageBody' => serialize($message),
             ];
 
             $batch[] = $messageData;
@@ -258,10 +259,11 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
     {
         if (null === $priority) {
             $priorities = $this->priorityHandler->getAll();
-            foreach ($priorities as $priority)
+            foreach ($priorities as $priority) {
                 if (!($this->isEmpty($queueName, $priority))) {
                     return false;
                 }
+            }
             return true;
         }
 
@@ -489,7 +491,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
 
         return $listQueues;
     }
-    
+
     /**
      * @inheritdoc
      */

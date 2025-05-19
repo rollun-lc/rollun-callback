@@ -41,7 +41,7 @@ class CallbackObject
     {
         return $this->runCallback($value);
     }
-    
+
     public function getName(): string
     {
         return $this->name;

@@ -50,7 +50,7 @@ class Proxy extends Http
     {
         $excluded = [
             'host',
-            'content-length'
+            'content-length',
         ];
         $headers = new Headers();
         foreach ($this->request->getHeaders() as $key => $header) {

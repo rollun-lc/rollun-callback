@@ -47,7 +47,7 @@ class WebhookMiddleware implements MiddlewareInterface
             new PostParamsResolver(),
             $metricMiddleware,
             $interrupterMiddleware,
-            $renderer
+            $renderer,
         ], $middlewares);
 
         foreach ($middlewares as $middleware) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: itprofessor02
@@ -7,7 +8,6 @@
  */
 
 namespace rollun\callback\Callback;
-
 
 /**
  * Class CompositionCallback

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -33,17 +34,17 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class WorkerManagerAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_CLASS = 'class';
+    public const KEY_CLASS = 'class';
 
-    const DEFAULT_CLASS = WorkerManager::class;
+    public const DEFAULT_CLASS = WorkerManager::class;
 
-    const KEY_TABLE_GATEWAY = 'tableGateway';
+    public const KEY_TABLE_GATEWAY = 'tableGateway';
 
-    const KEY_PROCESS = 'process';
+    public const KEY_PROCESS = 'process';
 
-    const KEY_WORKER_MANAGER_NAME = 'workerManagerName';
+    public const KEY_WORKER_MANAGER_NAME = 'workerManagerName';
 
-    const KEY_PROCESS_COUNT = 'processCount';
+    public const KEY_PROCESS_COUNT = 'processCount';
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace rollun\callback\PidKiller\Factory;
-
 
 use Psr\Container\ContainerInterface;
 use rollun\callback\Callback\Interrupter\Factory\ProcessAbstractFactory;
@@ -19,8 +17,6 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 class WorkerSystemAbstractFactory implements AbstractFactoryInterface
 {
-
-
     /*
     - WORKER_MANAGER
         - WORKER
@@ -123,7 +119,7 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
             ProcessAbstractFactory::KEY_MAX_EXECUTE_TIME =>
                 $options[ProcessAbstractFactory::KEY_MAX_EXECUTE_TIME] ?? self::DEFAULT_MAX_EXECUTE_TIME,
             ProcessAbstractFactory::KEY_CALLBACK_SERVICE =>
-                $options[ProcessAbstractFactory::KEY_CALLBACK_SERVICE] ?? self::buildWorker($container, $requestedName, $options)
+                $options[ProcessAbstractFactory::KEY_CALLBACK_SERVICE] ?? self::buildWorker($container, $requestedName, $options),
         ]);
     }
 
@@ -157,14 +153,14 @@ class WorkerSystemAbstractFactory implements AbstractFactoryInterface
             QueueClientAbstractFactory::KEY_NAME => $queueName,
             QueueClientAbstractFactory::KEY_DELAY => $options[QueueClientAbstractFactory::KEY_DELAY] ?? self::DEFAULT_QUEUE_DELAY,
             QueueClientAbstractFactory::KEY_ADAPTER => $options[QueueClientAbstractFactory::KEY_ADAPTER] ?? [
-                    SqsAdapterAbstractFactory::KEY_MAX_RECEIVE_COUNT => self::DEFAULT_SQS_ADAPTER_MAX_RECEIVE_COUNT,
-                    SqsAdapterAbstractFactory::KEY_SQS_ATTRIBUTES => self::DEFAULT_SQS_ATTRIBUTES,
-                    SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG => [
-                        'key' => getenv('AWS_KEY'),
-                        'secret' => getenv('AWS_SECRET'),
-                        'region' => getenv('AWS_REGION'),
-                    ],
+                SqsAdapterAbstractFactory::KEY_MAX_RECEIVE_COUNT => self::DEFAULT_SQS_ADAPTER_MAX_RECEIVE_COUNT,
+                SqsAdapterAbstractFactory::KEY_SQS_ATTRIBUTES => self::DEFAULT_SQS_ATTRIBUTES,
+                SqsAdapterAbstractFactory::KEY_SQS_CLIENT_CONFIG => [
+                    'key' => getenv('AWS_KEY'),
+                    'secret' => getenv('AWS_SECRET'),
+                    'region' => getenv('AWS_REGION'),
                 ],
+            ],
         ]);
     }
 

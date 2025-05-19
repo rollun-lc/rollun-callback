@@ -1,4 +1,5 @@
 <?php
+
 global $argv;
 
 use PHPUnit\Framework\Error\Deprecated;
@@ -16,7 +17,7 @@ $container = require 'config/container.php';
 InsideConstruct::setContainer($container);
 
 // Make environment variables stored in .env accessible via getenv(), $_ENV or $_SERVER.
-if(file_exists('.env')) {
+if (file_exists('.env')) {
     (new Dotenv())->usePutenv(true)->load('.env');
 }
 

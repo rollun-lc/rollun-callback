@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -105,6 +106,6 @@ class SqsAdapterTest extends TestCase
         ksort($attributes);
         $attributeHash = md5(json_encode($attributes));
 
-        return $attributeHash. $queueName . $prioritySuffix;
+        return $attributeHash . $queueName . $prioritySuffix;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -85,7 +86,7 @@ abstract class AbstractAdapterTest extends TestCase
         do {
             $existQueues = $this->createObject()->listQueues();
             sleep(10);
-        } while(!in_array($queueA, $existQueues) && time() < $maxTime);
+        } while (!in_array($queueA, $existQueues) && time() < $maxTime);
 
         $this->assertTrue(in_array($queueA, $existQueues));
         $this->assertTrue(in_array($queueB, $existQueues));
@@ -110,7 +111,7 @@ abstract class AbstractAdapterTest extends TestCase
         do {
             $existQueues = $this->createObject()->listQueues();
             sleep(10);
-        } while(!in_array($queueA, $existQueues) && time() < $maxTime);
+        } while (!in_array($queueA, $existQueues) && time() < $maxTime);
 
         $existQueues = $this->object->listQueues();
 
@@ -125,7 +126,7 @@ abstract class AbstractAdapterTest extends TestCase
         do {
             $existQueues = $this->createObject()->listQueues();
             sleep(10);
-        } while(!in_array($queueB, $existQueues) && time() < $maxTime);
+        } while (!in_array($queueB, $existQueues) && time() < $maxTime);
 
         $this->assertFalse(in_array($queueA, $existQueues));
         $this->assertTrue(in_array($queueB, $existQueues));
@@ -221,7 +222,7 @@ abstract class AbstractAdapterTest extends TestCase
     public function testSerialize()
     {
         $object = $this->createObject();
-        $this->assertTrue((bool)unserialize(serialize($object)));
+        $this->assertTrue((bool) unserialize(serialize($object)));
         $object->createQueue('a');
         $object->deleteQueue('a');
     }

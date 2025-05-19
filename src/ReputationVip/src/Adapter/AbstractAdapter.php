@@ -7,7 +7,6 @@ use ReputationVIP\QueueClient\QueueClientInterface;
 
 class AbstractAdapter
 {
-
     /**
      * @param string $queueName
      * @param array  $messages

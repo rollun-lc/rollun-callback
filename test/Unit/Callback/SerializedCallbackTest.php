@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -24,11 +25,11 @@ class SerializedCallbackTest extends TestCase
                 fn($value) => $value,
             ],
             'nested callback' => [
-                new SerializedCallback(fn($value) => $value)
+                new SerializedCallback(fn($value) => $value),
             ],
             'two level nested callback' => [
-                new SerializedCallback(new SerializedCallback(fn($value) => $value))
-            ]
+                new SerializedCallback(new SerializedCallback(fn($value) => $value)),
+            ],
         ];
     }
 
@@ -60,7 +61,7 @@ class A
         return $value;
     }
 
-    static public function staticInvoke($value)
+    public static function staticInvoke($value)
     {
         return $value;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,9 +14,9 @@ use rollun\callback\Callback\Multiplexer;
 
 class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
-    const KEY_CALLBACKS_SERVICES = 'interrupters';
+    public const KEY_CALLBACKS_SERVICES = 'interrupters';
 
-    const DEFAULT_CLASS = Multiplexer::class;
+    public const DEFAULT_CLASS = Multiplexer::class;
 
     /**
      * @param ContainerInterface $container
@@ -41,7 +42,7 @@ class MultiplexerAbstractFactory extends CallbackAbstractFactoryAbstract
                     if ($container->has($callback)) {
                         $callbacks[$name] = [
                             Multiplexer\CallbackObject::CALLBACK_KEY => $container->get($callback),
-                            Multiplexer\CallbackObject::NAME_KEY => $callback
+                            Multiplexer\CallbackObject::NAME_KEY => $callback,
                         ];
                     } else {
                         $logger->alert("Callback with name $callback not found in container.");

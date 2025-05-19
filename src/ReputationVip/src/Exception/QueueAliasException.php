@@ -2,6 +2,4 @@
 
 namespace ReputationVIP\QueueClient\Exception;
 
-class QueueAliasException extends \LogicException implements QueueClientException
-{
-}
+class QueueAliasException extends \LogicException implements QueueClientException {}

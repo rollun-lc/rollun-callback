@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -23,14 +24,14 @@ use rollun\logger\LifeCycleToken;
  */
 class Process extends InterrupterAbstract
 {
-    const CALLBACK_KEY = 'callback';
-    const VALUE_KEY = 'value';
+    public const CALLBACK_KEY = 'callback';
+    public const VALUE_KEY = 'value';
 
-    const STDOUT_KEY = 'stdout';
-    const STDERR_KEY = 'stderr';
-    const PID_KEY = 'pid';
+    public const STDOUT_KEY = 'stdout';
+    public const STDERR_KEY = 'stderr';
+    public const PID_KEY = 'pid';
 
-    const SCRIPT_PATH = '/Script/process.php';
+    public const SCRIPT_PATH = '/Script/process.php';
 
     /**
      * @var LifecycleToken
@@ -70,7 +71,7 @@ class Process extends InterrupterAbstract
         InsideConstruct::setConstructParams([
             "lifecycleToken" => LifeCycleToken::class,
             'tracer' => Tracer::class,
-            'logger' => LoggerInterface::class
+            'logger' => LoggerInterface::class,
         ]);
         parent::__construct($callback);
 
@@ -93,7 +94,7 @@ class Process extends InterrupterAbstract
         InsideConstruct::initWakeup([
             "lifecycleToken" => LifeCycleToken::class,
             'tracer' => Tracer::class,
-            'logger' => LoggerInterface::class
+            'logger' => LoggerInterface::class,
         ]);
     }
 

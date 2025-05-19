@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,7 +14,6 @@ use rollun\callback\Callback\Interrupter\InterrupterInterface;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\dic\InsideConstruct;
 use Laminas\Db\TableGateway\TableGateway;
-
 
 class WorkerManager
 {
@@ -114,7 +114,7 @@ class WorkerManager
     {
         $span = $this->tracer->start('WorkerManager::refreshSlot', [
             new StringTag('name', $this->workerManagerName),
-            new StringTag('slots', json_encode($slot))
+            new StringTag('slots', json_encode($slot)),
         ]);
 
         $adapter = $this->tableGateway->getAdapter();
@@ -134,7 +134,7 @@ class WorkerManager
             $info = $this->processManager->pidInfo($payload->getId());
             $this->tableGateway->update([
                 'pid' => $payload->getId(),
-                'pid_id' => $info['id']
+                'pid_id' => $info['id'],
             ], ['id' => $slot['id']]);
             $adapter->getDriver()->getConnection()->commit();
 
@@ -147,7 +147,7 @@ class WorkerManager
         }
         $this->tracer->finish($span);
 
-        return (int)$payload->getId();
+        return (int) $payload->getId();
     }
 
 
@@ -208,7 +208,7 @@ class WorkerManager
             }
 
             if ($isSlotFree) {
-                $freeSlots[] = (array)$slot;
+                $freeSlots[] = (array) $slot;
             } else {
                 //FIXME: not good practice use id for get from it data
                 $startTaskTime = str_replace("{$slot['pid']}.", '', $slot['pid_id']);
@@ -216,7 +216,7 @@ class WorkerManager
                 if ($workSeconds > $this->slotTakenSecondsLimit) {
                     $this->logger->emergency('Slot busy longer than allowed time.', [
                         'slot' => $slot,
-                        'workerManagerName' => $this->workerManagerName
+                        'workerManagerName' => $this->workerManagerName,
                     ]);
                 }
             }

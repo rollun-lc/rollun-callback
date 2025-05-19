@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -47,8 +48,8 @@ class Http
     /**
      * @const array Allowed methods
      */
-    const ALLOWED_METHODS  = ['GET','POST','PUT','PATCH','DELETE','HEAD'];
-    
+    public const ALLOWED_METHODS  = ['GET','POST','PUT','PATCH','DELETE','HEAD'];
+
     protected const SUPPORTED_KEYS = [
         'maxredirects',
         'useragent',
@@ -77,10 +78,10 @@ class Http
             $this->password = $options['password'];
         }
 
-        if(isset($options['method']) && in_array($options['method'],self::ALLOWED_METHODS,true)){
+        if (isset($options['method']) && in_array($options['method'], self::ALLOWED_METHODS, true)) {
             $this->method = $options['method'];
         }
-        
+
         $this->options = array_intersect_key($options, array_flip(static::SUPPORTED_KEYS));
     }
 

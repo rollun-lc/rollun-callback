@@ -1,10 +1,11 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace rollun\callback\Queues\Factory;
 
@@ -38,11 +39,11 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class FileAdapterAbstractFactory implements AbstractFactoryInterface
 {
-    const KEY_STORAGE_DIR_PATH = 'storageDirPath';
+    public const KEY_STORAGE_DIR_PATH = 'storageDirPath';
 
-    const KEY_PRIORITY_HANDLER = 'priorityHandler';
+    public const KEY_PRIORITY_HANDLER = 'priorityHandler';
 
-    const KEY_TIME_IN_FLIGHT = 'timeInflight';
+    public const KEY_TIME_IN_FLIGHT = 'timeInflight';
 
     /**
      * @param ContainerInterface $container

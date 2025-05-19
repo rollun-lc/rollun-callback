@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,9 +14,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractParamsResolver implements MiddlewareInterface
 {
-    const ATTRIBUTE_WEBHOOK_VALUE = "WebhookValue";
+    public const ATTRIBUTE_WEBHOOK_VALUE = "WebhookValue";
 
-    const HANDLE_METHOD = "";
+    public const HANDLE_METHOD = "";
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

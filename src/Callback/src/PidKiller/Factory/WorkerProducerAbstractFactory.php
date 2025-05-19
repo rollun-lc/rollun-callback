@@ -10,7 +10,6 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 class WorkerProducerAbstractFactory implements AbstractFactoryInterface
 {
-
     public const IMPLICIT_PRODUCER_POSTFIX = '_Producer';
 
     /**

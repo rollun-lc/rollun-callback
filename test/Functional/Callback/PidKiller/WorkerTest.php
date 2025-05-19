@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -62,7 +63,7 @@ class WorkerTest extends TestCase
     public function testInvokeWithWriter()
     {
         $writerMock = $this->getMockBuilder(WriterInterface::class)->disableOriginalConstructor()->getMock();
-        $writerMock->expects($this->once())->method('write')->with((array)101);
+        $writerMock->expects($this->once())->method('write')->with((array) 101);
         $queue = new QueueClient(new FileAdapter('/tmp/test', 1), 'queue');
         $callback = (fn($value) => $value);
         $worker = new Worker($queue, $callback, $writerMock);

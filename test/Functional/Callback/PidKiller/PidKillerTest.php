@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -80,13 +81,13 @@ class PidKillerTest extends TestCase
         $pidKiller->create([
             'pid' => $payload1->getId(),
             'delaySeconds' => 0,
-            'info' => $payload1
+            'info' => $payload1,
         ]);
 
         $pidKiller->create([
             'pid' => $payload2->getId(),
             'delaySeconds' => 0,
-            'info' => $payload2
+            'info' => $payload2,
         ]);
 
         $pidKiller();

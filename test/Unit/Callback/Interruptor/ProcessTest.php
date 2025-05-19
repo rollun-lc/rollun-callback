@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -54,8 +55,8 @@ class ProcessTest extends TestCase
     {
         global $container;
 
-       $callback = new SerializedCallback(new class {
-            public function __invoke(){}
+        $callback = new SerializedCallback(new class {
+            public function __invoke() {}
         });
 
         $logger = $container->get(LoggerInterface::class);
@@ -76,7 +77,7 @@ class ProcessTest extends TestCase
         global $container;
 
         $callback = new SerializedCallback(new class {
-            public function __invoke(){}
+            public function __invoke() {}
         });
 
         $logger = $container->get(LoggerInterface::class);

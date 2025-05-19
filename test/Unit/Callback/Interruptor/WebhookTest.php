@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Rollun\Test\Unit\Callback\Interruptor;
-
 
 use PHPUnit\Framework\TestCase;
 use Laminas\Http\Client;

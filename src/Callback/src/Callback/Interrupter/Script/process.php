@@ -57,7 +57,7 @@ $tracer = $container->get(Tracer::class);
 /** @var LoggerInterface $logger */
 $logger = $container->get(LoggerInterface::class);
 
-set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger) : void {
+set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline) use ($logger): void {
     if (! (error_reporting() & $errno)) {
         // error_reporting does not include this error
         return;
@@ -67,7 +67,7 @@ set_error_handler(function (int $errno, string $errstr, string $errfile, int $er
 
     // Maybe in next releases we will throw this exceptions
     $logger->warning('When execute process, catch PHP error. But not throwing it.', [
-        'exception' => $exception
+        'exception' => $exception,
     ]);
 });
 
@@ -77,7 +77,7 @@ try {
         throw new CallbackException('There is not params string');
     }
     $logger->info("Interrupter 'Process' start.", [
-        'memory' => memory_get_peak_usage(true)
+        'memory' => memory_get_peak_usage(true),
     ]);
     /* @var $job Job */
     $job = Job::unserializeBase64($paramsString);
@@ -86,14 +86,14 @@ try {
     //$logger->debug("Serialized job: $paramsString");
     call_user_func($callback, $value);
     $logger->info("Interrupter 'Process' finish.", [
-        'memory' => memory_get_peak_usage(true)
+        'memory' => memory_get_peak_usage(true),
     ]);
     $tracer->finish($span);
 } catch (\Throwable $e) {
     $span->addTag(new StringTag('exception', json_encode((new ExceptionBacktrace())->getExceptionBacktrace($e))));
     $logger->error('When execute process, catch error', [
         'exception' => $e,
-        'memory' => memory_get_peak_usage(true)
+        'memory' => memory_get_peak_usage(true),
     ]);
 } finally {
     $tracer->flush();

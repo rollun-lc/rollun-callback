@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -73,7 +74,7 @@ class QueueFiller implements InterrupterInterface
     {
         $span = $this->tracer->start('QueueFiller::__invoke', [
             new StringTag('queue', $this->queue->getName()),
-            new StringTag('value', Serializer::jsonSerialize($value))
+            new StringTag('value', Serializer::jsonSerialize($value)),
         ]);
         $serializedData = static::serializeMessage($value);
         $message = new Message(['Body' => $serializedData, 'TracerContext' => base64_encode(Serializer::jsonSerialize($span->getContext()))]);

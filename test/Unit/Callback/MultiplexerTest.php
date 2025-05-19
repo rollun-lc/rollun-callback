@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -32,7 +33,7 @@ class MultiplexerTest extends TestCase
 
     public function provider()
     {
-        $stdObject = (object)['prop' => 'Hello '];
+        $stdObject = (object) ['prop' => 'Hello '];
 
         return [
             [
@@ -81,7 +82,8 @@ class MultiplexerTest extends TestCase
     public function testInvokeWithCallable()
     {
         $multiplexer = new Multiplexer(
-            $this->getContainer()->get(LoggerInterface::class), [
+            $this->getContainer()->get(LoggerInterface::class),
+            [
                 fn($value) => $value + 1,
                 fn($value) => $value + 2,
             ]
@@ -93,7 +95,8 @@ class MultiplexerTest extends TestCase
     public function testInvokableWithInterrupter()
     {
         $multiplexer = new Multiplexer(
-            $this->getContainer()->get(LoggerInterface::class), [
+            $this->getContainer()->get(LoggerInterface::class),
+            [
                 new Process(fn($value) => $value + 1),
                 new Process(fn($value) => $value + 2),
             ]

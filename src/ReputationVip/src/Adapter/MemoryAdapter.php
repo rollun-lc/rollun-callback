@@ -12,7 +12,7 @@ use SplQueue;
 
 class MemoryAdapter extends AbstractAdapter implements AdapterInterface
 {
-    const MAX_TIME_IN_FLIGHT = 30;
+    public const MAX_TIME_IN_FLIGHT = 30;
 
     /** @var array */
     private $queues;
@@ -202,10 +202,11 @@ class MemoryAdapter extends AbstractAdapter implements AdapterInterface
 
         if (null === $priority) {
             $priorities = $this->priorityHandler->getAll();
-            foreach ($priorities as $priority)
+            foreach ($priorities as $priority) {
                 if (!($this->isEmpty($queueName, $priority))) {
                     return false;
                 }
+            }
             return true;
         }
 

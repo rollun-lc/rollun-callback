@@ -28,9 +28,9 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
-    const MAX_NB_MESSAGES = 10;
-    const SENT_MESSAGES_BATCH_SIZE = 10;
-    const PRIORITY_SEPARATOR = '-';
+    public const MAX_NB_MESSAGES = 10;
+    public const SENT_MESSAGES_BATCH_SIZE = 10;
+    public const PRIORITY_SEPARATOR = '-';
 
     /**
      * @param string $queueName
@@ -120,7 +120,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
             }
 
             $messageData = [
-                'Id' => (string)$index,
+                'Id' => (string) $index,
                 'MessageBody' => serialize($message),
             ];
 

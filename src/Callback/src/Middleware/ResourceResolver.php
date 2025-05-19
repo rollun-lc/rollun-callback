@@ -1,8 +1,6 @@
 <?php
 
-
 namespace rollun\callback\Middleware;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,11 +31,11 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class ResourceResolver implements MiddlewareInterface
 {
-    const BASE_PATH = '/api/webhook';
+    public const BASE_PATH = '/api/webhook';
 
-    const RESOURCE_NAME = 'resourceName';
+    public const RESOURCE_NAME = 'resourceName';
 
-    const PRIMARY_KEY_VALUE = 'primaryKeyValue';
+    public const PRIMARY_KEY_VALUE = 'primaryKeyValue';
 
     /**
      * @var string

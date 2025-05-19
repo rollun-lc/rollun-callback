@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Setup routes with a single request method:
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,11 +14,11 @@ use rollun\callback\Callback\CallbackException;
 
 class HttpAbstractFactory extends InterruptAbstractFactoryAbstract
 {
-    const KEY_URL = 'url';
+    public const KEY_URL = 'url';
 
-    const KEY_OPTIONS = 'options';
+    public const KEY_OPTIONS = 'options';
 
-    const DEFAULT_CLASS = Http::class;
+    public const DEFAULT_CLASS = Http::class;
 
     /**
      * @param ContainerInterface $container

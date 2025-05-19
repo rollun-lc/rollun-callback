@@ -1,6 +1,5 @@
 <?php
 
-
 namespace rollun\callback\Queues\Adapter;
 
 use Exception;
@@ -30,12 +29,11 @@ use Laminas\Db\Sql\Predicate\Predicate;
 use Laminas\Db\Sql\Predicate\PredicateSet;
 use Laminas\Db\Sql\Sql;
 
-
 class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessagesInterface
 {
-    const TABLE_NAME_PREFIX = 'queue_';
+    public const TABLE_NAME_PREFIX = 'queue_';
 
-    const MAX_NB_MESSAGES = 10;
+    public const MAX_NB_MESSAGES = 10;
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 
@@ -354,7 +352,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                 [
                     '(unix_timestamp(now()) - time_in_flight) > ?' => $this->timeInFlight,
                     'time_in_flight' => null,
-                    'receive_count < ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX)
+                    'receive_count < ?' => (intval($this->maxReceiveCount) ?: PHP_INT_MAX),
                 ],
                 Predicate::OP_OR
             );
@@ -709,7 +707,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
                     ->set(
                         [
                             'time_in_flight' => time(),
-                            'receive_count' => new Expression('receive_count + 1')
+                            'receive_count' => new Expression('receive_count + 1'),
                         ]
                     )
                     ->where(['id' => $freeMessageIds]);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -17,7 +18,7 @@ class WorkerTest extends TestCase
 {
     public function testInvokeWithCallable()
     {
-        $range = range(1 ,10);
+        $range = range(1, 10);
         $queue = QueueClientAbstractFactory::createSimpleQueueClient();
         $queueFiller = new QueueFiller($queue);
 
@@ -33,7 +34,7 @@ class WorkerTest extends TestCase
     public function testInvokableWithInterrupter()
     {
         $this->markTestSkipped('InvalidArgumentException : Exception argument must implement \Throwable interface, string given');
-        $range = range(1 ,10);
+        $range = range(1, 10);
         $queue = QueueClientAbstractFactory::createSimpleQueueClient();
         $queueFiller = new QueueFiller($queue);
 

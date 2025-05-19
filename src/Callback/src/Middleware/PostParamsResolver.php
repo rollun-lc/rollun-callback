@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -21,7 +22,7 @@ use rollun\utils\Json\Serializer;
  */
 class PostParamsResolver extends AbstractParamsResolver
 {
-    const HANDLE_METHOD = "POST";
+    public const HANDLE_METHOD = "POST";
 
     /**
      * @param ServerRequestInterface $request

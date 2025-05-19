@@ -8,7 +8,6 @@ use ReputationVIP\QueueClient\PriorityHandler\StandardPriorityHandler;
 
 class NullAdapter extends AbstractAdapter implements AdapterInterface
 {
-
     /** @var PriorityHandlerInterface $priorityHandler */
     private $priorityHandler;
 

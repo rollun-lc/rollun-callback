@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -14,7 +15,7 @@ use Throwable;
 
 class QueueClient extends BaseClient
 {
-    const KEY_DELAY_SECOND = 'delaySecond';
+    public const KEY_DELAY_SECOND = 'delaySecond';
 
     public function __construct(AdapterInterface $adapter, string $queueName)
     {
@@ -29,7 +30,7 @@ class QueueClient extends BaseClient
         $messageData = $message->getMessage();
 
         if (isset($messageData[self::KEY_DELAY_SECOND])) {
-            $delaySeconds = (int)$messageData[self::KEY_DELAY_SECOND];
+            $delaySeconds = (int) $messageData[self::KEY_DELAY_SECOND];
             unset($messageData[self::KEY_DELAY_SECOND]);
         } else {
             $delaySeconds = 0;

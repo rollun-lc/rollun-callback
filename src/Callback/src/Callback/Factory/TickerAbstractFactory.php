@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright © 2014 Rollun LC (http://rollun.com/)
  * @license LICENSE.md New BSD License
@@ -13,20 +14,20 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 class TickerAbstractFactory extends CallbackAbstractFactoryAbstract
 {
-    const KEY_CALLBACK = 'callback';
+    public const KEY_CALLBACK = 'callback';
 
-    const DEFAULT_CLASS = Ticker::class;
+    public const DEFAULT_CLASS = Ticker::class;
 
-    const KEY_TICKS_COUNT = 'ticks_count';
+    public const KEY_TICKS_COUNT = 'ticks_count';
 
-    const KEY_TICK_DURATION = 'tick_duration';
+    public const KEY_TICK_DURATION = 'tick_duration';
 
     /**
      * @deprecate KEY_WRAPPER_CLASS
      */
-    const KEY_WRAPPER_CLASS = 'wrapper_class';
+    public const KEY_WRAPPER_CLASS = 'wrapper_class';
 
-    const KEY_DELAY_MC = 'delay_MC';
+    public const KEY_DELAY_MC = 'delay_MC';
 
     /**
      * @param ContainerInterface $container
