@@ -45,7 +45,7 @@ services:
       - 33061:3306
 
   csfixer:
-    image: ghcr.io/php-cs-fixer/php-cs-fixer:3.66-php8.1
+    image: ghcr.io/php-cs-fixer/php-cs-fixer:3.75-php8.0
     volumes:
       - ./:/code
 
