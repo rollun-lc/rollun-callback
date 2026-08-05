@@ -62,7 +62,8 @@
     "test": "phpunit --colors=always",
     "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
     "server": "php -S 0.0.0.0:8000 -t public public/index.php",
-    "rector": "rector process --dry-run"
+    "rector": "rector process --dry-run",
+    "rector-fix": "rector process"
   },
   "config": {
     "allow-plugins": {
