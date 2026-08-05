@@ -22,7 +22,6 @@ $aggregator = new ConfigAggregator([
     \Laminas\Db\ConfigProvider::class,
     \Mezzio\Router\ConfigProvider::class,
     \Mezzio\Helper\ConfigProvider::class,
-    \Laminas\Cache\ConfigProvider::class,
     \Laminas\Mail\ConfigProvider::class,
     \Laminas\Validator\ConfigProvider::class,
     \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
