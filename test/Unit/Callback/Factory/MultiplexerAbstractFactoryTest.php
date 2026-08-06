@@ -16,6 +16,7 @@ use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Multiplexer;
 use rollun\callback\Callback\Multiplexer\CallbackObject;
 use rollun\callback\Callback\SerializedCallback;
+use stdClass;
 
 class MultiplexerAbstractFactoryTest extends TestCase
 {
@@ -98,6 +99,22 @@ class MultiplexerAbstractFactoryTest extends TestCase
         $this->assertSame(['cba'], $multiplexer('abc'));
     }
 
+    /**
+     * CallbackObject is invokable, so is_callable() used to swallow it and rewrap it into an
+     * unnamed SerializedCallback, dropping the name it exists to carry.
+     */
+    public function testInvokePreservesNameOfExplicitCallbackObject()
+    {
+        $callbackObject = new CallbackObject(static fn($value = null) => 'from-callback-object', 'myNamedCallback');
+
+        $multiplexer = self::buildMultiplexer([$callbackObject], []);
+
+        $callbacks = self::readCallbackObjects($multiplexer);
+
+        $this->assertSame('myNamedCallback', $callbacks[0]->getName());
+        $this->assertSame(['from-callback-object'], $multiplexer(null));
+    }
+
     public function testInvokeLogsAlertForUnknownServiceName()
     {
         $logger = self::createSpyLogger();
@@ -110,6 +127,25 @@ class MultiplexerAbstractFactoryTest extends TestCase
 
         $this->assertCount(1, $logger->records);
         $this->assertStringContainsString('no.such.service', $logger->records[0]);
+    }
+
+    /**
+     * A value that is neither a service id nor a callback is a config mistake: it has to be
+     * reported, not turned into a TypeError while the container is being built.
+     */
+    public function testInvokeLogsAlertInsteadOfFailingOnUnsupportedValue()
+    {
+        $logger = self::createSpyLogger();
+
+        $multiplexer = self::buildMultiplexer(
+            ['some.callback.service', new stdClass()],
+            ['some.callback.service' => self::invokableService(self::CONTAINER_RESULT)],
+            $logger
+        );
+
+        $this->assertCount(1, $logger->records);
+        $this->assertStringContainsString('stdClass', $logger->records[0]);
+        $this->assertSame([self::CONTAINER_RESULT], $multiplexer(null));
     }
 
     public function testCanCreateOnlyForMultiplexerConfig()
