@@ -88,3 +88,6 @@ Temporary Items
 bin/test*.php
 
 /.php-cs-fixer.php
+
+
+/.claude/
