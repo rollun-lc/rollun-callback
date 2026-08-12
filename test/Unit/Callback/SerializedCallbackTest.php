@@ -8,6 +8,7 @@
 namespace Rollun\Test\Unit\Callback;
 
 use PHPUnit\Framework\TestCase;
+use Rollun\Test\Support\RequiresWorkingOpisClosure;
 use rollun\callback\Callback\SerializedCallback;
 
 /**
@@ -15,22 +16,32 @@ use rollun\callback\Callback\SerializedCallback;
  */
 class SerializedCallbackTest extends TestCase
 {
+    use RequiresWorkingOpisClosure;
+
+    /**
+     * The second value of every set tells whether that callback kind reaches opis/closure
+     * on serialization: closures do, and so do string and array callables, because
+     * SerializedCallback converts them into closures.
+     */
     public function provider()
     {
         return [
-            [[new A(), 'invoke']],
-            ['Rollun\Test\Unit\Callback\A::staticInvoke'],
-            ['Rollun\Test\Unit\Callback\invoke'],
+            [[new A(), 'invoke'], true],
+            ['Rollun\Test\Unit\Callback\A::staticInvoke', true],
+            ['Rollun\Test\Unit\Callback\invoke', true],
             [
                 fn($value) => $value,
+                true,
             ],
             // The nested sets are about nesting, not about the callback kind, so they use an
             // invokable object: it is serialized natively and keeps them clear of opis/closure.
             'nested callback' => [
                 new SerializedCallback(new A()),
+                false,
             ],
             'two level nested callback' => [
                 new SerializedCallback(new SerializedCallback(new A())),
+                false,
             ],
         ];
     }
@@ -39,7 +50,7 @@ class SerializedCallbackTest extends TestCase
      * @dataProvider provider
      * @param $callable
      */
-    public function testInvoke($callable)
+    public function testInvoke($callable, bool $reachesOpisClosure)
     {
         $callback = new SerializedCallback($callable);
         $this->assertEquals(1, $callback(1));
@@ -49,8 +60,12 @@ class SerializedCallbackTest extends TestCase
      * @dataProvider provider
      * @param $callable
      */
-    public function testSerialize($callable)
+    public function testSerialize($callable, bool $reachesOpisClosure)
     {
+        if ($reachesOpisClosure) {
+            $this->skipIfPhpBreaksOpisClosure();
+        }
+
         $callback = new SerializedCallback($callable);
         $this->assertEquals($callback(1), unserialize(serialize($callback))(1));
     }
