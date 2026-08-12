@@ -17,9 +17,16 @@ class WorkerTest extends TestCase
     public function testSerializeSuccess()
     {
         $queue = new QueueClient(new FileAdapter('/tmp/test'), 'test');
-        $callback = function (): void {};
+        // What is under test is that Worker survives a round-trip; the callback is only a stub.
+        // An invokable object keeps it out of opis/closure, a closure would not.
+        $callback = new NoopCallback();
 
         $worker = new Worker($queue, $callback, null);
         $this->assertTrue(boolval(unserialize(serialize($worker))));
     }
+}
+
+class NoopCallback
+{
+    public function __invoke($value = null): void {}
 }

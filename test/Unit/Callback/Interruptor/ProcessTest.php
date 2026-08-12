@@ -9,6 +9,7 @@ namespace Rollun\Test\Unit\Callback\Interruptor;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Rollun\Test\Support\TimestampWriterCallback;
 use rollun\callback\Callback\CallbackException;
 use rollun\callback\Callback\SerializedCallback;
 use rollun\callback\Callback\Interrupter\Process;
@@ -28,11 +29,10 @@ class ProcessTest extends TestCase
 
     public function testParallelProcess()
     {
-        $callback = new SerializedCallback(function ($file): void {
-            sleep(1);
-            $time = microtime(true);
-            file_put_contents($file, "$time\n", FILE_APPEND);
-        });
+        // What is under test is that the two child processes overlap in time. The callback is
+        // a named invokable rather than a closure so that it reaches the child natively:
+        // a closure would go through opis/closure, an anonymous class would not serialize.
+        $callback = new SerializedCallback(new TimestampWriterCallback(1));
 
         (new Process($callback))(self::TEST_OUTPUT_TILE);
         (new Process($callback))(self::TEST_OUTPUT_TILE);

@@ -8,6 +8,7 @@
 namespace Rollun\Test\Unit\Callback;
 
 use PHPUnit\Framework\TestCase;
+use Rollun\Test\Support\TimestampWriterCallback;
 use rollun\callback\Callback\Interrupter\Process;
 use rollun\callback\Callback\Ticker;
 use rollun\callback\Promise\Interfaces\PayloadInterface;
@@ -54,11 +55,9 @@ class TickerTest extends TestCase
                 'resultFilePath' => 'data/ticker_result_3.txt',
             ],
             [
-                'tickerCallback' => new Process(
-                    function ($val): void {
-                        file_put_contents($val, microtime(true) . "\n", FILE_APPEND);
-                    }
-                ),
+                // Only this set crosses a process boundary, so its callback has to be a named
+                // invokable: a closure would be routed through opis/closure on the way out.
+                'tickerCallback' => new Process(new TimestampWriterCallback()),
                 'ticksCount' => 2,
                 'tickDuration' => 3,
                 'delayMicroSecond' => 2,

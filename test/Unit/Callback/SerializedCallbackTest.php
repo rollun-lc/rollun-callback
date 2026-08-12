@@ -24,11 +24,13 @@ class SerializedCallbackTest extends TestCase
             [
                 fn($value) => $value,
             ],
+            // The nested sets are about nesting, not about the callback kind, so they use an
+            // invokable object: it is serialized natively and keeps them clear of opis/closure.
             'nested callback' => [
-                new SerializedCallback(fn($value) => $value),
+                new SerializedCallback(new A()),
             ],
             'two level nested callback' => [
-                new SerializedCallback(new SerializedCallback(fn($value) => $value)),
+                new SerializedCallback(new SerializedCallback(new A())),
             ],
         ];
     }
