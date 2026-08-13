@@ -10,6 +10,7 @@ namespace Rollun\Test\Unit\Callback\Interruptor;
 use PHPUnit\Framework\TestCase;
 use Laminas\Http\Client;
 use Laminas\ServiceManager\ServiceManager;
+use Rollun\Test\Support\CronCallback;
 
 class CronTest extends TestCase
 {
@@ -25,7 +26,7 @@ class CronTest extends TestCase
      */
     private const CHILD_TIMEOUT_SEC = 30;
 
-    private const JOB_FILE = 'data' . DIRECTORY_SEPARATOR . 'interrupt_min';
+    private const JOB_FILE = CronCallback::OUTPUT_FILE;
 
     protected $url;
 

@@ -5,6 +5,7 @@
  * @license LICENSE.md New BSD License
  */
 
+use Rollun\Test\Support\CronCallback;
 use rollun\callback\Callback\Factory\CallbackAbstractFactoryAbstract;
 use rollun\callback\Callback\Factory\MultiplexerAbstractFactory;
 use rollun\callback\Callback\Factory\SerializedCallbackAbstractFactory;
@@ -23,16 +24,9 @@ use rollun\tracer\TracerFactory;
 return [
     SerializedCallbackAbstractFactory::class => [
         'testCallback' => fn($value) => 'Hello ' . (is_string($value) ? $value : ''),
-        'cronCallback' => function ($value) {
-            $time = microtime(true);
-            file_put_contents(
-                'data' . DIRECTORY_SEPARATOR . 'interrupt_min',
-                'MIN_FILE_NAME' . ": {$value} [" . microtime(true) . "]\n",
-                FILE_APPEND
-            );
-
-            return [$time];
-        },
+        // A named invokable, not a closure: this one is reached through Interrupter\Process,
+        // so it gets serialized, and only an object survives that on a PHP hit by GH-8995.
+        'cronCallback' => new CronCallback(),
         'webhookCallback' => function ($value) {
             switch ($value) {
                 case 'primitive':
