@@ -22,7 +22,7 @@
     "laminas/laminas-http": "^2.15",
     "opis/closure": "^4.3.1",
     "rollun-com/rollun-utils": "^9.0.0",
-    "rollun-com/rollun-logger": "^8.0.0",
+    "rollun-com/rollun-logger": "^7.7.0 || ^8.0.0",
     "laminas/laminas-stratigility": "^3.5.0",
     "laminas/laminas-diactoros": "^2.8.0",
     "laminas/laminas-db": "^2.13.4",
