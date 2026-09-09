@@ -16,9 +16,7 @@ class NullAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function __construct(PriorityHandlerInterface $priorityHandler = null)
     {
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
 
         $this->priorityHandler = $priorityHandler;
     }

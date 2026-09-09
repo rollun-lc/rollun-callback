@@ -42,9 +42,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function __construct(private SqsClient $sqsClient, PriorityHandlerInterface $priorityHandler = null)
     {
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
 
         $this->priorityHandler = $priorityHandler;
         return $this;
@@ -63,9 +61,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
             throw new \InvalidArgumentException('Queue name empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         $i = 0;
         $batch = [];
@@ -120,9 +116,7 @@ class SQSAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidMessageException($message, 'Message empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         $message = serialize($message);
         try {

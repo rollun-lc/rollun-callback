@@ -24,9 +24,7 @@ class MemoryAdapter extends AbstractAdapter implements AdapterInterface
     {
         $this->queues = [];
 
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
 
         $this->priorityHandler = $priorityHandler;
     }
@@ -60,9 +58,7 @@ class MemoryAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidMessageException($message, 'Message empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         if (!isset($this->queues[$queueName])) {
             throw new QueueAccessException("Queue " . $queueName . " doesn't exist, please create it before using it.");

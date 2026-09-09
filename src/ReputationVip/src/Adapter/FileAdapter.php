@@ -53,17 +53,11 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
             throw new \InvalidArgumentException('Argument repository empty or not defined.');
         }
 
-        if (null === $fs) {
-            $fs = new Filesystem();
-        }
+        $fs ??= new Filesystem();
 
-        if (null === $finder) {
-            $finder = new Finder();
-        }
+        $finder ??= new Finder();
 
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
 
         $this->fs = $fs;
 
@@ -75,9 +69,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
             }
         }
 
-        if (null === $lockHandlerFactory) {
-            $lockHandlerFactory = new LockFactory(new FlockStore($repository));
-        }
+        $lockHandlerFactory ??= new LockFactory(new FlockStore($repository));
 
         $this->priorityHandler = $priorityHandler;
         $this->repository = $repository;
@@ -264,9 +256,7 @@ class FileAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidMessageException($message, 'Message empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         if (!$this->fs->exists($this->getQueuePath($queueName, $priority))) {
             throw new QueueAccessException("Queue " . $queueName . " doesn't exist, please create it before using it.");

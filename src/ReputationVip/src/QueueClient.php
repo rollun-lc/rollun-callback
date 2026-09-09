@@ -36,10 +36,7 @@ class QueueClient implements QueueClientInterface
      */
     public function __construct(AdapterInterface $adapter = null)
     {
-        if (null === $adapter) {
-            $adapter = new NullAdapter();
-
-        }
+        $adapter ??= new NullAdapter();
 
         $this->adapter = $adapter;
 

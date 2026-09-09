@@ -34,9 +34,7 @@ class PidKillerTest extends TestCase
     {
         static $processManager;
 
-        if ($processManager === null) {
-            $processManager = $this->getContainer()->get(ProcessManager::class);
-        }
+        $processManager ??= $this->getContainer()->get(ProcessManager::class);
         return $processManager;
     }
 
