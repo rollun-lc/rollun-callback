@@ -67,9 +67,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
         $this->sqsClient = SqsClient::factory($sqsClientConfig);
         $this->sqsClientConfig = $sqsClientConfig;
 
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
 
         $this->priorityHandler = $priorityHandler;
     }
@@ -82,9 +80,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getQueueArn($queueName, Priority $priority = null)
     {
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         $queueUrl = $this->sqsClient->getQueueUrl([
             'QueueName' => $this->getQueueName($queueName, $priority),
@@ -106,9 +102,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
             throw new \InvalidArgumentException('Queue name empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         $i = 0;
         $batch = [];
@@ -165,9 +159,7 @@ class SqsAdapter extends AbstractAdapter implements AdapterInterface
             throw new InvalidMessageException($message, 'Message empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         $message = serialize($message);
         try {

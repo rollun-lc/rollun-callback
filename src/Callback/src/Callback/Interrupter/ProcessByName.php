@@ -30,7 +30,7 @@ class ProcessByName implements InterrupterInterface
     const SCRIPT_PATH = '/Script/processByName.php';
 
     /**
-     * @var LifecycleToken
+     * @var LifeCycleToken
      */
     protected $lifecycleToken;
 

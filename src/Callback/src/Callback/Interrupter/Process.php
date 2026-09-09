@@ -33,7 +33,7 @@ class Process extends InterrupterAbstract
     const SCRIPT_PATH = '/Script/process.php';
 
     /**
-     * @var LifecycleToken
+     * @var LifeCycleToken
      */
     protected $lifecycleToken;
 

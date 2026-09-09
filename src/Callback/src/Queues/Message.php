@@ -38,7 +38,7 @@ class Message
      * @param $message
      * @return Message
      */
-    static function createInstance($message)
+    public static function createInstance($message)
     {
         return new self($message);
     }

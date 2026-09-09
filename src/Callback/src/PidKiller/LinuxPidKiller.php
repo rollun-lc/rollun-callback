@@ -65,9 +65,7 @@ class LinuxPidKiller implements PidKillerInterface
             throw new RuntimeException('Pid killer does not work on Windows');
         }
 
-        if ($maxMessageCount === null) {
-            $maxMessageCount = self::DEF_MAX_MESSAGE_COUNT;
-        }
+        $maxMessageCount ??= self::DEF_MAX_MESSAGE_COUNT;
         $this->processManager = $processManager ?? new ProcessManager();
         $this->maxMessageCount = $maxMessageCount;
     }

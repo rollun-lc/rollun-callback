@@ -54,9 +54,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         PriorityHandlerInterface $priorityHandler = null,
         private string $_dbAdapterName = 'db'
     ) {
-        if (null === $priorityHandler) {
-            $priorityHandler = new StandardPriorityHandler();
-        }
+        $priorityHandler ??= new StandardPriorityHandler();
         $this->priorityHandler = $priorityHandler;
     }
 
@@ -95,9 +93,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             throw new InvalidMessageException($message, 'Message empty or not defined.');
         }
 
-        if (null === $priority) {
-            $priority = $this->priorityHandler->getDefault();
-        }
+        $priority ??= $this->priorityHandler->getDefault();
 
         if (!$this->isQueueExists($queueName)) {
             throw new QueueAccessException(
