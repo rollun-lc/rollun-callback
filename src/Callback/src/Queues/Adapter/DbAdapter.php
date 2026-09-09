@@ -175,23 +175,8 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         $select = $sql->select()
             ->from($tableName)
             ->columns(['id'])
-            ->where(
-                [
-                    new PredicateSet(
-                        [
-                            new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->timeInFlight),
-                            new IsNull('time_in_flight'),
-                        ],
-                        PredicateSet::COMBINED_BY_OR
-                    ),
-                    new PredicateExpression('delayed_until <= unix_timestamp(now())'),
-                    new PredicateExpression('receive_count < ?', (intval($this->maxReceiveCount) ?: PHP_INT_MAX)),
-                ]
-            )
+            ->where($this->buildAvailabilityPredicates($priority))
             ->order('added_at');
-        if (null !== $priority) {
-            $select->where(['priority_level' => $priority->getLevel()]);
-        }
         if ($nbMsg) {
             // 10 - запас с учетом сообщений, залоченных другими процессами
             $select->limit($nbMsg + 10);
@@ -216,7 +201,7 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
             if (empty($messageIds)) {
                 break;
             }
-            $messages = $this->getNotLockedMessages($tableName, $messageIds, $nbMsg);
+            $messages = $this->getNotLockedMessages($tableName, $messageIds, $nbMsg, $priority);
 
             // если нашлись сообщения - то повторные попытки не нужны, поэтому прерываем цикл
             if (!empty($messages)) {
@@ -672,13 +657,50 @@ class DbAdapter extends AbstractAdapter implements AdapterInterface, DeadMessage
         return $this;
     }
 
-    private function getNotLockedMessages(string $tableName, array $messageIds, int $nbMsg): array
+    /**
+     * Conditions under which a message may be handed to a consumer: not in flight (or its flight time has expired),
+     * not delayed, receive limit not exhausted, and (optionally) of the requested priority.
+     *
+     * @return array<int|string, mixed> laminas-db predicate list
+     */
+    private function buildAvailabilityPredicates(?Priority $priority): array
+    {
+        $predicates = [
+            new PredicateSet(
+                [
+                    new PredicateExpression('unix_timestamp(now()) - time_in_flight > ?', $this->timeInFlight),
+                    new IsNull('time_in_flight'),
+                ],
+                PredicateSet::COMBINED_BY_OR
+            ),
+            new PredicateExpression('delayed_until <= unix_timestamp(now())'),
+            new PredicateExpression('receive_count < ?', (intval($this->maxReceiveCount) ?: PHP_INT_MAX)),
+        ];
+        if (null !== $priority) {
+            $predicates['priority_level'] = $priority->getLevel();
+        }
+        return $predicates;
+    }
+
+    /**
+     * Lock and claim up to $nbMsg of the candidate messages.
+     *
+     * The candidate ids were selected without a lock, so another consumer may have claimed (and committed) any of
+     * them in the meantime. `SKIP LOCKED` only skips rows still locked by an open transaction, therefore the
+     * availability predicates are re-evaluated here, inside the locking read, to avoid handing out the same message
+     * twice (Trello nIjO2cqy).
+     *
+     * Protected (not private) so tests can interpose a competing consumer between the two steps.
+     */
+    protected function getNotLockedMessages(string $tableName, array $messageIds, int $nbMsg, ?Priority $priority = null): array
     {
         $sql = new Sql($this->db);
 
         $select = $sql->select()
             ->from($tableName)
             ->where(['id' => $messageIds])
+            ->where($this->buildAvailabilityPredicates($priority))
+            ->order('added_at')
             ->limit($nbMsg);
 
         $messages = [];
