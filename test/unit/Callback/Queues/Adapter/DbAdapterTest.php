@@ -14,6 +14,7 @@ use ReputationVIP\QueueClient\PriorityHandler\ThreeLevelPriorityHandler;
 use Zend\Db\Metadata\Source\Factory;
 use Zend\Db\Sql\Ddl\DropTable;
 use Zend\Db\Sql\Sql;
+use ReputationVIP\QueueClient\PriorityHandler\Priority\Priority;
 
 class DbAdapterTest extends TestCase
 {
@@ -465,5 +466,56 @@ class DbAdapterTest extends TestCase
     {
         $object = $this->createObject(10);
         $this->assertInstanceOf('ReputationVIP\QueueClient\PriorityHandler\PriorityHandlerInterface', $object->getPriorityHandler());
+    }
+    /**
+     * Trello nIjO2cqy. getMessages() prefetches candidate ids without a lock and only then locks them with
+     * FOR UPDATE SKIP LOCKED. A competing consumer that claims and commits one of those ids in between leaves the
+     * row unlocked, so the locking read must re-check availability instead of trusting the prefetched id.
+     */
+    public function testMessageClaimedByCompetitorBetweenPrefetchAndLockIsNotDeliveredTwice()
+    {
+        $timeInFlight = 5;
+        $competitor = new DbAdapter($this->createSecondConnection(), $timeInFlight);
+
+        $consumer = new class($this->getDb(), $timeInFlight) extends DbAdapter {
+            /** @var callable|null */
+            public $beforeLock;
+
+            protected function getNotLockedMessages(string $tableName, array $messageIds, int $nbMsg, ?Priority $priority = null): array
+            {
+                if ($this->beforeLock !== null) {
+                    $hook = $this->beforeLock;
+                    $this->beforeLock = null;
+                    $hook();
+                }
+                return parent::getNotLockedMessages($tableName, $messageIds, $nbMsg, $priority);
+            }
+        };
+
+        $consumer->createQueue('a');
+        $consumer->addMessage('a', 'message');
+
+        $claimedByCompetitor = [];
+        $consumer->beforeLock = function () use ($competitor, &$claimedByCompetitor) {
+            $claimedByCompetitor = $competitor->getMessages('a');
+        };
+
+        $claimedByConsumer = $consumer->getMessages('a');
+
+        $this->assertCount(1, $claimedByCompetitor, 'competitor must win the message');
+        $this->assertSame([], $claimedByConsumer, 'consumer must not receive a message already in flight');
+
+        $table = DbAdapter::TABLE_NAME_PREFIX . 'a_' . $timeInFlight . '_0';
+        $row = $this->getDb()
+            ->query("SELECT receive_count FROM `{$table}`", Adapter::QUERY_MODE_EXECUTE)
+            ->current();
+        $this->assertEquals(1, $row['receive_count'], 'receive_count must reflect a single delivery');
+    }
+
+    private function createSecondConnection(): Adapter
+    {
+        $this->getDb();
+        $container = require 'config/container.php';
+        return new Adapter($container->get('config')['db']);
     }
 }
