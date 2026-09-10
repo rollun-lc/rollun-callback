@@ -70,7 +70,7 @@ var_dump($callback('World')); // 'Hello World'
 Пример:
 
 ```php
-$multiplexer = new Multiplexer([
+$multiplexer = new Multiplexer($logger, [
     1 => function ($val) { echo "1. $val; "; },
     3 => function ($val) { echo "3. $val; "; },
     2 => function ($val) { echo "2. $val; "; },
@@ -202,14 +202,14 @@ $callback($value);
 #### Interrupter
 
 Interrupter разновидность `callable` для "параллельного" выполнения кода (на другом сайте, в другом процессе, через 
-очередь и тд). Реализует интерфейс `InterruptorInterface`.
-Так же существует абстрактный - `InterruptorAbstract` клас который все принимающие `callable` заворачивает в 
+очередь и тд). Реализует интерфейс `InterrupterInterface`.
+Так же существует абстрактный - `InterrupterAbstract` клас который все принимающие `callable` заворачивает в 
 `SerializedCallback` для того чтобы `Interrupter` можно было так же сериализовать и передать на выполнение другому 
 интераптору и так до бесконечности.
  
-Вызов `$interruptor()` возвращает результат выполнения в виде об'екта `PayloadInterface`.   
-Например в `Interruptor\Process` стартует новый процесс.  
-После вызова  `$info = $interruptor()`, в `$info` будет массив с информацией о процессе (PID, ...).  
+Вызов `$interrupter()` возвращает результат выполнения в виде об'екта `PayloadInterface`.   
+Например в `Interrupter\Process` стартует новый процесс.  
+После вызова  `$info = $interrupter()`, в `$info` будет массив с информацией о процессе (PID, ...).  
 Если нужен результат выполнения `callable`, используйте `Promise` из
 [rollun-com/rollun-promise](https://github.com/rollun-com/rollun-promise).
 
