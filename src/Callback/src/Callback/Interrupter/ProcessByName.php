@@ -127,6 +127,14 @@ class ProcessByName implements InterrupterInterface
         $cmd .= "  1>{$payload[self::STDOUT_KEY]} 2>{$payload[self::STDERR_KEY]}";
 
         if (!str_starts_with(php_uname(), "Windows")) {
+            // Close descriptors 3-9 in the job. A php-fpm worker holds dup()s of the master's
+            // stdout/stderr catch-pipes on low fds (rollun-logger php://stdout, seen at fd 6/7/8 in
+            // production); a job that inherits one keeps the master from ever reading EOF when the
+            // worker exits, which poisons the master's event queue and wedges the replacement
+            // worker in pipe_write (Trello py2Gb7O7). /bin/sh is dash on our images and only
+            // parses single-digit redirections, so fds >= 10 cannot be closed this way — the full
+            // fix is proc_open with a complete descriptorspec (BackgroundProcess, same ticket).
+            $cmd .= " 3>&- 4>&- 5>&- 6>&- 7>&- 8>&- 9>&-";
             $cmd .= " & echo $!";
         }
 
